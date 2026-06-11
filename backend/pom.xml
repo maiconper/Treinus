@@ -21,6 +21,7 @@
     <properties>
         <java.version>25</java.version>
         <lombok.version>1.18.46</lombok.version>
+        <postgresql.version>42.7.11</postgresql.version>
         <jjwt.version>0.12.6</jjwt.version>
         <springdoc.version>2.7.0</springdoc.version>
     </properties>
