@@ -107,7 +107,8 @@ public class WorkoutService {
         if (request.notes() != null) we.setNotes(request.notes());
 
         workoutExerciseRepository.save(we);
-        return WorkoutResponse.from(workoutRepository.findById(workoutId).orElseThrow());
+        return WorkoutResponse.from(workoutRepository.findById(workoutId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Workout", workoutId)));
     }
 
     @Transactional

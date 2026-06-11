@@ -9,6 +9,7 @@ import com.treinus.sessions.SessionStatus;
 import com.treinus.sessions.TrainingSession;
 import com.treinus.sessions.TrainingSessionRepository;
 import com.treinus.shared.exception.ResourceNotFoundException;
+import com.treinus.users.UserProfile;
 import com.treinus.users.UserProfileRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
