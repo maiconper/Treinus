@@ -143,7 +143,8 @@ public class SessionService {
         se.setStatus(SessionExerciseStatus.IN_PROGRESS);
         sessionExerciseRepository.save(se);
 
-        return SessionResponse.from(sessionRepository.findById(sessionId).orElseThrow());
+        return SessionResponse.from(sessionRepository.findById(sessionId)
+                .orElseThrow(() -> ResourceNotFoundException.of("TrainingSession", sessionId)));
     }
 
     @Transactional
@@ -161,7 +162,8 @@ public class SessionService {
         se.setSkipReason(request.reason());
         sessionExerciseRepository.save(se);
 
-        return SessionResponse.from(sessionRepository.findById(sessionId).orElseThrow());
+        return SessionResponse.from(sessionRepository.findById(sessionId)
+                .orElseThrow(() -> ResourceNotFoundException.of("TrainingSession", sessionId)));
     }
 
     @Transactional

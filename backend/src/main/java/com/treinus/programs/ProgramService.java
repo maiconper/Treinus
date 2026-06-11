@@ -149,7 +149,8 @@ public class ProgramService {
         week.getDays().add(day);
         programWeekRepository.save(week);
 
-        return ProgramResponse.from(programRepository.findById(programId).orElseThrow());
+        return ProgramResponse.from(programRepository.findById(programId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Program", programId)));
     }
 
     private Program findProgram(UUID id, UUID userId) {
