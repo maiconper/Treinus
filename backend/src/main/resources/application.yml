@@ -56,6 +56,10 @@ management:
 
 logging:
   level:
-    com.treinus: INFO
+    com.treinus: DEBUG
     org.springframework.security: WARN
     org.flywaydb: INFO
+    "[org.hibernate.SQL]": DEBUG
+    "[org.hibernate.orm.jdbc.bind]": TRACE
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%8X{reqId:-?}] [%X{user:-anon}]){yellow} %clr(%-36.36logger{35}){cyan}: %m%n%wEx"

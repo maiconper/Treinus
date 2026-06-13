@@ -11,6 +11,7 @@ import com.treinus.users.User;
 import com.treinus.users.UserProfile;
 import com.treinus.users.UserProfileRepository;
 import com.treinus.users.UserRepository;
+import com.treinus.users.UserRole;
 import com.treinus.workouts.Workout;
 import com.treinus.workouts.WorkoutExercise;
 import com.treinus.workouts.WorkoutRepository;
@@ -36,11 +37,11 @@ public class SessionService {
     private final ProgramDayRepository programDayRepository;
 
     public SessionService(TrainingSessionRepository sessionRepository,
-                          SessionExerciseRepository sessionExerciseRepository,
-                          UserRepository userRepository,
-                          UserProfileRepository userProfileRepository,
-                          WorkoutRepository workoutRepository,
-                          ProgramDayRepository programDayRepository) {
+            SessionExerciseRepository sessionExerciseRepository,
+            UserRepository userRepository,
+            UserProfileRepository userProfileRepository,
+            WorkoutRepository workoutRepository,
+            ProgramDayRepository programDayRepository) {
         this.sessionRepository = sessionRepository;
         this.sessionExerciseRepository = sessionExerciseRepository;
         this.userRepository = userRepository;
@@ -52,7 +53,7 @@ public class SessionService {
     public SessionResponse getCurrent(UUID userId) {
         return sessionRepository.findByUserIdAndStatus(userId, SessionStatus.IN_PROGRESS)
                 .map(SessionResponse::from)
-                .orElseThrow(() -> new BusinessException("No active session found"));
+                .orElseThrow(() -> new ResourceNotFoundException("No active session"));
     }
 
     public SessionResponse getById(UUID id, UUID userId) {
@@ -75,6 +76,7 @@ public class SessionService {
 
         if (request.workoutId() != null) {
             Workout workout = workoutRepository.findByIdAndUserId(request.workoutId(), userId)
+                    .or(() -> workoutRepository.findByIdAndUserRole(request.workoutId(), UserRole.SYSTEM))
                     .orElseThrow(() -> ResourceNotFoundException.of("Workout", request.workoutId()));
             session.setWorkout(workout);
 
@@ -115,7 +117,7 @@ public class SessionService {
 
     @Transactional
     public SessionResponse recordSet(UUID sessionId, UUID sessionExerciseId,
-                                     RecordSetRequest request, UUID userId) {
+            RecordSetRequest request, UUID userId) {
         TrainingSession session = findActiveSession(sessionId, userId);
         SessionExercise se = sessionExerciseRepository.findByIdAndSessionId(sessionExerciseId, sessionId)
                 .orElseThrow(() -> ResourceNotFoundException.of("SessionExercise", sessionExerciseId));
@@ -149,7 +151,7 @@ public class SessionService {
 
     @Transactional
     public SessionResponse skipExercise(UUID sessionId, UUID sessionExerciseId,
-                                        SkipExerciseRequest request, UUID userId) {
+            SkipExerciseRequest request, UUID userId) {
         findActiveSession(sessionId, userId);
         SessionExercise se = sessionExerciseRepository.findByIdAndSessionId(sessionExerciseId, sessionId)
                 .orElseThrow(() -> ResourceNotFoundException.of("SessionExercise", sessionExerciseId));
@@ -173,7 +175,7 @@ public class SessionService {
         // Mark remaining PENDING/IN_PROGRESS exercises as completed
         session.getExercises().stream()
                 .filter(se -> se.getStatus() == SessionExerciseStatus.IN_PROGRESS
-                           || se.getStatus() == SessionExerciseStatus.PENDING)
+                        || se.getStatus() == SessionExerciseStatus.PENDING)
                 .forEach(se -> {
                     if (!se.getSets().isEmpty()) {
                         se.setStatus(SessionExerciseStatus.COMPLETED);
@@ -192,7 +194,8 @@ public class SessionService {
                 totalReps += set.getReps();
                 totalVolume = totalVolume.add(
                         set.getWeightKg().multiply(BigDecimal.valueOf(set.getReps())));
-                if (set.isPersonalRecord()) newPRs++;
+                if (set.isPersonalRecord())
+                    newPRs++;
             }
         }
 
@@ -222,8 +225,7 @@ public class SessionService {
                 totalVolume,
                 session.getXpEarned(),
                 newPRs,
-                exercises
-        );
+                exercises);
     }
 
     @Transactional

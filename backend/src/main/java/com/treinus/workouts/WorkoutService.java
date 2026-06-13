@@ -6,6 +6,7 @@ import com.treinus.shared.exception.BusinessException;
 import com.treinus.shared.exception.ResourceNotFoundException;
 import com.treinus.users.User;
 import com.treinus.users.UserRepository;
+import com.treinus.users.UserRole;
 import com.treinus.workouts.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,43 @@ public class WorkoutService {
         return workoutRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(WorkoutResponse::from)
                 .toList();
+    }
+
+    public List<WorkoutResponse> findAllPresets() {
+        return workoutRepository.findAllByUserRole(UserRole.SYSTEM).stream()
+                .map(WorkoutResponse::from)
+                .toList();
+    }
+
+    @Transactional
+    public WorkoutResponse adopt(UUID presetId, UUID userId) {
+        Workout preset = workoutRepository.findByIdAndUserRole(presetId, UserRole.SYSTEM)
+                .orElseThrow(() -> ResourceNotFoundException.of("Preset workout", presetId));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> ResourceNotFoundException.of("User", userId));
+
+        Workout copy = new Workout();
+        copy.setName(preset.getName());
+        copy.setDescription(preset.getDescription());
+        copy.setUser(user);
+        Workout saved = workoutRepository.save(copy);
+
+        for (WorkoutExercise we : preset.getExercises()) {
+            WorkoutExercise copiedWe = new WorkoutExercise();
+            copiedWe.setWorkout(saved);
+            copiedWe.setExercise(we.getExercise());
+            copiedWe.setOrderIndex(we.getOrderIndex());
+            copiedWe.setPlannedSets(we.getPlannedSets());
+            copiedWe.setPlannedRepsMin(we.getPlannedRepsMin());
+            copiedWe.setPlannedRepsMax(we.getPlannedRepsMax());
+            copiedWe.setPlannedWeightKg(we.getPlannedWeightKg());
+            copiedWe.setRestSeconds(we.getRestSeconds());
+            copiedWe.setNotes(we.getNotes());
+            saved.getExercises().add(copiedWe);
+        }
+
+        return WorkoutResponse.from(workoutRepository.save(saved));
     }
 
     public WorkoutResponse findById(UUID id, UUID userId) {
@@ -145,6 +183,7 @@ public class WorkoutService {
 
     private Workout findWorkout(UUID id, UUID userId) {
         return workoutRepository.findByIdAndUserId(id, userId)
+                .or(() -> workoutRepository.findByIdAndUserRole(id, UserRole.SYSTEM))
                 .orElseThrow(() -> ResourceNotFoundException.of("Workout", id));
     }
 

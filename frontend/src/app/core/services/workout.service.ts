@@ -16,6 +16,14 @@ export class WorkoutService {
     return this.http.get<Workout[]>(this.url);
   }
 
+  listPresets(): Observable<Workout[]> {
+    return this.http.get<Workout[]>(`${this.url}/presets`);
+  }
+
+  adopt(id: string): Observable<Workout> {
+    return this.http.post<Workout>(`${this.url}/${id}/adopt`, {});
+  }
+
   get(id: string): Observable<Workout> {
     return this.http.get<Workout>(`${this.url}/${id}`);
   }

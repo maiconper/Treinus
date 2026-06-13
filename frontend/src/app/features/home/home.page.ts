@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
 import { ProgramService } from '../../core/services/program.service';
 import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/services/auth.service';
 import { User, Program, Session } from '../../core/models';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin, of, Subscription } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -14,12 +14,13 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./home.page.scss'],
   standalone: false,
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   user: User | null = null;
   activeProgram: Program | null = null;
   activeSession: Session | null = null;
   today = new Date();
   loading = true;
+  private sessionSub?: Subscription;
 
   weekDays = [
     { label: 'S', key: 1 },
@@ -39,25 +40,41 @@ export class HomePage implements OnInit {
     private router: Router,
   ) {}
 
-  ngOnInit() { this.load(); }
+  ngOnInit() {
+    this.sessionSub = this.sessionService.activeSession$.subscribe(s => {
+      this.activeSession = s;
+    });
+    this.load();
+  }
+
+  ngOnDestroy() { this.sessionSub?.unsubscribe(); }
 
   ionViewWillEnter() { this.load(); }
 
   load() {
     this.loading = true;
+    this.sessionService.getCurrent().pipe(catchError(() => of(null))).subscribe();
     forkJoin({
       user: this.userService.getMe(),
       program: this.programService.getActive().pipe(catchError(() => of(null))),
-      session: this.sessionService.getCurrent().pipe(catchError(() => of(null))),
     }).subscribe({
-      next: ({ user, program, session }) => {
+      next: ({ user, program }) => {
         this.user = user;
         this.activeProgram = program;
-        this.activeSession = session as Session | null;
         this.loading = false;
       },
       error: () => { this.loading = false; },
     });
+  }
+
+  // TODO: lastWorkoutDate indica que ALGUM treino foi feito hoje, não que o treino do programa de hoje
+  // foi concluído. Se o usuário trocar o treino do dia, o novo aparece como concluído incorretamente.
+  // Solução correta: rastrear a sessão concluída por programDayId ou workoutId específico.
+  get completedToday(): boolean {
+    if (!this.user?.lastWorkoutDate) return false;
+    const t = this.today;
+    const local = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    return this.user.lastWorkoutDate === local;
   }
 
   get todayWorkout() {

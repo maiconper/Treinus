@@ -4,6 +4,7 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
 import { ProgramService } from '../../../core/services/program.service';
 import { WorkoutService } from '../../../core/services/workout.service';
 import { Program, ProgramWeek, ProgramDay, Workout } from '../../../core/models';
+import { forkJoin } from 'rxjs';
 
 const DAY_NAMES: Record<number, string> = {
   1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb', 7: 'Dom',
@@ -19,6 +20,7 @@ export class ProgramDetailPage implements OnInit {
   programId!: string;
   program: Program | null = null;
   workouts: Workout[] = [];
+  presets: Workout[] = [];
   loading = true;
   programName = '';
   readonly allDays = [1, 2, 3, 4, 5, 6, 7];
@@ -38,7 +40,21 @@ export class ProgramDetailPage implements OnInit {
   ngOnInit() {
     this.programId = this.route.snapshot.paramMap.get('id')!;
     this.load();
-    this.workoutService.list().subscribe(ws => { this.workouts = ws; });
+    this.loadWorkouts();
+  }
+
+  ionViewWillEnter() {
+    this.loadWorkouts();
+  }
+
+  private loadWorkouts() {
+    forkJoin({
+      workouts: this.workoutService.list(),
+      presets: this.workoutService.listPresets(),
+    }).subscribe(({ workouts, presets }) => {
+      this.workouts = workouts;
+      this.presets = presets;
+    });
   }
 
   load() {
@@ -135,46 +151,103 @@ export class ProgramDetailPage implements OnInit {
     if (!this.canEdit) return;
     const existing = this.getDay(week, dayOfWeek);
 
-    const workoutButtons = this.workouts.map(w => ({
-      text: w.name,
-      handler: () => {
-        const req = { workoutId: w.id, restDay: false };
-        const obs = existing
-          ? this.programService.updateDay(this.programId, week.id, existing.id, req)
-          : this.programService.addDay(this.programId, week.id, { dayOfWeek, ...req });
-        obs.subscribe(p => { this.program = p; this.showSaved(); });
-      },
-    }));
-
-    const restButton = {
-      text: 'Descanso',
-      handler: () => {
-        const req = { restDay: true };
-        const obs = existing
-          ? this.programService.updateDay(this.programId, week.id, existing.id, req)
-          : this.programService.addDay(this.programId, week.id, { dayOfWeek, restDay: true });
-        obs.subscribe(p => { this.program = p; this.showSaved(); });
-      },
-    };
-
-    const buttons: any[] = [...workoutButtons, restButton];
-
-    if (existing) {
-      buttons.push({
-        text: 'Remover dia',
-        role: 'destructive',
-        handler: () => {
-          this.programService.removeDay(this.programId, week.id, existing.id)
-            .subscribe(p => { this.program = p; this.showSaved('Dia removido'); });
-        },
-      });
+    if (!existing) {
+      await this.showEmptyDaySheet(week, dayOfWeek);
+    } else {
+      await this.showExistingDaySheet(week, dayOfWeek, existing);
     }
+  }
 
-    buttons.push({ text: 'Cancelar', role: 'cancel' });
-
+  private async showEmptyDaySheet(week: ProgramWeek, dayOfWeek: number) {
     const sheet = await this.actionSheet.create({
       header: `${this.getDayName(dayOfWeek)} — Semana ${week.weekNumber}`,
-      buttons,
+      buttons: [
+        {
+          text: 'Criar treino',
+          icon: 'add-circle-outline',
+          handler: () => { this.router.navigate(['/tabs/workouts/builder']); },
+        },
+        {
+          text: 'Selecionar do catálogo',
+          icon: 'list-outline',
+          handler: () => { this.selectWorkoutForDay(week, dayOfWeek, undefined); },
+        },
+        {
+          text: 'Descanso',
+          icon: 'moon-outline',
+          handler: () => {
+            this.programService.addDay(this.programId, week.id, { dayOfWeek, restDay: true })
+              .subscribe(p => { this.program = p; this.showSaved(); });
+          },
+        },
+        { text: 'Cancelar', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  private async showExistingDaySheet(week: ProgramWeek, dayOfWeek: number, existing: ProgramDay) {
+    const sheet = await this.actionSheet.create({
+      header: `${this.getDayName(dayOfWeek)} — Semana ${week.weekNumber}`,
+      buttons: [
+        {
+          text: 'Alterar treino',
+          icon: 'swap-horizontal-outline',
+          handler: () => { this.selectWorkoutForDay(week, dayOfWeek, existing); },
+        },
+        {
+          text: 'Descanso',
+          icon: 'moon-outline',
+          handler: () => {
+            this.programService.updateDay(this.programId, week.id, existing.id, { restDay: true })
+              .subscribe(p => { this.program = p; this.showSaved(); });
+          },
+        },
+        {
+          text: 'Remover dia',
+          role: 'destructive',
+          handler: () => {
+            this.programService.removeDay(this.programId, week.id, existing.id)
+              .subscribe(p => { this.program = p; this.showSaved('Dia removido'); });
+          },
+        },
+        { text: 'Cancelar', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  private async selectWorkoutForDay(week: ProgramWeek, dayOfWeek: number, existing: ProgramDay | undefined) {
+    const allWorkouts = [...this.workouts, ...this.presets];
+
+    if (allWorkouts.length === 0) {
+      const t = await this.toast.create({
+        message: 'Nenhum treino disponível. Crie um treino primeiro.',
+        duration: 2000,
+        position: 'bottom',
+      });
+      await t.present();
+      return;
+    }
+
+    const makeHandler = (w: Workout) => () => {
+      const req = { workoutId: w.id, restDay: false };
+      const obs = existing
+        ? this.programService.updateDay(this.programId, week.id, existing.id, req)
+        : this.programService.addDay(this.programId, week.id, { dayOfWeek, ...req });
+      obs.subscribe(p => { this.program = p; this.showSaved(); });
+    };
+
+    const userButtons = this.workouts.map(w => ({ text: w.name, handler: makeHandler(w) }));
+    const presetButtons = this.presets.map(w => ({ text: `${w.name} ★`, handler: makeHandler(w) }));
+
+    const sheet = await this.actionSheet.create({
+      header: 'Selecionar treino',
+      buttons: [
+        ...userButtons,
+        ...presetButtons,
+        { text: 'Cancelar', role: 'cancel' },
+      ],
     });
     await sheet.present();
   }

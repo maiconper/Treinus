@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Session, StartSessionRequest, LogSetRequest, SkipExerciseRequest, SessionSummary } from '../models';
 
@@ -14,7 +14,11 @@ export class SessionService {
 
   getCurrent(): Observable<Session> {
     return this.http.get<Session>(`${this.url}/current`).pipe(
-      tap(s => this._active.next(s))
+      tap(s => this._active.next(s)),
+      catchError(err => {
+        this._active.next(null);
+        return throwError(() => err);
+      })
     );
   }
 

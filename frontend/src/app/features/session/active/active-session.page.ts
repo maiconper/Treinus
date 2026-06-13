@@ -34,11 +34,7 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.sessionService.get(id).subscribe(s => {
       this.session = s;
-      const ex = this.currentExercise;
-      if (ex) {
-        this.weight = 0;
-        this.reps = 10;
-      }
+      this.resetInputsForCurrentExercise();
     });
     this.timerSub = interval(1000).subscribe(() => this.elapsedSeconds++);
   }
@@ -63,8 +59,15 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   }
 
   get plannedSets(): number {
-    // Derive from workout — default 3
-    return 3;
+    return this.currentExercise?.plannedSets ?? 3;
+  }
+
+  get isExerciseDone(): boolean {
+    return this.completedSets >= this.plannedSets || this.currentExercise?.status === 'SKIPPED';
+  }
+
+  get isLastExercise(): boolean {
+    return this.currentExerciseIndex === (this.session?.exercises.length ?? 1) - 1;
   }
 
   get formattedTime(): string {
@@ -110,7 +113,7 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
     }).subscribe({
       next: s => {
         this.session = s;
-        this.startRest(90);
+        this.startRest(this.currentExercise?.restSeconds ?? 90);
       },
     });
   }
@@ -140,11 +143,24 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
     if (!this.session) return;
     if (this.currentExerciseIndex < this.session.exercises.length - 1) {
       this.currentExerciseIndex++;
+      this.restTimer?.unsubscribe();
+      this.restRunning = false;
+      this.restSeconds = 0;
+      this.resetInputsForCurrentExercise();
     }
   }
 
   prevExercise() {
-    if (this.currentExerciseIndex > 0) this.currentExerciseIndex--;
+    if (this.currentExerciseIndex > 0) {
+      this.currentExerciseIndex--;
+      this.resetInputsForCurrentExercise();
+    }
+  }
+
+  private resetInputsForCurrentExercise() {
+    const ex = this.currentExercise;
+    this.reps = ex?.plannedRepsMax ?? ex?.plannedRepsMin ?? 10;
+    this.weight = 0;
   }
 
   async finish() {

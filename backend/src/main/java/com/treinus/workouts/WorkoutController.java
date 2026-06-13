@@ -32,6 +32,20 @@ public class WorkoutController {
         return ResponseEntity.ok(workoutService.findAllByUser(user.getId()));
     }
 
+    @GetMapping("/presets")
+    @Operation(summary = "Listar treinos preset da plataforma")
+    public ResponseEntity<List<WorkoutResponse>> listPresets() {
+        return ResponseEntity.ok(workoutService.findAllPresets());
+    }
+
+    @PostMapping("/{id}/adopt")
+    @Operation(summary = "Adotar um treino preset como próprio")
+    public ResponseEntity<WorkoutResponse> adopt(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(workoutService.adopt(id, user.getId()));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Obter treino por ID")
     public ResponseEntity<WorkoutResponse> getById(

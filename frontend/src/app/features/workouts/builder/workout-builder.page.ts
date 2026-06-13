@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { WorkoutService } from '../../../core/services/workout.service';
 import { ExerciseService } from '../../../core/services/exercise.service';
+import { SessionService } from '../../../core/services/session.service';
 import { Exercise, Workout, WorkoutExercise } from '../../../core/models';
 
 const MUSCLE_GROUPS = [
@@ -49,6 +50,7 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
     private router: Router,
     private workoutService: WorkoutService,
     private exerciseService: ExerciseService,
+    private sessionService: SessionService,
     private modalCtrl: ModalController,
   ) {}
 
@@ -193,6 +195,17 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
 
   finish() {
     this.router.navigate(['/tabs/workouts']);
+  }
+
+  startWorkout() {
+    if (!this.workoutId) return;
+    this.sessionService.start({ workoutId: this.workoutId }).subscribe(session => {
+      this.router.navigate(['/session', session.id]);
+    });
+  }
+
+  get hasExercises(): boolean {
+    return (this.workout?.exercises.length ?? 0) > 0;
   }
 
   getCategoryColor(category: string): string {

@@ -146,8 +146,17 @@
       <ion-icon name="arrow-forward-outline" *ngIf="!saving"></ion-icon>
     </button>
 
-    <!-- Step 2 -->
-    <button class="btn-cta" *ngIf="step === 2" [disabled]="!workout" (click)="finish()">
+    <!-- Step 2: tem exercícios → iniciar + salvar -->
+    <ng-container *ngIf="step === 2 && hasExercises">
+      <button class="btn-cta" (click)="startWorkout()">
+        <ion-icon name="play-outline"></ion-icon>
+        Iniciar treino
+      </button>
+      <button class="btn-cta-ghost" (click)="finish()">Salvar e sair</button>
+    </ng-container>
+
+    <!-- Step 2: sem exercícios → apenas concluir -->
+    <button class="btn-cta" *ngIf="step === 2 && !hasExercises" [disabled]="!workout" (click)="finish()">
       Concluir treino
       <ion-icon name="checkmark-outline"></ion-icon>
     </button>

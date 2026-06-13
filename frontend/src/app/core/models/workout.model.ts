@@ -20,6 +20,7 @@ export interface Workout {
   name: string;
   description?: string;
   userId: string;
+  preset: boolean;
   exercises: WorkoutExercise[];
   createdAt: string;
   updatedAt: string;

@@ -296,3 +296,16 @@
   &:disabled { opacity: 0.4; cursor: not-allowed; }
   &:not(:disabled):active { opacity: 0.85; }
 }
+
+.btn-cta-ghost {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  font-size: 14px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  display: block;
+  margin-top: 2px;
+}

@@ -13,13 +13,14 @@ public record SessionExerciseResponse(
         int orderIndex,
         SessionExerciseStatus status,
         String skipReason,
+        Integer plannedSets,
+        Integer plannedRepsMin,
+        Integer plannedRepsMax,
+        Integer restSeconds,
         List<SessionSetResponse> sets
 ) {
     public static SessionExerciseResponse from(SessionExercise se) {
-        List<SessionSetResponse> sets = se.getSets().stream()
-                .map(SessionSetResponse::from)
-                .toList();
-
+        var we = se.getWorkoutExercise();
         return new SessionExerciseResponse(
                 se.getId(),
                 se.getExercise().getId(),
@@ -27,7 +28,11 @@ public record SessionExerciseResponse(
                 se.getOrderIndex(),
                 se.getStatus(),
                 se.getSkipReason(),
-                sets
+                we != null ? we.getPlannedSets() : null,
+                we != null ? we.getPlannedRepsMin() : null,
+                we != null ? we.getPlannedRepsMax() : null,
+                we != null ? we.getRestSeconds() : null,
+                se.getSets().stream().map(SessionSetResponse::from).toList()
         );
     }
 }

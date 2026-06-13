@@ -16,6 +16,10 @@ export interface SessionExercise {
   orderIndex: number;
   status: SessionExerciseStatus;
   skipReason?: string;
+  plannedSets?: number;
+  plannedRepsMin?: number;
+  plannedRepsMax?: number;
+  restSeconds?: number;
   sets: SessionSet[];
 }
 

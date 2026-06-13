@@ -78,11 +78,20 @@
     </div>
 
     <!-- Actions -->
-    <button class="btn-confirm" (click)="logSet()">
+    <button class="btn-confirm" (click)="logSet()" *ngIf="!isExerciseDone">
       <ion-icon name="checkmark-outline"></ion-icon>
       Confirmar série
     </button>
-    <button class="btn-skip" (click)="skipExercise()">Pular exercício</button>
+    <button class="btn-skip" (click)="skipExercise()" *ngIf="!isExerciseDone">Pular exercício</button>
+
+    <button class="btn-next" (click)="nextExercise()" *ngIf="isExerciseDone && !isLastExercise">
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+      Próximo exercício
+    </button>
+    <button class="btn-finish" (click)="finish()" *ngIf="isExerciseDone && isLastExercise">
+      <ion-icon name="trophy-outline"></ion-icon>
+      Finalizar treino
+    </button>
 
     <!-- Nav between exercises -->
     <div class="ex-nav">

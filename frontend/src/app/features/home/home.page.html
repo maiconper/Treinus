@@ -45,7 +45,16 @@
     <!-- Today's workout -->
     <p class="section-lbl">Treino de hoje</p>
 
-    <div class="workout-card" *ngIf="todayWorkout; else noWorkout">
+    <div class="workout-card done-card" *ngIf="todayWorkout && completedToday">
+      <p class="wc-meta">Concluído hoje</p>
+      <p class="wc-title">{{ todayWorkout?.workoutName }}</p>
+      <div class="done-badge">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Treino concluído!
+      </div>
+    </div>
+
+    <div class="workout-card" *ngIf="todayWorkout && !completedToday; else noWorkout">
       <p class="wc-meta">{{ activeProgram ? 'Programa ativo' : 'Treino avulso' }}</p>
       <p class="wc-title">{{ todayWorkout.workoutName }}</p>
       <button class="btn-primary start-btn" (click)="startWorkout()">

@@ -5,6 +5,7 @@ import com.treinus.shared.exception.BusinessException;
 import com.treinus.shared.exception.ResourceNotFoundException;
 import com.treinus.users.User;
 import com.treinus.users.UserRepository;
+import com.treinus.users.UserRole;
 import com.treinus.workouts.Workout;
 import com.treinus.workouts.WorkoutRepository;
 import org.springframework.stereotype.Service;
@@ -146,6 +147,7 @@ public class ProgramService {
         Workout workout = null;
         if (!request.restDay() && request.workoutId() != null) {
             workout = workoutRepository.findByIdAndUserId(request.workoutId(), userId)
+                    .or(() -> workoutRepository.findByIdAndUserRole(request.workoutId(), UserRole.SYSTEM))
                     .orElseThrow(() -> ResourceNotFoundException.of("Workout", request.workoutId()));
         }
 
@@ -217,6 +219,7 @@ public class ProgramService {
             day.setWorkout(null);
         } else if (request.workoutId() != null) {
             Workout workout = workoutRepository.findByIdAndUserId(request.workoutId(), userId)
+                    .or(() -> workoutRepository.findByIdAndUserRole(request.workoutId(), UserRole.SYSTEM))
                     .orElseThrow(() -> ResourceNotFoundException.of("Workout", request.workoutId()));
             day.setRestDay(false);
             day.setWorkout(workout);
