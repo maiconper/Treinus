@@ -1,0 +1,115 @@
+<ion-content class="auth-content">
+
+  <!-- Step dots -->
+  <div class="step-dots" *ngIf="step < 4">
+    <div class="dot" [class.done]="step > 1" [class.active]="step === 1"></div>
+    <div class="dot" [class.done]="step > 2" [class.active]="step === 2"></div>
+    <div class="dot" [class.active]="step === 3"></div>
+  </div>
+
+  <!-- Step 1: Level -->
+  <div class="auth-form" *ngIf="step === 1">
+    <h2>Qual é seu nível?</h2>
+    <p class="sub">Isso ajuda a recomendar os programas certos pra você.</p>
+
+    <div class="options-list">
+      <div class="option-card" *ngFor="let l of levels"
+        [class.selected]="level === l.value"
+        (click)="level = l.value">
+        <div class="opt-icon" [style.background]="l.bg">
+          <ion-icon [name]="l.icon" [style.color]="l.color"></ion-icon>
+        </div>
+        <div class="opt-info">
+          <p class="opt-name">{{ l.label }}</p>
+          <p class="opt-desc">{{ l.desc }}</p>
+        </div>
+        <div class="radio" [class.checked]="level === l.value">
+          <ion-icon name="checkmark" *ngIf="level === l.value"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" [disabled]="!level" (click)="next()">
+      <ion-icon name="arrow-forward-outline"></ion-icon> Próximo
+    </button>
+  </div>
+
+  <!-- Step 2: Goal -->
+  <div class="auth-form" *ngIf="step === 2">
+    <h2>Qual é seu objetivo?</h2>
+    <p class="sub">Pode ter mais de um, escolha o principal.</p>
+
+    <div class="options-grid">
+      <div class="option-card" *ngFor="let g of goals"
+        [class.selected]="goal === g.value"
+        (click)="goal = g.value">
+        <div class="opt-icon" style="background: var(--surface2)">
+          <ion-icon [name]="g.icon" style="color: var(--text2)"></ion-icon>
+        </div>
+        <div class="opt-info">
+          <p class="opt-name">{{ g.label }}</p>
+          <p class="opt-desc">{{ g.desc }}</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" [disabled]="!goal" (click)="next()">
+      <ion-icon name="arrow-forward-outline"></ion-icon> Próximo
+    </button>
+    <p class="switch-link" (click)="back()">← Voltar</p>
+  </div>
+
+  <!-- Step 3: Days -->
+  <div class="auth-form" *ngIf="step === 3">
+    <h2>Quando você treina?</h2>
+    <p class="sub">O app vai organizar seus treinos nesses dias.</p>
+
+    <div class="days-picker">
+      <div class="day-btn"
+        *ngFor="let d of days"
+        [class.active]="d.selected"
+        (click)="d.selected = !d.selected">
+        {{ d.label }}
+      </div>
+    </div>
+
+    <div class="hint-box" *ngIf="selectedDaysCount > 0">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <p><strong>{{ selectedDaysCount }} dia{{ selectedDaysCount > 1 ? 's' : '' }} selecionado{{ selectedDaysCount > 1 ? 's' : '' }}</strong> — {{ daysHint }}</p>
+    </div>
+
+    <button class="btn-primary" [disabled]="selectedDaysCount === 0" (click)="finish()">
+      <ion-icon name="checkmark-outline"></ion-icon> Tudo certo, vamos lá!
+    </button>
+    <p class="switch-link" (click)="back()">← Voltar</p>
+  </div>
+
+  <!-- Step 4: Ready -->
+  <div class="auth-form ready" *ngIf="step === 4">
+    <div class="ready-icon">
+      <ion-icon name="checkmark-outline"></ion-icon>
+    </div>
+    <h2>Tudo pronto!</h2>
+    <p class="sub">Seu perfil foi criado. Que tal começar a treinar?</p>
+
+    <div class="tags">
+      <span class="tag">
+        <ion-icon name="flame-outline" style="color: var(--amber)"></ion-icon>
+        {{ level === 'BEGINNER' ? 'Iniciante' : level === 'INTERMEDIATE' ? 'Intermediário' : 'Avançado' }}
+      </span>
+      <span class="tag">
+        <ion-icon name="barbell-outline" style="color: var(--purple)"></ion-icon>
+        {{ goal === 'GAIN_MUSCLE' ? 'Hipertrofia' : goal === 'LOSE_WEIGHT' ? 'Emagrecimento' : goal === 'MAINTAIN' ? 'Força' : 'Saúde' }}
+      </span>
+      <span class="tag">
+        <ion-icon name="repeat-outline" style="color: var(--blue)"></ion-icon>
+        {{ selectedDaysCount }} dias/sem
+      </span>
+    </div>
+
+    <button class="btn-primary" (click)="goToApp()">
+      <ion-icon name="arrow-forward-outline"></ion-icon> Ir para o app
+    </button>
+  </div>
+
+</ion-content>

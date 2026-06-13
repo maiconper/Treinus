@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Treinos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="segment === 'workouts' ? createWorkout() : createProgram()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <div class="seg-wrap">
+    <div class="seg-control">
+      <button class="seg-btn" [class.active]="segment === 'workouts'" (click)="segment = 'workouts'">Treinos</button>
+      <button class="seg-btn" [class.active]="segment === 'programs'" (click)="segment = 'programs'">Programas</button>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="workouts-content">
+  <div class="content-inner" *ngIf="!loading">
+
+    <!-- Workouts -->
+    <ng-container *ngIf="segment === 'workouts'">
+      <div class="empty-state" *ngIf="workouts.length === 0">
+        <ion-icon name="barbell-outline"></ion-icon>
+        <p>Nenhum treino criado ainda.</p>
+        <button class="btn-primary" (click)="createWorkout()">
+          <ion-icon name="add-outline"></ion-icon> Criar treino
+        </button>
+      </div>
+
+      <div class="workout-item" *ngFor="let w of workouts" (click)="openWorkout(w)">
+        <div class="wi-icon">
+          <ion-icon name="barbell-outline"></ion-icon>
+        </div>
+        <div class="wi-info">
+          <p class="wi-name">{{ w.name }}</p>
+          <p class="wi-meta">{{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' : '' }}</p>
+        </div>
+        <ion-button fill="clear" size="small" (click)="deleteWorkout(w, $event)" color="medium">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+        <ion-icon name="chevron-forward-outline" class="wi-arrow"></ion-icon>
+      </div>
+    </ng-container>
+
+    <!-- Programs -->
+    <ng-container *ngIf="segment === 'programs'">
+      <div class="empty-state" *ngIf="programs.length === 0">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <p>Nenhum programa criado ainda.</p>
+        <button class="btn-primary" (click)="createProgram()">
+          <ion-icon name="add-outline"></ion-icon> Criar programa
+        </button>
+      </div>
+
+      <div class="program-item" *ngFor="let p of programs" (click)="openProgram(p)">
+        <div class="pi-icon" style="background: var(--purple-bg)">
+          <ion-icon name="calendar-outline" style="color: var(--purple)"></ion-icon>
+        </div>
+        <div class="pi-info">
+          <p class="pi-name">{{ p.name }}</p>
+          <p class="pi-meta">{{ p.weeksCount }} semanas</p>
+        </div>
+        <span class="status-tag" [style.color]="getProgramStatusColor(p.status)">
+          {{ getProgramStatusLabel(p.status) }}
+        </span>
+        <ion-button *ngIf="p.status === 'DRAFT' || p.status === 'COMPLETED' || p.status === 'CANCELLED'"
+          fill="clear" size="small" (click)="deleteProgram(p, $event)" color="medium">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+        <ion-icon
+          [name]="p.status === 'DRAFT' ? 'play-circle-outline' : 'chevron-forward-outline'"
+          [style.color]="p.status === 'DRAFT' ? 'var(--blue)' : 'var(--text3)'"
+          class="pi-arrow"
+        ></ion-icon>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</ion-content>

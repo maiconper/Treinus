@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="abandon()" fill="clear" color="medium">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <div class="toolbar-center" *ngIf="session">
+      <p class="toolbar-title">{{ session.workoutName }}</p>
+      <p class="toolbar-sub">Exercício {{ currentExerciseIndex + 1 }} de {{ session.exercises.length }} · {{ formattedTime }}</p>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button (click)="finish()" fill="clear" color="primary">
+        <ion-icon slot="icon-only" name="checkmark-done-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" [style.width.%]="progress"></div>
+  </div>
+</ion-header>
+
+<ion-content class="session-content" *ngIf="session && currentExercise">
+  <div class="content-inner">
+
+    <!-- Exercise name -->
+    <span class="ex-badge">{{ currentExercise.exerciseName }}</span>
+    <p class="ex-name">{{ currentExercise.exerciseName }}</p>
+
+    <!-- Sets progress -->
+    <p class="sets-label">Séries</p>
+    <div class="sets-row">
+      <div class="set-chip"
+        *ngFor="let i of [1,2,3,4,5].slice(0, plannedSets)"
+        [class.done]="i <= completedSets"
+        [class.active]="i === completedSets + 1">
+        <span class="sc-lbl">Série {{ i }}</span>
+        <span class="sc-val">
+          <ion-icon name="checkmark" *ngIf="i <= completedSets" style="font-size:13px"></ion-icon>
+          <ng-container *ngIf="i > completedSets">{{ reps }} reps</ng-container>
+        </span>
+      </div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="inputs-row">
+      <div class="input-block">
+        <p class="ib-lbl">Carga</p>
+        <div class="ib-ctrl">
+          <button class="ctrl-btn" (click)="decWeight()">−</button>
+          <div class="ib-val">{{ weight }} <span>kg</span></div>
+          <button class="ctrl-btn" (click)="weight = weight + 2.5">+</button>
+        </div>
+      </div>
+      <div class="input-block">
+        <p class="ib-lbl">Reps</p>
+        <div class="ib-ctrl">
+          <button class="ctrl-btn" (click)="decReps()">−</button>
+          <div class="ib-val">{{ reps }} <span>reps</span></div>
+          <button class="ctrl-btn" (click)="reps = reps + 1">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rest timer -->
+    <div class="rest-block">
+      <div class="rest-info">
+        <p class="rest-lbl">Descanso</p>
+        <p class="rest-val">{{ restDisplay }}</p>
+      </div>
+      <div class="rest-btns">
+        <button class="rest-btn" (click)="adjustRest(-15)">−15s</button>
+        <button class="rest-btn" (click)="adjustRest(15)">+15s</button>
+        <button class="rest-btn" [class.active]="restRunning" (click)="startRest()">
+          {{ restRunning ? 'Pausar' : 'Iniciar' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <button class="btn-confirm" (click)="logSet()">
+      <ion-icon name="checkmark-outline"></ion-icon>
+      Confirmar série
+    </button>
+    <button class="btn-skip" (click)="skipExercise()">Pular exercício</button>
+
+    <!-- Nav between exercises -->
+    <div class="ex-nav">
+      <button class="ex-nav-btn" (click)="prevExercise()" [disabled]="currentExerciseIndex === 0">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <span class="ex-nav-label">{{ currentExerciseIndex + 1 }} / {{ session.exercises.length }}</span>
+      <button class="ex-nav-btn" (click)="nextExercise()" [disabled]="currentExerciseIndex === session.exercises.length - 1">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+    </div>
+
+  </div>
+</ion-content>

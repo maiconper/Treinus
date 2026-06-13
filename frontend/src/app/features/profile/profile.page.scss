@@ -1,0 +1,62 @@
+ion-content.profile-content { --background: var(--bg); }
+.content-inner { padding: 16px 16px 40px; }
+
+.profile-hero {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 0 20px; text-align: center;
+
+  .avatar-lg {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--blue-bg); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: var(--blue-mid);
+    margin-bottom: 12px;
+  }
+
+  .profile-name { font-size: 20px; font-weight: 700; color: var(--text1); margin-bottom: 4px; }
+  .profile-email { font-size: 13px; color: var(--text3); }
+}
+
+.stat-cards {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 20px;
+
+  .stat-card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 14px; text-align: center;
+
+    .sc-val { font-size: 22px; font-weight: 700; color: var(--text1); }
+    .sc-lbl { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  }
+}
+
+.info-section { margin-bottom: 20px; }
+
+.info-card {
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+
+  .info-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 14px; border-bottom: 0.5px solid var(--border);
+
+    &:last-child { border-bottom: none; }
+
+    ion-icon { font-size: 18px; color: var(--text3); flex-shrink: 0; }
+    .ir-label { flex: 1; font-size: 13px; color: var(--text2); }
+    .ir-val { font-size: 13px; font-weight: 500; color: var(--text1); }
+  }
+}
+
+.actions-section {
+  .action-btn {
+    width: 100%; display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 13px; border-radius: 12px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    border: 0.5px solid var(--border);
+
+    ion-icon { font-size: 18px; }
+
+    &.danger { background: var(--danger-bg); color: var(--danger); border-color: #F4B8A8; }
+  }
+}

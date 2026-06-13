@@ -1,0 +1,53 @@
+<ion-content class="post-content" *ngIf="summary">
+  <div class="content-inner">
+
+    <div class="trophy-icon">🏆</div>
+    <h2>Treino concluído!</h2>
+    <p class="hero-sub">{{ summary.workoutName }}</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <p class="sc-lbl">Duração</p>
+        <p class="sc-val">{{ formatDuration(summary.durationSeconds) }}</p>
+      </div>
+      <div class="stat-card">
+        <p class="sc-lbl">Séries</p>
+        <p class="sc-val">{{ summary.totalSets }}</p>
+      </div>
+      <div class="stat-card">
+        <p class="sc-lbl">Volume</p>
+        <p class="sc-val">{{ summary.totalVolumeKg | number:'1.0-0' }} <span>kg</span></p>
+      </div>
+      <div class="stat-card">
+        <p class="sc-lbl">Reps</p>
+        <p class="sc-val">{{ summary.totalReps }}</p>
+      </div>
+    </div>
+
+    <!-- XP earned -->
+    <div class="xp-banner">
+      <ion-icon name="star-outline" style="color: var(--amber); font-size: 20px"></ion-icon>
+      <div>
+        <p class="xp-title">+{{ summary.xpEarned }} XP ganhos!</p>
+        <p class="xp-sub" *ngIf="summary.newPersonalRecords > 0">
+          🎉 {{ summary.newPersonalRecords }} novo{{ summary.newPersonalRecords > 1 ? 's' : '' }} recorde{{ summary.newPersonalRecords > 1 ? 's' : '' }} pessoal{{ summary.newPersonalRecords > 1 ? 'is' : '' }}!
+        </p>
+      </div>
+    </div>
+
+    <!-- Exercises summary -->
+    <p class="section-lbl" style="margin-top: 8px">Exercícios</p>
+    <div class="ex-row" *ngFor="let ex of summary.exercises">
+      <div class="ex-dot" [style.background]="ex.status === 'SKIPPED' ? 'var(--text3)' : 'var(--green)'"></div>
+      <p class="ex-name">{{ ex.exerciseName }}</p>
+      <p class="ex-detail" *ngIf="ex.status !== 'SKIPPED'">{{ ex.sets.length }} séries</p>
+      <span class="skipped-tag" *ngIf="ex.status === 'SKIPPED'">Pulado</span>
+    </div>
+
+    <button class="btn-primary" (click)="goHome()">
+      <ion-icon name="home-outline"></ion-icon>
+      Voltar ao início
+    </button>
+
+  </div>
+</ion-content>

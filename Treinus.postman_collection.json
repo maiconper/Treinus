@@ -1,0 +1,612 @@
+{
+  "info": {
+    "name": "Treinus API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "workoutId", "value": "" },
+    { "key": "workoutExerciseId", "value": "" },
+    { "key": "exerciseId", "value": "" },
+    { "key": "programId", "value": "" },
+    { "key": "programWeekId", "value": "" },
+    { "key": "programDayId", "value": "" },
+    { "key": "sessionId", "value": "" },
+    { "key": "sessionExerciseId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', res.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', res.refreshToken);",
+                  "pm.collectionVariables.set('userId', res.userId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maicon Pereira\",\n  \"email\": \"maicon@example.com\",\n  \"password\": \"senha123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', res.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', res.refreshToken);",
+                  "pm.collectionVariables.set('userId', res.userId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maicon@example.com\",\n  \"password\": \"senha123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', res.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', res.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/me", "host": ["{{baseUrl}}"], "path": ["users", "me"] }
+          }
+        },
+        {
+          "name": "Onboarding",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/users/me/onboarding", "host": ["{{baseUrl}}"], "path": ["users", "me", "onboarding"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fitnessLevel\": \"INTERMEDIATE\",\n  \"goal\": \"GAIN_MUSCLE\",\n  \"availableDaysPerWeek\": 4,\n  \"bodyWeightKg\": 80.5,\n  \"heightCm\": 178,\n  \"birthDate\": \"1990-01-15\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/users/me/profile", "host": ["{{baseUrl}}"], "path": ["users", "me", "profile"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maicon Pereira\",\n  \"fitnessLevel\": \"ADVANCED\",\n  \"goal\": \"GAIN_MUSCLE\",\n  \"availableDaysPerWeek\": 5,\n  \"bodyWeightKg\": 82.0,\n  \"heightCm\": 178,\n  \"birthDate\": \"1990-01-15\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exercises",
+      "item": [
+        {
+          "name": "List Exercises",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/exercises?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["exercises"],
+              "query": [
+                { "key": "category", "value": "CHEST", "disabled": true },
+                { "key": "equipment", "value": "BARBELL", "disabled": true },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Exercise by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/exercises/{{exerciseId}}", "host": ["{{baseUrl}}"], "path": ["exercises", "{{exerciseId}}"] }
+          }
+        },
+        {
+          "name": "Create Custom Exercise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.collectionVariables.set('exerciseId', pm.response.json().id);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/exercises", "host": ["{{baseUrl}}"], "path": ["exercises"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Supino Reto\",\n  \"description\": \"Exercício para peitoral\",\n  \"category\": \"CHEST\",\n  \"primaryMuscleGroup\": \"Peitoral maior\",\n  \"equipment\": \"BARBELL\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Global Exercise (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/exercises/global", "host": ["{{baseUrl}}"], "path": ["exercises", "global"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Agachamento Livre\",\n  \"description\": \"Exercício composto para pernas\",\n  \"category\": \"LEGS\",\n  \"primaryMuscleGroup\": \"Quadríceps\",\n  \"equipment\": \"BARBELL\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Exercise",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/exercises/{{exerciseId}}", "host": ["{{baseUrl}}"], "path": ["exercises", "{{exerciseId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workouts",
+      "item": [
+        {
+          "name": "List Workouts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] }
+          }
+        },
+        {
+          "name": "Get Workout by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] }
+          }
+        },
+        {
+          "name": "Create Workout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.collectionVariables.set('workoutId', pm.response.json().id);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Treino A - Peito e Tríceps\",\n  \"description\": \"Foco em empurrar\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Workout",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Treino A - Peito e Tríceps (atualizado)\",\n  \"description\": \"Descrição atualizada\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Workout",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] }
+          }
+        },
+        {
+          "name": "Add Exercise to Workout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.exercises && res.exercises.length > 0) {",
+                  "  pm.collectionVariables.set('workoutExerciseId', res.exercises[res.exercises.length - 1].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}/exercises", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}", "exercises"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"exerciseId\": \"{{exerciseId}}\",\n  \"plannedSets\": 4,\n  \"plannedRepsMin\": 8,\n  \"plannedRepsMax\": 12,\n  \"plannedWeightKg\": 60.0,\n  \"restSeconds\": 90,\n  \"notes\": \"Foco na descida controlada\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Workout Exercise",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}/exercises/{{workoutExerciseId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}", "exercises", "{{workoutExerciseId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plannedSets\": 5,\n  \"plannedRepsMin\": 6,\n  \"plannedRepsMax\": 10,\n  \"plannedWeightKg\": 70.0,\n  \"restSeconds\": 120,\n  \"notes\": \"Aumentar carga progressivamente\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Exercise from Workout",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}/exercises/{{workoutExerciseId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}", "exercises", "{{workoutExerciseId}}"] }
+          }
+        },
+        {
+          "name": "Reorder Exercises",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}/exercises/reorder", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}", "exercises", "reorder"] },
+            "body": {
+              "mode": "raw",
+              "raw": "[\"{{workoutExerciseId}}\"]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Programs",
+      "item": [
+        {
+          "name": "List Programs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/programs", "host": ["{{baseUrl}}"], "path": ["programs"] }
+          }
+        },
+        {
+          "name": "Get Active Program",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/programs/active", "host": ["{{baseUrl}}"], "path": ["programs", "active"] }
+          }
+        },
+        {
+          "name": "Get Program by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/programs/{{programId}}", "host": ["{{baseUrl}}"], "path": ["programs", "{{programId}}"] }
+          }
+        },
+        {
+          "name": "Create Program",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.collectionVariables.set('programId', pm.response.json().id);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/programs", "host": ["{{baseUrl}}"], "path": ["programs"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Programa Hipertrofia 12 Semanas\",\n  \"description\": \"Foco em ganho de massa muscular\",\n  \"weeksCount\": 12\n}"
+            }
+          }
+        },
+        {
+          "name": "Start Program",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/programs/{{programId}}/start", "host": ["{{baseUrl}}"], "path": ["programs", "{{programId}}", "start"] }
+          }
+        },
+        {
+          "name": "Finish Program",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/programs/{{programId}}/finish", "host": ["{{baseUrl}}"], "path": ["programs", "{{programId}}", "finish"] }
+          }
+        },
+        {
+          "name": "Add Week to Program",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.weeks && res.weeks.length > 0) {",
+                  "  pm.collectionVariables.set('programWeekId', res.weeks[res.weeks.length - 1].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/programs/{{programId}}/weeks", "host": ["{{baseUrl}}"], "path": ["programs", "{{programId}}", "weeks"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"weekNumber\": 1,\n  \"name\": \"Semana 1 - Adaptação\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Day to Week",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "const week = res.weeks && res.weeks.find(w => w.id === pm.collectionVariables.get('programWeekId'));",
+                  "if (week && week.days && week.days.length > 0) {",
+                  "  pm.collectionVariables.set('programDayId', week.days[week.days.length - 1].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/programs/{{programId}}/weeks/{{programWeekId}}/days", "host": ["{{baseUrl}}"], "path": ["programs", "{{programId}}", "weeks", "{{programWeekId}}", "days"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dayOfWeek\": 1,\n  \"workoutId\": \"{{workoutId}}\",\n  \"restDay\": false\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sessions",
+      "item": [
+        {
+          "name": "Get Current Session",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/sessions/current", "host": ["{{baseUrl}}"], "path": ["sessions", "current"] }
+          }
+        },
+        {
+          "name": "Get Session by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/sessions/{{sessionId}}", "host": ["{{baseUrl}}"], "path": ["sessions", "{{sessionId}}"] }
+          }
+        },
+        {
+          "name": "Start Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('sessionId', res.id);",
+                  "if (res.exercises && res.exercises.length > 0) {",
+                  "  pm.collectionVariables.set('sessionExerciseId', res.exercises[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/sessions/start", "host": ["{{baseUrl}}"], "path": ["sessions", "start"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workoutId\": \"{{workoutId}}\",\n  \"programDayId\": null,\n  \"notes\": \"Sentindo-me disposto hoje\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Log Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/sessions/{{sessionId}}/exercises/{{sessionExerciseId}}/sets", "host": ["{{baseUrl}}"], "path": ["sessions", "{{sessionId}}", "exercises", "{{sessionExerciseId}}", "sets"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reps\": 10,\n  \"weightKg\": 60.0\n}"
+            }
+          }
+        },
+        {
+          "name": "Skip Exercise",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/sessions/{{sessionId}}/exercises/{{sessionExerciseId}}/skip", "host": ["{{baseUrl}}"], "path": ["sessions", "{{sessionId}}", "exercises", "{{sessionExerciseId}}", "skip"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Dor no ombro\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Finish Session",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/sessions/{{sessionId}}/finish", "host": ["{{baseUrl}}"], "path": ["sessions", "{{sessionId}}", "finish"] }
+          }
+        },
+        {
+          "name": "Abandon Session",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/sessions/{{sessionId}}/abandon", "host": ["{{baseUrl}}"], "path": ["sessions", "{{sessionId}}", "abandon"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "item": [
+        {
+          "name": "Get Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/progress/summary", "host": ["{{baseUrl}}"], "path": ["progress", "summary"] }
+          }
+        },
+        {
+          "name": "Get History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/progress/history?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "history"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Exercise Progress",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/progress/exercises/{{exerciseId}}", "host": ["{{baseUrl}}"], "path": ["progress", "exercises", "{{exerciseId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="dark" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Programa</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="detail-content" *ngIf="!loading && program">
+  <div class="content-inner">
+
+    <!-- Nome + status -->
+    <div class="name-row">
+      <input
+        class="name-input"
+        [(ngModel)]="programName"
+        (blur)="saveName()"
+        [readOnly]="!canEdit"
+        [class.readonly]="!canEdit"
+        maxlength="150"
+      />
+      <span class="status-chip" [style.color]="getStatusColor(program.status)">
+        {{ getStatusLabel(program.status) }}
+      </span>
+    </div>
+
+    <!-- Botão de ação -->
+    <div class="action-row" *ngIf="program.status === 'DRAFT'">
+      <button class="btn-start" (click)="startProgram()">
+        <ion-icon name="play-outline"></ion-icon>
+        Iniciar programa
+      </button>
+    </div>
+    <div class="action-row" *ngIf="program.status === 'ACTIVE'">
+      <button class="btn-finish" (click)="finishProgram()">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Concluir programa
+      </button>
+    </div>
+
+    <!-- Semanas -->
+    <p class="section-label">SEMANAS</p>
+
+    <div class="week-card" *ngFor="let week of program.weeks">
+
+      <div class="week-header" (click)="toggleWeek(week.id)">
+        <span class="week-title">Semana {{ week.weekNumber }}</span>
+        <div class="week-header-end">
+          <button class="week-trash" *ngIf="canEdit" (click)="removeWeek(week, $event)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+          <ion-icon
+            [name]="isExpanded(week.id) ? 'chevron-up-outline' : 'chevron-down-outline'"
+            class="week-chevron"
+          ></ion-icon>
+        </div>
+      </div>
+
+      <div class="week-days" *ngIf="isExpanded(week.id)">
+        <div
+          class="day-row"
+          *ngFor="let d of allDays"
+          [class.clickable]="canEdit"
+          (click)="configDay(week, d)"
+        >
+          <span class="day-name">{{ getDayName(d) }}</span>
+          <div class="day-value">
+            <ng-container *ngIf="getDay(week, d) as day; else emptyDay">
+              <span class="tag-rest" *ngIf="day.restDay">Descanso</span>
+              <span class="tag-workout" *ngIf="!day.restDay && day.workoutName">
+                {{ day.workoutName }}
+              </span>
+            </ng-container>
+            <ng-template #emptyDay>
+              <span class="day-empty">—</span>
+            </ng-template>
+          </div>
+          <ion-icon *ngIf="canEdit" name="chevron-forward-outline" class="day-arrow"></ion-icon>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty-weeks" *ngIf="!program.weeks || program.weeks.length === 0">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <p>Nenhuma semana ainda.</p>
+    </div>
+
+    <button class="btn-add-week" *ngIf="canEdit" (click)="addWeek()">
+      <ion-icon name="add-circle-outline"></ion-icon>
+      Adicionar semana
+    </button>
+
+  </div>
+</ion-content>
+
+<div class="loading-wrap" *ngIf="loading">
+  <ion-spinner name="crescent"></ion-spinner>
+</div>

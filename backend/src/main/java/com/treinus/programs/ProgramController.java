@@ -82,6 +82,24 @@ public class ProgramController {
                 .body(programService.addWeek(id, request, user.getId()));
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar nome/descrição do programa")
+    public ResponseEntity<ProgramResponse> update(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateProgramRequest request) {
+        return ResponseEntity.ok(programService.update(id, request, user.getId()));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir programa")
+    public ResponseEntity<Void> delete(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id) {
+        programService.delete(id, user.getId());
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/weeks/{weekId}/days")
     @Operation(summary = "Adicionar dia de treino/descanso à semana")
     public ResponseEntity<ProgramResponse> addDay(
@@ -91,5 +109,35 @@ public class ProgramController {
             @Valid @RequestBody CreateProgramDayRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(programService.addDay(id, weekId, request, user.getId()));
+    }
+
+    @PutMapping("/{id}/weeks/{weekId}/days/{dayId}")
+    @Operation(summary = "Atualizar dia (trocar treino ou marcar descanso)")
+    public ResponseEntity<ProgramResponse> updateDay(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @PathVariable UUID weekId,
+            @PathVariable UUID dayId,
+            @Valid @RequestBody UpdateProgramDayRequest request) {
+        return ResponseEntity.ok(programService.updateDay(id, weekId, dayId, request, user.getId()));
+    }
+
+    @DeleteMapping("/{id}/weeks/{weekId}")
+    @Operation(summary = "Remover semana do programa")
+    public ResponseEntity<ProgramResponse> removeWeek(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @PathVariable UUID weekId) {
+        return ResponseEntity.ok(programService.removeWeek(id, weekId, user.getId()));
+    }
+
+    @DeleteMapping("/{id}/weeks/{weekId}/days/{dayId}")
+    @Operation(summary = "Remover dia da semana")
+    public ResponseEntity<ProgramResponse> removeDay(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @PathVariable UUID weekId,
+            @PathVariable UUID dayId) {
+        return ResponseEntity.ok(programService.removeDay(id, weekId, dayId, user.getId()));
     }
 }

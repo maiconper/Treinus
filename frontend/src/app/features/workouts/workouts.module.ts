@@ -1,0 +1,22 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { RouterModule, Routes } from '@angular/router';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { WorkoutsPage } from './workouts.page';
+import { WorkoutBuilderPage } from './builder/workout-builder.page';
+import { ExerciseConfigModal } from './builder/exercise-config.modal';
+import { ProgramDetailPage } from './programs/program-detail.page';
+
+const routes: Routes = [
+  { path: '', component: WorkoutsPage },
+  { path: 'builder', component: WorkoutBuilderPage },
+  { path: 'builder/:id', component: WorkoutBuilderPage },
+  { path: 'programs/:id', component: ProgramDetailPage },
+];
+
+@NgModule({
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, RouterModule.forChild(routes)],
+  declarations: [WorkoutsPage, WorkoutBuilderPage, ExerciseConfigModal, ProgramDetailPage],
+})
+export class WorkoutsPageModule {}

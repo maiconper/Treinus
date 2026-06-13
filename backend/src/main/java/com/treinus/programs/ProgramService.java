@@ -63,6 +63,15 @@ public class ProgramService {
         program.setWeeksCount(request.weeksCount());
         program.setUser(user);
         program.setStatus(ProgramStatus.DRAFT);
+        programRepository.save(program);
+
+        int weeks = request.weeksCount() != null ? request.weeksCount() : 0;
+        for (int i = 1; i <= weeks; i++) {
+            ProgramWeek week = new ProgramWeek();
+            week.setProgram(program);
+            week.setWeekNumber(i);
+            program.getWeeks().add(week);
+        }
 
         return ProgramResponse.from(programRepository.save(program));
     }
@@ -149,6 +158,71 @@ public class ProgramService {
         week.getDays().add(day);
         programWeekRepository.save(week);
 
+        return ProgramResponse.from(programRepository.findById(programId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Program", programId)));
+    }
+
+    @Transactional
+    public ProgramResponse update(UUID id, UpdateProgramRequest request, UUID userId) {
+        Program program = findProgram(id, userId);
+        program.setName(request.name());
+        if (request.description() != null) {
+            program.setDescription(request.description());
+        }
+        return ProgramResponse.from(programRepository.save(program));
+    }
+
+    @Transactional
+    public void delete(UUID id, UUID userId) {
+        Program program = findProgram(id, userId);
+        if (program.getStatus() == ProgramStatus.ACTIVE) {
+            throw new BusinessException("Cannot delete an active program");
+        }
+        programRepository.delete(program);
+    }
+
+    @Transactional
+    public ProgramResponse removeWeek(UUID programId, UUID weekId, UUID userId) {
+        findProgram(programId, userId);
+        ProgramWeek week = programWeekRepository.findByIdAndProgramId(weekId, programId)
+                .orElseThrow(() -> ResourceNotFoundException.of("ProgramWeek", weekId));
+        programWeekRepository.delete(week);
+        return ProgramResponse.from(programRepository.findById(programId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Program", programId)));
+    }
+
+    @Transactional
+    public ProgramResponse removeDay(UUID programId, UUID weekId, UUID dayId, UUID userId) {
+        findProgram(programId, userId);
+        programWeekRepository.findByIdAndProgramId(weekId, programId)
+                .orElseThrow(() -> ResourceNotFoundException.of("ProgramWeek", weekId));
+        ProgramDay day = programDayRepository.findByIdAndProgramWeekId(dayId, weekId)
+                .orElseThrow(() -> ResourceNotFoundException.of("ProgramDay", dayId));
+        programDayRepository.delete(day);
+        return ProgramResponse.from(programRepository.findById(programId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Program", programId)));
+    }
+
+    @Transactional
+    public ProgramResponse updateDay(UUID programId, UUID weekId, UUID dayId,
+                                     UpdateProgramDayRequest request, UUID userId) {
+        findProgram(programId, userId);
+        programWeekRepository.findByIdAndProgramId(weekId, programId)
+                .orElseThrow(() -> ResourceNotFoundException.of("ProgramWeek", weekId));
+        ProgramDay day = programDayRepository.findByIdAndProgramWeekId(dayId, weekId)
+                .orElseThrow(() -> ResourceNotFoundException.of("ProgramDay", dayId));
+
+        if (request.restDay()) {
+            day.setRestDay(true);
+            day.setWorkout(null);
+        } else if (request.workoutId() != null) {
+            Workout workout = workoutRepository.findByIdAndUserId(request.workoutId(), userId)
+                    .orElseThrow(() -> ResourceNotFoundException.of("Workout", request.workoutId()));
+            day.setRestDay(false);
+            day.setWorkout(workout);
+        }
+
+        programDayRepository.save(day);
         return ProgramResponse.from(programRepository.findById(programId)
                 .orElseThrow(() -> ResourceNotFoundException.of("Program", programId)));
     }

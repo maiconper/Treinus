@@ -1,0 +1,35 @@
+<ion-content class="auth-content">
+  <div class="auth-form" style="padding-top: 60px">
+    <h2>Entrar</h2>
+    <p class="sub">Bem-vindo de volta!</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label>Email</label>
+        <ion-input formControlName="email" placeholder="seu@email.com" type="email"></ion-input>
+      </div>
+
+      <div class="field">
+        <label>Senha</label>
+        <div class="pw-wrap">
+          <ion-input
+            formControlName="password"
+            placeholder="••••••••"
+            [type]="showPassword ? 'text' : 'password'"
+          ></ion-input>
+          <ion-icon
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+            (click)="showPassword = !showPassword"
+          ></ion-icon>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="form.invalid">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+        Entrar
+      </button>
+    </form>
+
+    <p class="switch-link" routerLink="/auth/register">Não tenho conta — criar</p>
+  </div>
+</ion-content>

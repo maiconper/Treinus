@@ -1,0 +1,84 @@
+ion-content.workouts-content { --background: var(--bg); }
+
+.seg-wrap {
+  padding: 8px 16px 0;
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.seg-control {
+  display: flex;
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 8px;
+
+  .seg-btn {
+    flex: 1; border: none; background: transparent;
+    border-radius: 8px; padding: 7px 4px;
+    font-size: 13px; color: var(--text2); cursor: pointer;
+
+    &.active {
+      background: var(--surface); color: var(--text1);
+      font-weight: 600; border: 0.5px solid var(--border);
+    }
+  }
+}
+
+.content-inner { padding: 12px 16px; }
+
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px; padding: 48px 24px; text-align: center;
+
+  ion-icon { font-size: 40px; color: var(--text3); }
+  p { font-size: 14px; color: var(--text2); }
+
+  .btn-primary {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--blue); color: #042C53; border: none;
+    border-radius: 99px; padding: 11px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+}
+
+.workout-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+  margin-bottom: 8px; cursor: pointer;
+
+  .wi-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--surface2); display: flex;
+    align-items: center; justify-content: center;
+    ion-icon { font-size: 20px; color: var(--text3); }
+  }
+
+  .wi-info { flex: 1; min-width: 0; }
+  .wi-name { font-size: 14px; font-weight: 600; color: var(--text1); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wi-meta { font-size: 12px; color: var(--text3); }
+  .wi-arrow { font-size: 16px; color: var(--text3); }
+}
+
+.program-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+  margin-bottom: 8px; cursor: pointer;
+
+  .pi-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    ion-icon { font-size: 20px; }
+  }
+
+  .pi-info { flex: 1; min-width: 0; }
+  .pi-name { font-size: 14px; font-weight: 600; color: var(--text1); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pi-meta { font-size: 12px; color: var(--text3); }
+  .status-tag { font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .pi-arrow { font-size: 16px; color: var(--text3); }
+}
+
+.loading-state {
+  display: flex; justify-content: center; padding-top: 60px;
+}

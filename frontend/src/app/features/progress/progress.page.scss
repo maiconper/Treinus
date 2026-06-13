@@ -1,0 +1,62 @@
+ion-content.progress-content { --background: var(--bg); }
+.content-inner { padding: 14px 16px; }
+
+.mini-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px; margin-bottom: 14px;
+
+  .mini-stat {
+    background: var(--surface2); border-radius: 10px;
+    padding: 12px; text-align: center;
+
+    .ms-val { font-size: 18px; font-weight: 700; color: var(--text1); }
+    .ms-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+  }
+}
+
+.card {
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
+
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text1); }
+  .card-sub { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+}
+
+.volume-card {
+  .vol-row { display: flex; align-items: center; gap: 0; }
+  .vol-item { flex: 1; text-align: center; }
+  .vol-val { font-size: 20px; font-weight: 700; color: var(--text1); span { font-size: 12px; font-weight: 400; color: var(--text3); } }
+  .vol-lbl { font-size: 11px; color: var(--text3); }
+  .vol-divider { width: 0.5px; height: 40px; background: var(--border); }
+}
+
+.xp-card {
+  .xp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .xp-val { font-size: 22px; font-weight: 700; color: var(--amber-dark); margin-top: 2px; }
+  .xp-bar { height: 7px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+  .xp-fill { height: 7px; background: var(--amber); border-radius: 99px; }
+  .xp-sub { font-size: 11px; color: var(--text3); }
+}
+
+.hist-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 0.5px solid var(--border);
+
+  .hist-date { text-align: center; min-width: 36px; }
+  .hd-day { font-size: 17px; font-weight: 700; color: var(--text1); line-height: 1; }
+  .hd-mon { font-size: 10px; color: var(--text3); }
+  .hist-divider { width: 0.5px; height: 32px; background: var(--border); flex-shrink: 0; }
+  .hist-info { flex: 1; }
+  .hi-name { font-size: 13px; font-weight: 600; color: var(--text1); margin-bottom: 2px; }
+  .hi-meta { font-size: 11px; color: var(--text3); }
+  .xp-badge { font-size: 11px; color: var(--amber-dark); font-weight: 600; white-space: nowrap; }
+}
+
+.empty-history {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding: 32px; text-align: center;
+  ion-icon { font-size: 32px; color: var(--text3); }
+  p { font-size: 13px; color: var(--text2); }
+}
+
+.loading-state { display: flex; justify-content: center; padding-top: 60px; }

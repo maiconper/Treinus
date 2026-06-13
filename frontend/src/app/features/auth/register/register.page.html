@@ -1,0 +1,47 @@
+<ion-content class="auth-content">
+  <div class="step-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <div class="auth-form">
+    <h2>Criar conta</h2>
+    <p class="sub">Vamos começar com o básico.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label>Nome</label>
+        <ion-input formControlName="name" placeholder="Seu nome" type="text"></ion-input>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <ion-input formControlName="email" placeholder="seu@email.com" type="email"></ion-input>
+      </div>
+
+      <div class="field">
+        <label>Senha</label>
+        <div class="pw-wrap">
+          <ion-input
+            formControlName="password"
+            placeholder="••••••••"
+            [type]="showPassword ? 'text' : 'password'"
+          ></ion-input>
+          <ion-icon
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+            (click)="showPassword = !showPassword"
+          ></ion-icon>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="form.invalid">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+        Criar conta
+      </button>
+    </form>
+
+    <p class="switch-link" routerLink="/auth/login">Já tenho conta — entrar</p>
+  </div>
+</ion-content>

@@ -1,0 +1,222 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { ExerciseConfigModal, ExerciseConfig } from './exercise-config.modal';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { WorkoutService } from '../../../core/services/workout.service';
+import { ExerciseService } from '../../../core/services/exercise.service';
+import { Exercise, Workout, WorkoutExercise } from '../../../core/models';
+
+const MUSCLE_GROUPS = [
+  { label: 'Peito',    category: 'CHEST' },
+  { label: 'Costas',   category: 'BACK' },
+  { label: 'Ombros',   category: 'SHOULDERS' },
+  { label: 'Tríceps',  category: 'ARMS' },
+  { label: 'Bíceps',   category: 'ARMS' },
+  { label: 'Pernas',   category: 'LEGS' },
+  { label: 'Glúteos',  category: 'GLUTES' },
+  { label: 'Core',     category: 'CORE' },
+];
+
+@Component({
+  selector: 'app-workout-builder',
+  templateUrl: './workout-builder.page.html',
+  styleUrls: ['./workout-builder.page.scss'],
+  standalone: false,
+})
+export class WorkoutBuilderPage implements OnInit, OnDestroy {
+  step = 1;
+  workoutId: string | null = null;
+  workout: Workout | null = null;
+  isNew = true;
+
+  // Step 1
+  name = '';
+  selectedGroups: string[] = [];
+  muscleGroups = MUSCLE_GROUPS;
+  saving = false;
+
+  // Step 2
+  searchQuery = '';
+  allExercises: Exercise[] = [];
+  searchResults: Exercise[] = [];
+  private searchSubject = new Subject<string>();
+  private subs: any[] = [];
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private workoutService: WorkoutService,
+    private exerciseService: ExerciseService,
+    private modalCtrl: ModalController,
+  ) {}
+
+  ngOnInit() {
+    this.workoutId = this.route.snapshot.paramMap.get('id');
+    this.isNew = !this.workoutId;
+
+    if (this.workoutId) {
+      this.step = 2;
+      this.workoutService.get(this.workoutId).subscribe(w => {
+        this.workout = w;
+        this.name = w.name;
+        this.refreshResults();
+      });
+    }
+
+    this.loadExercises();
+
+    const sub = this.searchSubject.pipe(debounceTime(250), distinctUntilChanged())
+      .subscribe(q => this.filterResults(q));
+    this.subs.push(sub);
+  }
+
+  ngOnDestroy() { this.subs.forEach(s => s.unsubscribe()); }
+
+  private loadExercises() {
+    this.exerciseService.list({ size: 100 }).subscribe(page => {
+      this.allExercises = page.content;
+      this.refreshResults();
+    });
+  }
+
+  private refreshResults() {
+    this.filterResults(this.searchQuery);
+  }
+
+  private filterResults(query: string) {
+    const addedIds = new Set(this.workout?.exercises.map(e => e.exerciseId) ?? []);
+    let results = this.allExercises.filter(e => !addedIds.has(e.id));
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      results = results.filter(e => e.name.toLowerCase().includes(q));
+    }
+    this.searchResults = results.slice(0, 30);
+  }
+
+  onSearchChange(query: string) {
+    this.searchSubject.next(query);
+  }
+
+  toggleGroup(category: string) {
+    const i = this.selectedGroups.indexOf(category);
+    if (i >= 0) this.selectedGroups.splice(i, 1);
+    else this.selectedGroups.push(category);
+  }
+
+  isGroupSelected(category: string): boolean {
+    return this.selectedGroups.includes(category);
+  }
+
+  get estimatedDuration(): string {
+    const exercises = this.workout?.exercises ?? [];
+    if (exercises.length === 0) return null as any;
+    const totalSets = exercises.reduce((sum, e) => sum + e.plannedSets, 0);
+    // ~40s per set + 90s rest between sets + 60s transition per exercise
+    const seconds = totalSets * 130 + exercises.length * 60;
+    const minutes = Math.round(seconds / 60 / 5) * 5; // round to nearest 5 min
+    return `~${minutes} min`;
+  }
+
+  nextStep() {
+    if (!this.name.trim()) return;
+    this.saving = true;
+    this.workoutService.create({ name: this.name.trim() }).subscribe({
+      next: w => {
+        this.workout = w;
+        this.workoutId = w.id;
+        this.saving = false;
+        this.step = 2;
+        this.refreshResults();
+      },
+      error: () => { this.saving = false; },
+    });
+  }
+
+  async addExercise(exercise: Exercise) {
+    if (!this.workout) return;
+    const modal = await this.modalCtrl.create({
+      component: ExerciseConfigModal,
+      componentProps: { exerciseName: exercise.name },
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      handle: false,
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<ExerciseConfig>();
+    if (role !== 'confirm' || !data) return;
+    this.workoutService.addExercise(this.workout.id, {
+      exerciseId: exercise.id,
+      plannedSets: data.sets,
+      plannedRepsMin: data.reps,
+      plannedRepsMax: data.reps,
+      plannedWeightKg: data.weightKg ?? undefined,
+    }).subscribe(w => {
+      this.workout = w;
+      this.refreshResults();
+    });
+  }
+
+  async editExercise(ex: WorkoutExercise) {
+    if (!this.workout) return;
+    const modal = await this.modalCtrl.create({
+      component: ExerciseConfigModal,
+      componentProps: {
+        exerciseName:  ex.exerciseName,
+        initialSets:   ex.plannedSets,
+        initialReps:   ex.plannedRepsMin ?? 10,
+        initialWeight: ex.plannedWeightKg ?? null,
+      },
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      handle: false,
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<ExerciseConfig>();
+    if (role !== 'confirm' || !data) return;
+    this.workoutService.updateExercise(this.workout.id, ex.id, {
+      plannedSets: data.sets,
+      plannedRepsMin: data.reps,
+      plannedRepsMax: data.reps,
+      plannedWeightKg: data.weightKg ?? undefined,
+    }).subscribe(w => { this.workout = w; });
+  }
+
+  removeExercise(ex: WorkoutExercise) {
+    if (!this.workout) return;
+    this.workoutService.removeExercise(this.workout.id, ex.id).subscribe(w => {
+      this.workout = w;
+      this.refreshResults();
+    });
+  }
+
+  finish() {
+    this.router.navigate(['/tabs/workouts']);
+  }
+
+  getCategoryColor(category: string): string {
+    const map: Record<string, string> = {
+      CHEST: '#5B8DEF', BACK: '#A78BFA', LEGS: '#34D399', SHOULDERS: '#F59E0B',
+      ARMS: '#F97316', CORE: '#EC4899', GLUTES: '#8B5CF6', CARDIO: '#06B6D4',
+    };
+    return map[category] ?? '#94A3B8';
+  }
+
+  getCategoryLabel(category: string): string {
+    const map: Record<string, string> = {
+      CHEST: 'Peito', BACK: 'Costas', LEGS: 'Pernas', SHOULDERS: 'Ombros',
+      ARMS: 'Braços', CORE: 'Core', GLUTES: 'Glúteos', CARDIO: 'Cardio',
+      FULL_BODY: 'Corpo todo', CALVES: 'Panturrilha', FOREARMS: 'Antebraço', NECK: 'Pescoço',
+    };
+    return map[category] ?? category;
+  }
+
+  goBack() {
+    if (this.step === 2 && this.isNew) {
+      this.step = 1;
+    } else {
+      this.router.navigate(['/tabs/workouts']);
+    }
+  }
+}

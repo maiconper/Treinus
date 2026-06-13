@@ -1,0 +1,64 @@
+<div class="config-sheet">
+
+  <div class="sheet-handle"></div>
+
+  <p class="sheet-title">{{ exerciseName }}</p>
+
+  <!-- Séries -->
+  <div class="config-row">
+    <div class="cr-label">
+      <ion-icon name="layers-outline"></ion-icon>
+      <span>Séries</span>
+    </div>
+    <div class="stepper">
+      <button class="step-btn" (click)="decSets()" [disabled]="sets <= 1">−</button>
+      <span class="step-val">{{ sets }}</span>
+      <button class="step-btn" (click)="incSets()">+</button>
+    </div>
+  </div>
+
+  <!-- Repetições -->
+  <div class="config-row">
+    <div class="cr-label">
+      <ion-icon name="repeat-outline"></ion-icon>
+      <span>Repetições</span>
+    </div>
+    <div class="stepper">
+      <button class="step-btn" (click)="decReps()" [disabled]="reps <= 1">−</button>
+      <span class="step-val">{{ reps }}</span>
+      <button class="step-btn" (click)="incReps()">+</button>
+    </div>
+  </div>
+
+  <!-- Carga -->
+  <div class="config-row">
+    <div class="cr-label">
+      <ion-icon name="barbell-outline"></ion-icon>
+      <span>Carga <span class="optional">(kg, opcional)</span></span>
+    </div>
+    <input
+      class="weight-input"
+      type="number"
+      min="0"
+      step="2.5"
+      placeholder="—"
+      [(ngModel)]="weightKg"
+    />
+  </div>
+
+  <!-- Preview -->
+  <div class="config-preview">
+    <span class="preview-chip sets">{{ sets }} séries</span>
+    <span class="preview-sep">×</span>
+    <span class="preview-chip reps">{{ reps }} reps</span>
+    <span class="preview-chip weight" *ngIf="weightKg">{{ weightKg }} kg</span>
+  </div>
+
+  <button class="btn-confirm" (click)="confirm()">
+    <ion-icon name="add-outline"></ion-icon>
+    Adicionar ao treino
+  </button>
+
+  <button class="btn-cancel" (click)="dismiss()">Cancelar</button>
+
+</div>

@@ -1,0 +1,118 @@
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text1);
+}
+
+// Utility classes
+.text1 { color: var(--text1); }
+.text2 { color: var(--text2); }
+.text3 { color: var(--text3); }
+.fw-600 { font-weight: 600; }
+.fw-500 { font-weight: 500; }
+
+// Section label
+.section-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin: 0 0 8px;
+}
+
+// Card base
+.card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 15px;
+}
+
+// Primary button
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  background: var(--blue);
+  color: #042C53;
+  border: none;
+  border-radius: 99px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  ion-icon { font-size: 16px; }
+}
+
+// Stat pill
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface2);
+  border-radius: 99px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--text2);
+  strong { color: var(--text1); font-weight: 600; }
+}
+
+// Ionic component resets
+ion-content {
+  --background: var(--bg);
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+ion-toolbar {
+  --background: var(--surface);
+  --border-color: var(--border);
+}
+
+ion-tab-bar {
+  --background: var(--surface);
+  --border-color: var(--border);
+  height: 56px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+ion-tab-button {
+  --color: var(--text3);
+  --color-selected: var(--blue);
+  font-size: 10px;
+}
+
+ion-item {
+  --background: var(--surface);
+  --border-color: var(--border);
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+ion-input, ion-textarea {
+  --background: var(--surface2);
+  --border-radius: 9px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  border: 0.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+// Remove default Ionic header border
+ion-header {
+  &::after { display: none; }
+}

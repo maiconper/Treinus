@@ -1,0 +1,156 @@
+<ion-header class="builder-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear" color="dark">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <div class="toolbar-center">
+      <p class="tb-title">{{ isNew ? 'Novo treino' : (workout?.name || 'Treino') }}</p>
+      <p class="tb-sub" *ngIf="!isNew">
+        Passo {{ step }} de 2
+      </p>
+      <p class="tb-sub" *ngIf="isNew">
+        Passo {{ step }} de 2
+      </p>
+    </div>
+
+    <ion-buttons slot="end">
+      <span class="draft-badge" *ngIf="step === 2 && workout">Rascunho</span>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Step dots -->
+  <div class="step-dots">
+    <span class="dot" [class.active]="step === 1" [class.done]="step > 1"></span>
+    <span class="dot" [class.active]="step === 2"></span>
+  </div>
+</ion-header>
+
+<ion-content class="builder-content">
+
+  <!-- ── PASSO 1: INFO ── -->
+  <div class="step-panel" *ngIf="step === 1">
+    <div class="content-inner">
+
+      <div class="field-group">
+        <label class="field-label">Nome do treino</label>
+        <input
+          class="field-input"
+          type="text"
+          placeholder="Ex: Peito & Tríceps"
+          [(ngModel)]="name"
+          maxlength="60"
+        />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Grupos musculares</label>
+        <div class="group-grid">
+          <button
+            class="group-chip"
+            *ngFor="let g of muscleGroups"
+            [class.selected]="isGroupSelected(g.category)"
+            (click)="toggleGroup(g.category)"
+          >
+            {{ g.label }}
+          </button>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <!-- ── PASSO 2: EXERCÍCIOS ── -->
+  <div class="step-panel" *ngIf="step === 2">
+    <div class="content-inner">
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Buscar exercício..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </div>
+
+      <!-- Exercises in workout -->
+      <div class="section" *ngIf="workout && workout.exercises.length > 0">
+        <p class="section-label">
+          NO TREINO
+          <span class="count-badge">{{ workout.exercises.length }}</span>
+        </p>
+
+        <div class="ex-item added" *ngFor="let ex of workout.exercises">
+          <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
+          <div class="ex-info" (click)="editExercise(ex)">
+            <p class="ex-name">{{ ex.exerciseName }}</p>
+            <div class="ex-config">
+              <span class="config-chip sets">{{ ex.plannedSets }}</span>
+              <span class="config-x">×</span>
+              <span class="config-chip reps">{{ ex.plannedRepsMin ?? 10 }}</span>
+              <span class="config-label">reps</span>
+              <span class="config-chip weight" *ngIf="ex.plannedWeightKg">
+                {{ ex.plannedWeightKg }}kg
+              </span>
+            </div>
+          </div>
+          <button class="remove-btn" (click)="removeExercise(ex)">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Duração estimada -->
+      <div class="duration-pill" *ngIf="estimatedDuration">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>Duração estimada: <strong>{{ estimatedDuration }}</strong></span>
+      </div>
+
+      <!-- Search results -->
+      <div class="section" *ngIf="searchResults.length > 0">
+        <p class="section-label">ADICIONAR</p>
+
+        <div class="ex-item" *ngFor="let ex of searchResults" (click)="addExercise(ex)">
+          <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
+          <div class="ex-info">
+            <p class="ex-name">{{ ex.name }}</p>
+            <p class="ex-meta">{{ getCategoryLabel(ex.category) }}</p>
+          </div>
+          <ion-icon name="add-circle-outline" class="add-icon"></ion-icon>
+        </div>
+      </div>
+
+      <div class="empty-search" *ngIf="searchResults.length === 0 && searchQuery">
+        <p>Nenhum exercício encontrado para "{{ searchQuery }}"</p>
+      </div>
+
+    </div>
+  </div>
+
+</ion-content>
+
+<!-- Footer CTA -->
+<ion-footer class="builder-footer">
+  <div class="footer-inner">
+
+    <!-- Step 1 -->
+    <button class="btn-cta" *ngIf="step === 1" [disabled]="!name.trim() || saving" (click)="nextStep()">
+      <ion-spinner name="crescent" *ngIf="saving" style="width:18px;height:18px;margin-right:8px"></ion-spinner>
+      Próximo: exercícios
+      <ion-icon name="arrow-forward-outline" *ngIf="!saving"></ion-icon>
+    </button>
+
+    <!-- Step 2 -->
+    <button class="btn-cta" *ngIf="step === 2" [disabled]="!workout" (click)="finish()">
+      Concluir treino
+      <ion-icon name="checkmark-outline"></ion-icon>
+    </button>
+
+  </div>
+</ion-footer>

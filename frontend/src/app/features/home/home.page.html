@@ -1,0 +1,86 @@
+<ion-content class="home-content">
+  <div class="content-inner" *ngIf="!loading">
+
+    <!-- Header -->
+    <div class="home-header">
+      <div>
+        <p class="greeting-sub">{{ formattedDate }}</p>
+        <p class="greeting-name">{{ greeting }}, {{ firstName }}</p>
+      </div>
+      <div class="avatar">{{ userInitials }}</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-pill">
+        <ion-icon name="flame-outline" style="color: var(--orange)"></ion-icon>
+        <strong>{{ user?.streak ?? 0 }}</strong> dias
+      </div>
+      <div class="stat-pill">
+        <ion-icon name="star-outline" style="color: var(--amber)"></ion-icon>
+        <strong>{{ user?.xp ?? 0 }}</strong> XP
+      </div>
+    </div>
+
+    <!-- Active session banner -->
+    <div class="session-banner" *ngIf="activeSession" (click)="startWorkout()">
+      <ion-icon name="radio-button-on" style="color: var(--green)"></ion-icon>
+      <p><strong>Treino em andamento</strong> — {{ activeSession.workoutName }}</p>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </div>
+
+    <!-- Active program -->
+    <ng-container *ngIf="activeProgram">
+      <p class="section-lbl">Programa ativo</p>
+      <div class="program-card" (click)="goToPrograms()">
+        <p class="prog-meta">{{ activeProgram.name }}</p>
+        <p class="prog-title">{{ activeProgram.weeksCount }} semanas</p>
+        <div class="prog-bar">
+          <div class="prog-fill" [style.width.%]="programPercent"></div>
+        </div>
+        <p class="prog-pct">{{ programPercent }}% concluído</p>
+      </div>
+    </ng-container>
+
+    <!-- Today's workout -->
+    <p class="section-lbl">Treino de hoje</p>
+
+    <div class="workout-card" *ngIf="todayWorkout; else noWorkout">
+      <p class="wc-meta">{{ activeProgram ? 'Programa ativo' : 'Treino avulso' }}</p>
+      <p class="wc-title">{{ todayWorkout.workoutName }}</p>
+      <button class="btn-primary start-btn" (click)="startWorkout()">
+        <ion-icon name="play-outline"></ion-icon>
+        {{ activeSession ? 'Continuar treino' : 'Iniciar treino' }}
+      </button>
+    </div>
+
+    <ng-template #noWorkout>
+      <div class="no-workout-card">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <p>Nenhum treino para hoje.</p>
+        <button class="btn-outline" (click)="goToPrograms()">Ver programas</button>
+      </div>
+    </ng-template>
+
+    <!-- Week view -->
+    <p class="section-lbl" style="margin-top: 16px">Sua semana</p>
+    <div class="week-row">
+      <div class="day-col" *ngFor="let d of weekDays">
+        <span class="day-lbl">{{ d.label }}</span>
+        <div class="day-dot"
+          [class.done]="getDayStatus(d.key) === 'done'"
+          [class.today]="getDayStatus(d.key) === 'today'"
+          [class.rest]="getDayStatus(d.key) === 'rest'">
+          <ion-icon name="checkmark" *ngIf="getDayStatus(d.key) === 'done'" style="font-size:11px"></ion-icon>
+          <ion-icon name="remove" *ngIf="getDayStatus(d.key) === 'rest'" style="font-size:11px"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</ion-content>

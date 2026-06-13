@@ -1,0 +1,33 @@
+<ion-content class="welcome">
+  <div class="hero">
+    <div class="logo-icon">
+      <ion-icon name="barbell"></ion-icon>
+    </div>
+    <h1>Seu treino,<br>do seu jeito</h1>
+    <p>Crie programas, acompanhe sua evolução e nunca perca um treino.</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn-apple" (click)="goToRegister()">
+      <ion-icon name="logo-apple"></ion-icon>
+      Continuar com Apple
+    </button>
+    <button class="btn-google" (click)="goToRegister()">
+      <ion-icon name="logo-google"></ion-icon>
+      Continuar com Google
+    </button>
+
+    <div class="divider"><span>ou</span></div>
+
+    <button class="btn-email" (click)="goToRegister()">
+      <ion-icon name="mail-outline"></ion-icon>
+      Entrar com email
+    </button>
+
+    <p class="terms">
+      Ao continuar você aceita os <a>Termos de uso</a> e a <a>Política de privacidade</a>
+    </p>
+
+    <p class="login-link" (click)="goToLogin()">Já tenho conta — entrar</p>
+  </div>
+</ion-content>

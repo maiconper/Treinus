@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="profile-content" *ngIf="user">
+  <div class="content-inner">
+
+    <!-- Avatar -->
+    <div class="profile-hero">
+      <div class="avatar-lg">{{ userInitials }}</div>
+      <p class="profile-name">{{ user.name }}</p>
+      <p class="profile-email">{{ user.email }}</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <p class="sc-val">{{ user.streak }}</p>
+        <p class="sc-lbl">Sequência</p>
+      </div>
+      <div class="stat-card">
+        <p class="sc-val">{{ user.xp }}</p>
+        <p class="sc-lbl">XP Total</p>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-section">
+      <p class="section-lbl">Perfil de treino</p>
+      <div class="info-card">
+        <div class="info-row">
+          <ion-icon name="flame-outline"></ion-icon>
+          <span class="ir-label">Nível</span>
+          <span class="ir-val">{{ levelLabel }}</span>
+        </div>
+        <div class="info-row">
+          <ion-icon name="barbell-outline"></ion-icon>
+          <span class="ir-label">Objetivo</span>
+          <span class="ir-val">{{ goalLabel }}</span>
+        </div>
+        <div class="info-row" *ngIf="user.availableDaysPerWeek">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span class="ir-label">Dias por semana</span>
+          <span class="ir-val">{{ user.availableDaysPerWeek }}</span>
+        </div>
+        <div class="info-row" *ngIf="user.bodyWeightKg">
+          <ion-icon name="body-outline"></ion-icon>
+          <span class="ir-label">Peso</span>
+          <span class="ir-val">{{ user.bodyWeightKg }} kg</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-section">
+      <button class="action-btn danger" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Sair da conta
+      </button>
+    </div>
+
+  </div>
+</ion-content>
