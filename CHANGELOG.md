@@ -1,5 +1,73 @@
 # Changelog — Treinus
 
+## [2026-06-13] — Sessão de treino: fluxo de execução, presets e estado concluído
+
+### Backend
+
+#### `SessionService`
+
+- `start()`: aceita `workoutId` de treino do usuário **ou** preset do SYSTEM (fix — usava só `findByIdAndUserId`)
+- `getCurrent()`: alterado de `BusinessException` (422) para `ResourceNotFoundException` (404) quando não há sessão ativa — semântica HTTP correta para "não encontrado"
+
+#### `SessionExerciseResponse`
+
+Adicionados campos derivados do `WorkoutExercise` (nullable para sessões livres):
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `plannedSets` | `Integer` | Número de séries planejadas |
+| `plannedRepsMin` | `Integer` | Reps mínimas planejadas |
+| `plannedRepsMax` | `Integer` | Reps máximas planejadas |
+| `restSeconds` | `Integer` | Descanso planejado em segundos |
+
+---
+
+### Frontend
+
+#### `ActiveSessionPage` — fluxo de execução melhorado
+
+- **`plannedSets`**: usa o valor real do backend em vez de fixo em 3
+- **`reps` inicial**: carregado de `plannedRepsMax ?? plannedRepsMin ?? 10` ao entrar no exercício
+- **Descanso automático**: usa `restSeconds` do workout (fallback 90s)
+- **Botão contextual no rodapé**:
+  - Durante as séries: "Confirmar série" + "Pular exercício"
+  - Após completar todas as séries (`completedSets >= plannedSets`): "Próximo exercício" (azul)
+  - No último exercício concluído: "Finalizar treino" (verde)
+  - Após pular o último exercício (`status === 'SKIPPED'`): "Finalizar treino" também aparece
+- Ao avançar de exercício: timer de descanso é parado e inputs resetam para os valores planejados do próximo exercício
+
+#### `WorkoutBuilderPage` — iniciar treino direto do builder
+
+- Botão **"Iniciar treino"** aparece no rodapé do Passo 2 quando há pelo menos 1 exercício adicionado
+- Ao clicar: cria sessão via `SessionService.start({ workoutId })` e navega para `/session/:id`
+- "Salvar e sair" (ghost) mantém comportamento anterior de voltar para a lista
+
+#### `SessionService`
+
+- `getCurrent()`: limpa `_active` no erro (via `catchError`) para manter o `BehaviorSubject` consistente
+- `activeSession$` (`BehaviorSubject`): já existia; `finishSession()` e `abandonSession()` continuam zerando
+
+#### `HomePage` — banner de sessão ativa reativo
+
+- Subscribes ao `activeSession$` do `SessionService` via `ngOnInit` → banner "Treino em andamento" desaparece imediatamente após `finishSession()`, sem depender de `ionViewWillEnter`
+- `getCurrent()` ainda é chamado no `load()` para sincronizar estado inicial com o backend
+
+#### Estado "Treino concluído" — `HomePage` e `WorkoutsPage`
+
+- Getter `completedToday` compara `user.lastWorkoutDate` (data local do dispositivo, sem UTC offset) com a data de hoje
+- Card "Treino de hoje" alterna entre:
+  - **Normal**: botão "Iniciar treino" / "Continuar treino"
+  - **Concluído**: card com borda verde + badge "Treino concluído!" / "Concluído!" (sem botão)
+- Funciona após F5 pois `lastWorkoutDate` vem do banco via `GET /users/me`
+- **TODO**: `lastWorkoutDate` indica que *algum* treino foi feito hoje, não que o treino específico do programa foi concluído. Se o usuário trocar o treino do dia no programa, o novo aparece incorretamente como concluído. Solução correta: vincular a sessão ao `programDayId` ou `workoutId` específico e consultar via endpoint dedicado.
+
+#### `WorkoutsPage` — ajustes adicionais
+
+- Carrega `user` via `UserService.getMe()` no `forkJoin` do `load()` para habilitar `completedToday`
+- Mesmo estado de card concluído (verde) aplicado ao card "Treino de hoje"
+
+---
+
 ## [2026-06-13] — Programas: iniciar, editar e página de detalhe
 
 ### Backend
