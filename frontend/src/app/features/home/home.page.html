@@ -55,8 +55,41 @@
     </div>
 
     <div class="workout-card" *ngIf="todayWorkout && !completedToday; else noWorkout">
-      <p class="wc-meta">{{ activeProgram ? 'Programa ativo' : 'Treino avulso' }}</p>
-      <p class="wc-title">{{ todayWorkout.workoutName }}</p>
+      <div class="wc-title-row">
+        <div>
+          <p class="wc-meta">{{ activeProgram ? activeProgram.name : 'Treino avulso' }}</p>
+          <p class="wc-title">{{ todayWorkout.workoutName }}</p>
+        </div>
+        <button class="btn-edit" (click)="editWorkout()">
+          <ion-icon name="pencil-outline"></ion-icon>
+        </button>
+      </div>
+      @if (todayWorkoutDetails; as w) {
+        <div class="wc-stats">
+          <span class="stat-item">
+            <ion-icon name="barbell-outline"></ion-icon>
+            {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' : '' }}
+          </span>
+          <span class="stat-sep">·</span>
+          <span class="stat-item">
+            <ion-icon name="time-outline"></ion-icon>
+            ~{{ estimatedMinutes(w) }} min
+          </span>
+        </div>
+        @if (w.exercises.length > 0) {
+          <div class="exercise-preview">
+            @for (ex of w.exercises.slice(0, 3); track ex.id) {
+              <div class="ex-row">
+                <span class="ex-name">{{ ex.exerciseName }}</span>
+                <span class="ex-detail">{{ formatReps(ex) }}</span>
+              </div>
+            }
+            @if (w.exercises.length > 3) {
+              <p class="ex-more">+ {{ w.exercises.length - 3 }} mais</p>
+            }
+          </div>
+        }
+      }
       <button class="btn-primary start-btn" (click)="startWorkout()">
         <ion-icon name="play-outline"></ion-icon>
         {{ activeSession ? 'Continuar treino' : 'Iniciar treino' }}
@@ -71,21 +104,6 @@
       </div>
     </ng-template>
 
-    <!-- Week view -->
-    <p class="section-lbl" style="margin-top: 16px">Sua semana</p>
-    <div class="week-row">
-      <div class="day-col" *ngFor="let d of weekDays">
-        <span class="day-lbl">{{ d.label }}</span>
-        <div class="day-dot"
-          [class.done]="getDayStatus(d.key) === 'done'"
-          [class.today]="getDayStatus(d.key) === 'today'"
-          [class.rest]="getDayStatus(d.key) === 'rest'">
-          <ion-icon name="checkmark" *ngIf="getDayStatus(d.key) === 'done'" style="font-size:11px"></ion-icon>
-          <ion-icon name="remove" *ngIf="getDayStatus(d.key) === 'rest'" style="font-size:11px"></ion-icon>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Loading -->
@@ -93,3 +111,26 @@
     <ion-spinner name="crescent"></ion-spinner>
   </div>
 </ion-content>
+
+<!-- Week view -->
+<ion-footer class="week-footer">
+  <div class="footer-inner">
+    <p class="section-lbl">Sua semana</p>
+    <div class="week-row">
+      @for (d of weekDays; track d.key) {
+        <div class="day-col">
+          <span class="day-lbl">{{ d.label }}</span>
+          <div class="day-dot"
+            [class.done]="getDayStatus(d.key) === 'done'"
+            [class.today]="getDayStatus(d.key) === 'today'"
+            [class.rest]="getDayStatus(d.key) === 'rest'"
+            [class.workout]="getDayStatus(d.key) === 'workout'">
+            @if (getDayIcon(d.key)) {
+              <ion-icon [name]="getDayIcon(d.key)" style="font-size:11px"></ion-icon>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</ion-footer>

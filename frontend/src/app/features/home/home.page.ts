@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
 import { ProgramService } from '../../core/services/program.service';
 import { SessionService } from '../../core/services/session.service';
+import { WorkoutService } from '../../core/services/workout.service';
 import { AuthService } from '../../core/services/auth.service';
-import { User, Program, Session } from '../../core/models';
+import { User, Program, Session, Workout, WorkoutExercise } from '../../core/models';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -18,6 +19,8 @@ export class HomePage implements OnInit, OnDestroy {
   user: User | null = null;
   activeProgram: Program | null = null;
   activeSession: Session | null = null;
+  workouts: Workout[] = [];
+  presets: Workout[] = [];
   today = new Date();
   loading = true;
   private sessionSub?: Subscription;
@@ -36,6 +39,7 @@ export class HomePage implements OnInit, OnDestroy {
     private userService: UserService,
     private programService: ProgramService,
     private sessionService: SessionService,
+    private workoutService: WorkoutService,
     private auth: AuthService,
     private router: Router,
   ) {}
@@ -57,10 +61,14 @@ export class HomePage implements OnInit, OnDestroy {
     forkJoin({
       user: this.userService.getMe(),
       program: this.programService.getActive().pipe(catchError(() => of(null))),
+      workouts: this.workoutService.list().pipe(catchError(() => of([]))),
+      presets: this.workoutService.listPresets().pipe(catchError(() => of([]))),
     }).subscribe({
-      next: ({ user, program }) => {
+      next: ({ user, program, workouts, presets }) => {
         this.user = user;
         this.activeProgram = program;
+        this.workouts = workouts;
+        this.presets = presets;
         this.loading = false;
       },
       error: () => { this.loading = false; },
@@ -85,6 +93,28 @@ export class HomePage implements OnInit, OnDestroy {
       if (day) return day;
     }
     return null;
+  }
+
+  get todayWorkoutDetails(): Workout | undefined {
+    const id = this.todayWorkout?.workoutId;
+    if (!id) return undefined;
+    return [...this.workouts, ...this.presets].find(w => w.id === id);
+  }
+
+  estimatedMinutes(w: Workout): number {
+    const secs = w.exercises.reduce((total, ex) => {
+      const rest = ex.restSeconds ?? 60;
+      return total + ex.plannedSets * (45 + rest);
+    }, 0);
+    const rounded = Math.round(secs / 60 / 5) * 5;
+    return rounded || 30;
+  }
+
+  formatReps(ex: WorkoutExercise): string {
+    const { plannedSets: sets, plannedRepsMin: min, plannedRepsMax: max } = ex;
+    if (min && max && min !== max) return `${sets}×${min}–${max}`;
+    if (min) return `${sets}×${min}`;
+    return `${sets} séries`;
   }
 
   get programPercent(): number {
@@ -113,14 +143,30 @@ export class HomePage implements OnInit, OnDestroy {
     return this.today.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'short' });
   }
 
-  getDayStatus(key: number): 'done' | 'today' | 'rest' | '' {
+  getDayStatus(key: number): 'done' | 'today' | 'rest' | 'workout' | '' {
     const todayKey = this.today.getDay();
     if (key === todayKey) return 'today';
     if (!this.activeProgram) return '';
-    const hasWorkout = this.activeProgram.weeks[0]?.days.some(d => d.dayOfWeek === key && !d.restDay);
-    const isRest = this.activeProgram.weeks[0]?.days.some(d => d.dayOfWeek === key && d.restDay);
-    if (isRest) return 'rest';
-    return '';
+    const day = this.activeProgram.weeks[0]?.days.find(d => d.dayOfWeek === key);
+    if (!day) return '';
+    if (day.restDay) return 'rest';
+    return 'workout';
+  }
+
+  getDayIcon(key: number): string {
+    const status = this.getDayStatus(key);
+    if (status === 'done') return 'checkmark';
+    if (!this.activeProgram) return '';
+    const day = this.activeProgram.weeks[0]?.days.find(d => d.dayOfWeek === key);
+    if (!day) return '';
+    return day.restDay ? 'moon-outline' : 'barbell-outline';
+  }
+
+  editWorkout() {
+    const workoutId = this.todayWorkout?.workoutId;
+    if (workoutId) {
+      this.router.navigate(['/tabs/workouts/builder', workoutId]);
+    }
   }
 
   startWorkout() {

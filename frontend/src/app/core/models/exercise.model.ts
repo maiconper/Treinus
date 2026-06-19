@@ -11,6 +11,7 @@ export interface Exercise {
   id: string;
   name: string;
   description?: string;
+  gifUrl?: string;
   category: ExerciseCategory;
   primaryMuscleGroup?: string;
   equipment?: Equipment;

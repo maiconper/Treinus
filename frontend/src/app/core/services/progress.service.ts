@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ProgressSummary, WorkoutHistory, ExerciseProgress } from '../models';
+import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ProgressService {
@@ -17,6 +17,11 @@ export class ProgressService {
   getHistory(page = 0, size = 20): Observable<WorkoutHistory> {
     const params = new HttpParams().set('page', page).set('size', size);
     return this.http.get<WorkoutHistory>(`${this.url}/history`, { params });
+  }
+
+  getHistoryForDate(date: string): Observable<WorkoutHistoryItem[]> {
+    const params = new HttpParams().set('date', date);
+    return this.http.get<WorkoutHistoryItem[]>(`${this.url}/history`, { params });
   }
 
   getExerciseProgress(exerciseId: string): Observable<ExerciseProgress> {

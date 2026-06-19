@@ -7,6 +7,7 @@ export interface SessionSet {
   reps: number;
   weightKg: number;
   recordedAt: string;
+  personalRecord?: boolean;
 }
 
 export interface SessionExercise {

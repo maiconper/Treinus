@@ -9,175 +9,241 @@
   </ion-toolbar>
   <div class="seg-wrap">
     <div class="seg-control">
-      <button class="seg-btn" [class.active]="segment === 'programs'" (click)="segment = 'programs'">Programas</button>
       <button class="seg-btn" [class.active]="segment === 'workouts'" (click)="segment = 'workouts'">Meus treinos</button>
+      <button class="seg-btn" [class.active]="segment === 'programs'" (click)="segment = 'programs'">Programas</button>
     </div>
   </div>
 </ion-header>
 
 <ion-content class="workouts-content">
-  <div class="content-inner" *ngIf="!loading">
+  @if (!loading) {
+    <div class="content-inner">
 
-    <!-- ── MEUS TREINOS ──────────────────────────────────────────────────── -->
-    <ng-container *ngIf="segment === 'workouts'">
+      <!-- ── MEUS TREINOS ──────────────────────────────────────────────────── -->
+      @if (segment === 'workouts') {
 
-      <!-- Programa ativo: semana atual -->
-      <ng-container *ngIf="activeProgram">
+        @if (activeProgram) {
 
-        <p class="section-label">SEMANA {{ currentWeekNumber }} · {{ activeProgram.name | uppercase }}</p>
+          <p class="section-label">SEMANA {{ viewedWeekNumber }} · {{ viewedMonthLabel }} · {{ activeProgram.name | uppercase }}</p>
 
-        <!-- Strip de dias -->
-        <div class="week-strip">
-          <div
-            class="day-cell"
-            *ngFor="let d of allDays"
-            [class.is-today]="d === todayDow"
-            [class.is-past]="d < todayDow"
-          >
-            <span class="day-label">{{ dayLabels[d] }}</span>
-            <ng-container *ngIf="getWeekDay(currentWeek, d) as day; else emptyCell">
-              <span class="day-tag" [class.tag-rest]="day.restDay" [class.tag-workout]="!day.restDay">
-                {{ day.restDay ? 'Desc' : abbrev(day.workoutName) }}
-              </span>
-            </ng-container>
-            <ng-template #emptyCell>
-              <span class="day-tag tag-empty">—</span>
-            </ng-template>
-          </div>
-        </div>
-
-        <!-- Treino de hoje -->
-        <p class="section-label mt">TREINO DE HOJE</p>
-
-        <div class="today-card done" *ngIf="todayDay && !todayDay.restDay && todayDay.workoutId && completedToday">
-          <div class="today-card-body">
-            <p class="today-sub">Semana {{ currentWeekNumber }} · Dia {{ todayDow }}</p>
-            <p class="today-title">{{ todayDay.workoutName }}</p>
-          </div>
-          <div class="done-badge">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-            Concluído!
-          </div>
-        </div>
-
-        <div class="today-card" *ngIf="todayDay && !todayDay.restDay && todayDay.workoutId && !completedToday">
-          <div class="today-card-body">
-            <p class="today-sub">Semana {{ currentWeekNumber }} · Dia {{ todayDow }}</p>
-            <p class="today-title">{{ todayDay.workoutName }}</p>
-            <p class="today-meta" *ngIf="getWorkoutForDay(todayDay) as w">
-              {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' : '' }}
-            </p>
-          </div>
-          <button class="btn-start-workout" (click)="startWorkout(todayDay)">
-            <ion-icon name="play-outline"></ion-icon>
-            Iniciar treino
-          </button>
-        </div>
-
-        <div class="rest-card" *ngIf="todayDay?.restDay">
-          <ion-icon name="moon-outline"></ion-icon>
-          <p>Dia de descanso</p>
-        </div>
-
-        <div class="no-today" *ngIf="!todayDay">
-          <p>Nenhum treino programado para hoje.</p>
-        </div>
-
-        <!-- Próxima semana -->
-        <ng-container *ngIf="nextWeek">
-          <p class="section-label mt">PRÓXIMA SEMANA</p>
-          <ng-container *ngFor="let d of allDays">
-            <div class="upcoming-item" *ngIf="getWeekDay(nextWeek, d) as day">
-              <div class="upcoming-left">
-                <span class="upcoming-day">{{ dayLabels[d] }}</span>
-                <div class="upcoming-info">
-                  <p class="upcoming-name" *ngIf="!day.restDay">{{ day.workoutName }}</p>
-                  <p class="upcoming-name rest-label" *ngIf="day.restDay">Descanso</p>
-                  <p class="upcoming-meta" *ngIf="!day.restDay && getWorkoutForDay(day) as w">
-                    {{ w.exercises.length }} ex
-                  </p>
-                </div>
+          <!-- Linha do tempo do programa -->
+          <div class="week-strip" #weekStrip (scroll)="onStripScroll()">
+            @for (d of timelineDays; track d.globalIndex) {
+              <div
+                class="day-cell"
+                [attr.data-week]="d.weekNumber"
+                [class.is-today]="d.globalIndex === todayGlobalIndex"
+                [class.is-past]="d.globalIndex < todayGlobalIndex"
+                [class.is-clickable]="d.globalIndex < todayGlobalIndex && !!d.day && !d.day.restDay"
+                [class.week-end]="d.dayOfWeek === 7"
+                (click)="onDayClick(d)"
+              >
+                <span class="day-date">{{ d.date.getDate() }}</span>
+                <span class="day-label">{{ dayLabels[d.dayOfWeek] }}</span>
+                @if (d.day) {
+                  <span class="day-tag" [class.tag-rest]="d.day.restDay" [class.tag-workout]="!d.day.restDay">
+                    {{ d.day.restDay ? 'Desc' : abbrev(d.day.workoutName) }}
+                  </span>
+                } @else {
+                  <span class="day-tag tag-empty">—</span>
+                }
               </div>
-              <ion-icon name="chevron-forward-outline" class="upcoming-arrow" *ngIf="!day.restDay"></ion-icon>
+            }
+          </div>
+
+          <!-- Treino de hoje -->
+          <p class="section-label mt">TREINO DE HOJE</p>
+
+          @if (todayDay && !todayDay.restDay && todayDay.workoutId && completedToday) {
+            <div class="today-card done">
+              <div class="today-card-body">
+                <p class="today-sub">Semana {{ currentWeekNumber }} · Dia {{ todayDow }}</p>
+                <p class="today-title">{{ todayDay.workoutName }}</p>
+              </div>
+              <div class="done-badge">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                Concluído!
+              </div>
             </div>
-          </ng-container>
-        </ng-container>
+          }
 
-      </ng-container>
+          @if (todayDay && !todayDay.restDay && todayDay.workoutId && !completedToday) {
+            <div class="today-card">
+              <div class="today-card-body">
+                <div class="today-title-row">
+                  <div>
+                    <p class="today-sub">Semana {{ currentWeekNumber }} · {{ activeProgram.name }}</p>
+                    <p class="today-title">{{ todayDay.workoutName }}</p>
+                  </div>
+                  <button class="btn-edit" (click)="editTodayWorkout()">
+                    <ion-icon name="pencil-outline"></ion-icon>
+                  </button>
+                </div>
+                @if (getWorkoutForDay(todayDay); as w) {
+                  <div class="today-stats">
+                    <span class="stat-item">
+                      <ion-icon name="barbell-outline"></ion-icon>
+                      {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' : '' }}
+                    </span>
+                    <span class="stat-sep">·</span>
+                    <span class="stat-item">
+                      <ion-icon name="time-outline"></ion-icon>
+                      ~{{ estimatedMinutes(w) }} min
+                    </span>
+                  </div>
+                  @if (w.exercises.length > 0) {
+                    <div class="exercise-preview">
+                      @for (ex of w.exercises.slice(0, 3); track ex.id) {
+                        <div class="ex-row">
+                          <span class="ex-name">{{ ex.exerciseName }}</span>
+                          <span class="ex-detail">{{ formatReps(ex) }}</span>
+                        </div>
+                      }
+                      @if (w.exercises.length > 3) {
+                        <p class="ex-more">+ {{ w.exercises.length - 3 }} mais</p>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+              <button class="btn-start-workout" (click)="startWorkout(todayDay)">
+                <ion-icon name="play-outline"></ion-icon>
+                Iniciar treino
+              </button>
+            </div>
+          }
 
-      <!-- Sem programa ativo -->
-      <div class="no-program-note" *ngIf="!activeProgram">
-        <ion-icon name="calendar-outline"></ion-icon>
-        <p>Nenhum programa ativo.</p>
-        <button class="btn-link" (click)="segment = 'programs'">Ver programas</button>
-      </div>
+          @if (todayDay?.restDay) {
+            <div class="rest-card">
+              <ion-icon name="moon-outline"></ion-icon>
+              <p>Dia de descanso</p>
+            </div>
+          }
 
-      <!-- Treinos avulsos -->
-      <p class="section-label mt">TREINOS AVULSOS</p>
+          @if (!todayDay) {
+            <div class="no-today">
+              <p>Nenhum treino programado para hoje.</p>
+            </div>
+          }
 
-      <div class="empty-state" *ngIf="allWorkouts.length === 0">
-        <ion-icon name="barbell-outline"></ion-icon>
-        <p>Nenhum treino disponível.</p>
-        <button class="btn-primary" (click)="createWorkout()">
-          <ion-icon name="add-outline"></ion-icon> Criar treino
-        </button>
-      </div>
+          <!-- Próxima semana -->
+          @if (nextWeek) {
+            <p class="section-label mt">PRÓXIMA SEMANA</p>
+            @for (d of allDays; track d) {
+              @if (getWeekDay(nextWeek, d); as day) {
+                <div class="upcoming-item">
+                  <div class="upcoming-left">
+                    <span class="upcoming-day">{{ dayLabels[d] }}</span>
+                    <div class="upcoming-info">
+                      @if (day.restDay) {
+                        <p class="upcoming-name rest-label">Descanso</p>
+                      } @else {
+                        <p class="upcoming-name">{{ day.workoutName }}</p>
+                        @if (getWorkoutForDay(day); as w) {
+                          <p class="upcoming-meta">{{ w.exercises.length }} ex</p>
+                        }
+                      }
+                    </div>
+                  </div>
+                  @if (!day.restDay) {
+                    <ion-icon name="chevron-forward-outline" class="upcoming-arrow"></ion-icon>
+                  }
+                </div>
+              }
+            }
+          }
 
-      <div class="workout-item" *ngFor="let w of allWorkouts" (click)="openWorkout(w)">
-        <div class="wi-icon">
-          <ion-icon name="barbell-outline"></ion-icon>
-        </div>
-        <div class="wi-info">
-          <p class="wi-name">{{ w.name }}</p>
-          <p class="wi-meta">
-            {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' : '' }}
-            <span class="preset-badge" *ngIf="w.preset">· Treinus</span>
-          </p>
-        </div>
-        <ion-button *ngIf="!w.preset" fill="clear" size="small" (click)="deleteWorkout(w, $event)" color="medium">
-          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-        </ion-button>
-        <ion-icon name="chevron-forward-outline" class="wi-arrow"></ion-icon>
-      </div>
+        }
 
-    </ng-container>
+        <!-- Sem programa ativo -->
+        @if (!activeProgram) {
+          <div class="no-program-note">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <p>Nenhum programa ativo.</p>
+            <button class="btn-link" (click)="segment = 'programs'">Ver programas</button>
+          </div>
+        }
 
-    <!-- ── PROGRAMAS ─────────────────────────────────────────────────────── -->
-    <ng-container *ngIf="segment === 'programs'">
-      <div class="empty-state" *ngIf="programs.length === 0">
-        <ion-icon name="calendar-outline"></ion-icon>
-        <p>Nenhum programa criado ainda.</p>
-        <button class="btn-primary" (click)="createProgram()">
-          <ion-icon name="add-outline"></ion-icon> Criar programa
-        </button>
-      </div>
+        <!-- Treinos avulsos -->
+        <p class="section-label mt">TREINOS AVULSOS</p>
 
-      <div class="program-item" *ngFor="let p of programs" (click)="openProgram(p)">
-        <div class="pi-icon" style="background: var(--purple-bg)">
-          <ion-icon name="calendar-outline" style="color: var(--purple)"></ion-icon>
-        </div>
-        <div class="pi-info">
-          <p class="pi-name">{{ p.name }}</p>
-          <p class="pi-meta">{{ p.weeksCount }} semanas</p>
-        </div>
-        <span class="status-tag" [style.color]="getProgramStatusColor(p.status)">
-          {{ getProgramStatusLabel(p.status) }}
-        </span>
-        <ion-button *ngIf="p.status === 'DRAFT' || p.status === 'COMPLETED' || p.status === 'CANCELLED'"
-          fill="clear" size="small" (click)="deleteProgram(p, $event)" color="medium">
-          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-        </ion-button>
-        <ion-icon
-          [name]="p.status === 'DRAFT' ? 'play-circle-outline' : 'chevron-forward-outline'"
-          [style.color]="p.status === 'DRAFT' ? 'var(--blue)' : 'var(--text3)'"
-          class="pi-arrow"
-        ></ion-icon>
-      </div>
-    </ng-container>
+        @if (allWorkouts.length === 0) {
+          <div class="empty-state">
+            <ion-icon name="barbell-outline"></ion-icon>
+            <p>Nenhum treino disponível.</p>
+            <button class="btn-primary" (click)="createWorkout()">
+              <ion-icon name="add-outline"></ion-icon> Criar treino
+            </button>
+          </div>
+        }
 
-  </div>
+        @for (w of allWorkouts; track w.id) {
+          <div class="workout-item" (click)="openWorkout(w)">
+            <div class="wi-icon">
+              <ion-icon name="barbell-outline"></ion-icon>
+            </div>
+            <div class="wi-info">
+              <p class="wi-name">{{ w.name }}</p>
+              <p class="wi-meta">
+                {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' : '' }}
+                @if (w.preset) { <span class="preset-badge">· Treinus</span> }
+              </p>
+            </div>
+            @if (!w.preset) {
+              <ion-button fill="clear" size="small" (click)="deleteWorkout(w, $event)" color="medium">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-button>
+            }
+            <ion-icon name="chevron-forward-outline" class="wi-arrow"></ion-icon>
+          </div>
+        }
 
-  <div class="loading-state" *ngIf="loading">
-    <ion-spinner name="crescent"></ion-spinner>
-  </div>
+      }
+
+      <!-- ── PROGRAMAS ─────────────────────────────────────────────────────── -->
+      @if (segment === 'programs') {
+        @if (programs.length === 0) {
+          <div class="empty-state">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <p>Nenhum programa criado ainda.</p>
+            <button class="btn-primary" (click)="createProgram()">
+              <ion-icon name="add-outline"></ion-icon> Criar programa
+            </button>
+          </div>
+        }
+
+        @for (p of programs; track p.id) {
+          <div class="program-item" (click)="openProgram(p)">
+            <div class="pi-icon" style="background: var(--purple-bg)">
+              <ion-icon name="calendar-outline" style="color: var(--purple)"></ion-icon>
+            </div>
+            <div class="pi-info">
+              <p class="pi-name">{{ p.name }}</p>
+              <p class="pi-meta">{{ p.weeksCount }} semanas</p>
+            </div>
+            <span class="status-tag" [style.color]="getProgramStatusColor(p.status)">
+              {{ getProgramStatusLabel(p.status) }}
+            </span>
+            @if (p.status === 'DRAFT' || p.status === 'COMPLETED' || p.status === 'CANCELLED') {
+              <ion-button fill="clear" size="small" (click)="deleteProgram(p, $event)" color="medium">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-button>
+            }
+            <ion-icon
+              [name]="p.status === 'DRAFT' ? 'play-circle-outline' : 'chevron-forward-outline'"
+              [style.color]="p.status === 'DRAFT' ? 'var(--blue)' : 'var(--text3)'"
+              class="pi-arrow"
+            ></ion-icon>
+          </div>
+        }
+      }
+
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  }
 </ion-content>

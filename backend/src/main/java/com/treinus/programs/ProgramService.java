@@ -1,6 +1,8 @@
 package com.treinus.programs;
 
 import com.treinus.programs.dto.*;
+import com.treinus.sessions.SessionStatus;
+import com.treinus.sessions.TrainingSessionRepository;
 import com.treinus.shared.exception.BusinessException;
 import com.treinus.shared.exception.ResourceNotFoundException;
 import com.treinus.users.User;
@@ -12,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,17 +29,20 @@ public class ProgramService {
     private final ProgramDayRepository programDayRepository;
     private final UserRepository userRepository;
     private final WorkoutRepository workoutRepository;
+    private final TrainingSessionRepository trainingSessionRepository;
 
     public ProgramService(ProgramRepository programRepository,
                           ProgramWeekRepository programWeekRepository,
                           ProgramDayRepository programDayRepository,
                           UserRepository userRepository,
-                          WorkoutRepository workoutRepository) {
+                          WorkoutRepository workoutRepository,
+                          TrainingSessionRepository trainingSessionRepository) {
         this.programRepository = programRepository;
         this.programWeekRepository = programWeekRepository;
         this.programDayRepository = programDayRepository;
         this.userRepository = userRepository;
         this.workoutRepository = workoutRepository;
+        this.trainingSessionRepository = trainingSessionRepository;
     }
 
     public List<ProgramResponse> findAllByUser(UUID userId) {
@@ -45,12 +52,13 @@ public class ProgramService {
     }
 
     public ProgramResponse findById(UUID id, UUID userId) {
-        return ProgramResponse.from(findProgram(id, userId));
+        Program program = findProgram(id, userId);
+        return ProgramResponse.from(program, completedDaysMap(program));
     }
 
     public Optional<ProgramResponse> findActive(UUID userId) {
         return programRepository.findByUserIdAndStatus(userId, ProgramStatus.ACTIVE)
-                .map(ProgramResponse::from);
+                .map(program -> ProgramResponse.from(program, completedDaysMap(program)));
     }
 
     @Transactional
@@ -228,6 +236,20 @@ public class ProgramService {
         programDayRepository.save(day);
         return ProgramResponse.from(programRepository.findById(programId)
                 .orElseThrow(() -> ResourceNotFoundException.of("Program", programId)));
+    }
+
+    private Map<UUID, UUID> completedDaysMap(Program program) {
+        List<UUID> dayIds = program.getWeeks().stream()
+                .flatMap(w -> w.getDays().stream())
+                .map(ProgramDay::getId)
+                .toList();
+        if (dayIds.isEmpty()) return Map.of();
+
+        Map<UUID, UUID> result = new LinkedHashMap<>();
+        trainingSessionRepository
+                .findByProgramDayIdInAndStatusOrderByFinishedAtDesc(dayIds, SessionStatus.COMPLETED)
+                .forEach(s -> result.putIfAbsent(s.getProgramDay().getId(), s.getId()));
+        return result;
     }
 
     private Program findProgram(UUID id, UUID userId) {

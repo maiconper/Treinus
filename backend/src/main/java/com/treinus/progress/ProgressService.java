@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
@@ -91,6 +92,21 @@ public class ProgressService {
                             .sum();
                     return WorkoutHistoryResponse.from(session, totalSets);
                 });
+    }
+
+    public List<WorkoutHistoryResponse> getHistoryForDate(UUID userId, LocalDate date) {
+        Instant from = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant to = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+        return sessionRepository
+                .findByUserIdAndStatusAndFinishedAtBetween(userId, SessionStatus.COMPLETED, from, to)
+                .stream()
+                .map(session -> {
+                    int totalSets = session.getExercises().stream()
+                            .mapToInt(se -> se.getSets().size())
+                            .sum();
+                    return WorkoutHistoryResponse.from(session, totalSets);
+                })
+                .toList();
     }
 
     public ExerciseProgressResponse getExerciseProgress(UUID userId, UUID exerciseId) {

@@ -7,13 +7,15 @@ import com.treinus.users.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,9 +38,14 @@ public class ProgressController {
 
     @GetMapping("/history")
     @Operation(summary = "Histórico de treinos concluídos")
-    public ResponseEntity<Page<WorkoutHistoryResponse>> getHistory(
+    public ResponseEntity<?> getHistory(
             @AuthenticationPrincipal User user,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @PageableDefault(size = 20) Pageable pageable) {
+        if (date != null) {
+            List<WorkoutHistoryResponse> result = progressService.getHistoryForDate(user.getId(), date);
+            return ResponseEntity.ok(result);
+        }
         return ResponseEntity.ok(progressService.getHistory(user.getId(), pageable));
     }
 

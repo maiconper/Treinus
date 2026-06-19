@@ -50,6 +50,9 @@ ion-content.progress-content { --background: var(--bg); }
   .hi-name { font-size: 13px; font-weight: 600; color: var(--text1); margin-bottom: 2px; }
   .hi-meta { font-size: 11px; color: var(--text3); }
   .xp-badge { font-size: 11px; color: var(--amber-dark); font-weight: 600; white-space: nowrap; }
+  .hist-arrow { font-size: 15px; color: var(--text3); flex-shrink: 0; }
+  cursor: pointer;
+  &:active { background: var(--surface2); border-radius: 8px; }
 }
 
 .empty-history {

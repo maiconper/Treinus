@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="dark" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ session?.workoutName ?? 'Treino' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="detail-content">
+  @if (!loading && session) {
+    <div class="content-inner">
+
+      <p class="session-date">{{ formatDateTime(session.startedAt) }}</p>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <p class="stat-val">{{ formatDuration(durationSeconds) }}</p>
+          <p class="stat-lbl">Duração</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-val">{{ totalSets }}</p>
+          <p class="stat-lbl">Séries</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-val">{{ session.totalVolumeKg | number:'1.0-0' }} <span>kg</span></p>
+          <p class="stat-lbl">Volume</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-val xp">+{{ session.xpEarned }}</p>
+          <p class="stat-lbl">XP</p>
+        </div>
+      </div>
+
+      <!-- Exercises -->
+      <p class="section-lbl">Exercícios</p>
+
+      @for (ex of session.exercises; track ex.id) {
+        <div class="exercise-card">
+          <div class="ex-header">
+            <p class="ex-name">{{ ex.exerciseName }}</p>
+            <span class="ex-badge" [class.skipped]="ex.status === 'SKIPPED'">
+              @if (ex.status === 'SKIPPED') { Pulado }
+              @else { {{ ex.sets.length }} série{{ ex.sets.length !== 1 ? 's' : '' }} }
+            </span>
+          </div>
+
+          @if (ex.status === 'SKIPPED' && ex.skipReason) {
+            <p class="skip-reason">{{ ex.skipReason }}</p>
+          }
+
+          @if (ex.status !== 'SKIPPED' && ex.sets.length > 0) {
+            <div class="sets-table">
+              <div class="set-row header-row">
+                <span>Série</span>
+                <span>Peso</span>
+                <span>Reps</span>
+              </div>
+              @for (s of ex.sets; track s.id) {
+                <div class="set-row" [class.pr]="s.personalRecord">
+                  <span>{{ s.setNumber }}</span>
+                  <span>{{ s.weightKg }} kg</span>
+                  <span class="reps-cell">
+                    {{ s.reps }}
+                    @if (s.personalRecord) {
+                      <ion-icon name="trophy-outline" class="pr-icon"></ion-icon>
+                    }
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  }
+
+  @if (!loading && !session) {
+    <div class="error-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <p>Sessão não encontrada.</p>
+      <button class="btn-back" (click)="goBack()">Voltar</button>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-wrap">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  }
+</ion-content>

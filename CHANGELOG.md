@@ -1,5 +1,77 @@
 # Changelog — Treinus
 
+## [2026-06-19] — Catálogo de exercícios: descrições, imagens e painel expansível no builder
+
+### Backend
+
+#### `V14__exercise_descriptions_and_images.sql`
+
+- Adicionada coluna `gif_url VARCHAR(500)` à tabela `exercises`
+- Preenchida coluna `description` para todos os **91 exercícios globais** do catálogo (PT-BR, 1–2 frases focadas em execução e técnica)
+- Preenchida coluna `gif_url` para **22 exercícios** com imagens do dataset open-source [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (fotos JPG hospedadas no GitHub via `raw.githubusercontent.com`). Exercícios cobertos:
+  - Peito: Supino reto com barra, Supino inclinado com barra, Supino declinado com barra, Crossover alto/baixo, Mergulho entre barras (peito)
+  - Costas: Barra fixa supinada, Remada curvada com barra, Levantamento terra
+  - Pernas: Agachamento livre, Agachamento hack, Passada
+  - Glúteos: Hip thrust com barra
+  - Ombros: Desenvolvimento com barra, Desenvolvimento Arnold
+  - Braços: Rosca direta com barra, Rosca martelo, Rosca concentrada, Mergulho no banco (tríceps)
+  - Core: Abdominal supra, Abdominal no cabo
+  - Panturrilha: Panturrilha no leg press
+  - Full Body: Clean and jerk
+
+#### `Exercise.java` / `ExerciseResponse.java`
+
+- Campo `gifUrl` (`String`) adicionado à entidade e ao DTO de resposta
+
+### Frontend
+
+#### `exercise.model.ts`
+
+- Campo `gifUrl?: string` adicionado à interface `Exercise`
+
+#### `workout-builder.page` (passo 2 — exercícios)
+
+**Painel expansível por exercício:**
+
+- Cada exercício nas seções "NO TREINO" e "ADICIONAR" ganhou um botão chevron (`∨`/`∧`) à direita
+- Ao abrir, o card do exercício conecta visualmente com um painel abaixo (sem gap, bordas inferiores quadradas no card + bordas superiores quadradas no painel) exibindo:
+  - **Foto** do exercício (`<img loading="lazy">`, carregada apenas ao abrir — sem impacto de performance)
+  - **Descrição** textual em PT-BR
+  - **Badge roxo** com músculo principal (`body-outline` icon + `primaryMuscleGroup`)
+  - **Badge cinza** com equipamento (`getEquipmentLabel` — BARBELL → "Barra", DUMBBELL → "Halteres", etc.)
+- Clicar no chevron usa `stopPropagation()` para não disparar ações do item pai (editar/adicionar)
+- `expandedIds: Set<string>` controla quais exercícios estão abertos; `exerciseMap: Map<string, Exercise>` para lookup O(1) na seção "NO TREINO" (que só tem `exerciseId`, não os dados completos do exercício)
+- HTML usa sintaxe de controle de fluxo do Angular 17+ (`@for`/`@if`)
+
+---
+
+## [2026-06-16] — Home: faixa de semana fixa · Treinos: timeline rolável e ordem de abas
+
+### Frontend
+
+#### `HomePage` — faixa "Sua semana" fixa acima da tab bar
+
+- Bloco "Sua semana" movido do conteúdo rolável para um `<ion-footer>`, posicionado após o `</ion-content>`
+- Cada página de aba tem seu próprio `ion-header`/`ion-content`/`ion-footer`, dimensionado para caber acima do `ion-tab-bar` global — o footer fica sempre visível, sem cálculo manual de offset/safe-area
+- `*ngFor` convertido para `@for` no bloco movido (sintaxe de controle de fluxo do Angular 17+)
+- CSS: `.week-footer` com `background: var(--surface)` e `border-top`, seguindo o mesmo padrão já usado em `.builder-footer` (`workout-builder.page.scss`)
+
+#### `WorkoutsPage` — "Meus treinos" como aba padrão
+
+- `segment` inicial alterado de `'programs'` para `'workouts'`
+- Ordem dos botões do segmento invertida: "Meus treinos" aparece primeiro, "Programas" em seguida
+
+#### `WorkoutsPage` — timeline rolável do programa (substitui strip da semana atual)
+
+- A faixa de dias deixou de mostrar só os 7 dias da semana atual e passou a exibir **uma linha do tempo única com todos os dias de todas as semanas do programa ativo**, lado a lado e rolável horizontalmente (`overflow-x: auto`, sem barra de rolagem visível, scroll por toque/arraste)
+- `timelineDays` (nova interface `TimelineDay`): array plano construído em `buildTimeline()` a partir de `activeProgram.weeks`, com um índice global por dia (`globalIndex = (weekNumber - 1) * 7 + (dayOfWeek - 1)`)
+- Ao carregar a página, a faixa rola automaticamente para centralizar o dia de hoje (`scrollToToday()`, via `@ViewChild('weekStrip')`)
+- **Label "SEMANA X" dinâmico**: `viewedWeekNumber` é recalculado a cada scroll (`(scroll)="onStripScroll()"`, com throttle via `requestAnimationFrame`) comparando o centro de cada célula (`data-week`) com o centro visível da faixa — o label sempre reflete a semana atualmente centralizada na tela, não mais a semana "de hoje" fixa
+- **Dia do mês por célula**: cada `day-cell` agora mostra `d.date.getDate()` acima do dia da semana. A data é calculada relativa a hoje (`hoje ± diferença de índice global`) para não depender do alinhamento exato entre `startedAt` do programa e os dias da semana reais
+- CSS: células com largura fixa (38px, antes `flex: 1`), pequeno espaçamento extra a cada domingo (`.week-end`) para separar visualmente as semanas; destaque azul/bold também no número do dia quando `is-today`
+
+---
+
 ## [2026-06-13] — Sessão de treino: fluxo de execução, presets e estado concluído
 
 ### Backend

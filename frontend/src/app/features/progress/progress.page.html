@@ -5,80 +5,89 @@
 </ion-header>
 
 <ion-content class="progress-content">
-  <div class="content-inner" *ngIf="!loading && summary">
+  @if (!loading && summary) {
+    <div class="content-inner">
 
-    <!-- Mini stats -->
-    <div class="mini-stats">
-      <div class="mini-stat">
-        <p class="ms-val">{{ summary.streak }}</p>
-        <p class="ms-lbl">Sequência</p>
-      </div>
-      <div class="mini-stat">
-        <p class="ms-val">{{ summary.totalWorkouts }}</p>
-        <p class="ms-lbl">Treinos</p>
-      </div>
-      <div class="mini-stat">
-        <p class="ms-val">{{ summary.workoutsThisWeek }}</p>
-        <p class="ms-lbl">Esta semana</p>
-      </div>
-    </div>
-
-    <!-- Volume card -->
-    <div class="card volume-card">
-      <p class="card-title">Volume semanal</p>
-      <p class="card-sub">Esta semana vs semana passada</p>
-      <div class="vol-row">
-        <div class="vol-item">
-          <p class="vol-val">{{ summary.volumeThisWeek | number:'1.0-0' }} <span>kg</span></p>
-          <p class="vol-lbl">Esta semana</p>
+      <!-- Mini stats -->
+      <div class="mini-stats">
+        <div class="mini-stat">
+          <p class="ms-val">{{ summary.streak }}</p>
+          <p class="ms-lbl">Sequência</p>
         </div>
-        <div class="vol-divider"></div>
-        <div class="vol-item">
-          <p class="vol-val">{{ summary.volumeLastWeek | number:'1.0-0' }} <span>kg</span></p>
-          <p class="vol-lbl">Semana passada</p>
+        <div class="mini-stat">
+          <p class="ms-val">{{ summary.totalWorkouts }}</p>
+          <p class="ms-lbl">Treinos</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-val">{{ summary.workoutsThisWeek }}</p>
+          <p class="ms-lbl">Esta semana</p>
         </div>
       </div>
-    </div>
 
-    <!-- XP -->
-    <div class="card xp-card">
-      <div class="xp-header">
-        <div>
-          <p class="card-title">XP Total</p>
-          <p class="xp-val">{{ summary.xp }} XP</p>
+      <!-- Volume card -->
+      <div class="card volume-card">
+        <p class="card-title">Volume semanal</p>
+        <p class="card-sub">Esta semana vs semana passada</p>
+        <div class="vol-row">
+          <div class="vol-item">
+            <p class="vol-val">{{ summary.volumeThisWeek | number:'1.0-0' }} <span>kg</span></p>
+            <p class="vol-lbl">Esta semana</p>
+          </div>
+          <div class="vol-divider"></div>
+          <div class="vol-item">
+            <p class="vol-val">{{ summary.volumeLastWeek | number:'1.0-0' }} <span>kg</span></p>
+            <p class="vol-lbl">Semana passada</p>
+          </div>
         </div>
-        <ion-icon name="star-outline" style="font-size: 24px; color: var(--amber)"></ion-icon>
       </div>
-      <div class="xp-bar">
-        <div class="xp-fill" [style.width.%]="(summary.xp % 1000) / 10"></div>
+
+      <!-- XP -->
+      <div class="card xp-card">
+        <div class="xp-header">
+          <div>
+            <p class="card-title">XP Total</p>
+            <p class="xp-val">{{ summary.xp }} XP</p>
+          </div>
+          <ion-icon name="star-outline" style="font-size: 24px; color: var(--amber)"></ion-icon>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-fill" [style.width.%]="(summary.xp % 1000) / 10"></div>
+        </div>
+        <p class="xp-sub">{{ 1000 - (summary.xp % 1000) }} XP para o próximo nível</p>
       </div>
-      <p class="xp-sub">{{ 1000 - (summary.xp % 1000) }} XP para o próximo nível</p>
+
+      <!-- History -->
+      <p class="section-lbl" style="margin-top: 4px">Histórico</p>
+
+      @if (history.length === 0) {
+        <div class="empty-history">
+          <ion-icon name="time-outline"></ion-icon>
+          <p>Nenhum treino registrado ainda.</p>
+        </div>
+      }
+
+      @for (h of history; track h.sessionId) {
+        <div class="hist-item" (click)="openSession(h)">
+          <div class="hist-date">
+            <p class="hd-day">{{ formatDate(h.startedAt).day }}</p>
+            <p class="hd-mon">{{ formatDate(h.startedAt).month }}</p>
+          </div>
+          <div class="hist-divider"></div>
+          <div class="hist-info">
+            <p class="hi-name">{{ h.workoutName }}</p>
+            <p class="hi-meta">{{ formatDuration(h.durationSeconds) }} · {{ h.totalSets }} séries · {{ h.totalVolumeKg | number:'1.0-0' }} kg</p>
+          </div>
+          <span class="xp-badge">+{{ h.xpEarned }} XP</span>
+          <ion-icon name="chevron-forward-outline" class="hist-arrow"></ion-icon>
+        </div>
+      }
+
     </div>
+  }
 
-    <!-- History -->
-    <p class="section-lbl" style="margin-top: 4px">Histórico</p>
-
-    <div class="empty-history" *ngIf="history.length === 0">
-      <ion-icon name="time-outline"></ion-icon>
-      <p>Nenhum treino registrado ainda.</p>
+  @if (loading) {
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
     </div>
-
-    <div class="hist-item" *ngFor="let h of history">
-      <div class="hist-date">
-        <p class="hd-day">{{ formatDate(h.startedAt).day }}</p>
-        <p class="hd-mon">{{ formatDate(h.startedAt).month }}</p>
-      </div>
-      <div class="hist-divider"></div>
-      <div class="hist-info">
-        <p class="hi-name">{{ h.workoutName }}</p>
-        <p class="hi-meta">{{ formatDuration(h.durationSeconds) }} · {{ h.totalSets }} séries · {{ h.totalVolumeKg | number:'1.0-0' }} kg</p>
-      </div>
-      <span class="xp-badge">+{{ h.xpEarned }} XP</span>
-    </div>
-
-  </div>
-
-  <div class="loading-state" *ngIf="loading">
-    <ion-spinner name="crescent"></ion-spinner>
-  </div>
+  }
 </ion-content>

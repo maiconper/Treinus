@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ActionSheetController, AlertController } from '@ionic/angular';
+import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
 import { WorkoutService } from '../../core/services/workout.service';
 import { ProgramService } from '../../core/services/program.service';
 import { UserService } from '../../core/services/user.service';
+import { ProgressService } from '../../core/services/progress.service';
 import { Workout, Program, ProgramWeek, ProgramDay, User } from '../../core/models';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,6 +13,14 @@ const DAY_LABELS: Record<number, string> = {
   1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb', 7: 'Dom',
 };
 
+interface TimelineDay {
+  globalIndex: number;
+  weekNumber: number;
+  dayOfWeek: number;
+  date: Date;
+  day?: ProgramDay;
+}
+
 @Component({
   selector: 'app-workouts',
   templateUrl: './workouts.page.html',
@@ -19,12 +28,17 @@ const DAY_LABELS: Record<number, string> = {
   standalone: false,
 })
 export class WorkoutsPage implements OnInit {
-  segment: 'workouts' | 'programs' = 'programs';
+  @ViewChild('weekStrip') weekStripRef?: ElementRef<HTMLElement>;
+
+  segment: 'workouts' | 'programs' = 'workouts';
   user: User | null = null;
   workouts: Workout[] = [];
   presets: Workout[] = [];
   programs: Program[] = [];
   activeProgram: Program | null = null;
+  timelineDays: TimelineDay[] = [];
+  viewedWeekNumber = 1;
+  private scrollRaf = false;
 
   get allWorkouts(): Workout[] {
     return [...this.workouts, ...this.presets];
@@ -38,9 +52,11 @@ export class WorkoutsPage implements OnInit {
     private workoutService: WorkoutService,
     private programService: ProgramService,
     private userService: UserService,
+    private progressService: ProgressService,
     private router: Router,
     private alert: AlertController,
     private actionSheet: ActionSheetController,
+    private toast: ToastController,
   ) {}
 
   ngOnInit() { this.load(); }
@@ -61,10 +77,73 @@ export class WorkoutsPage implements OnInit {
         this.presets = presets;
         this.programs = programs;
         this.activeProgram = active;
+        this.buildTimeline();
         this.loading = false;
+        setTimeout(() => this.scrollToToday());
       },
       error: () => { this.loading = false; },
     });
+  }
+
+  private buildTimeline() {
+    this.timelineDays = [];
+    this.viewedWeekNumber = this.currentWeekNumber;
+    if (!this.activeProgram) return;
+    const todayIdx = this.todayGlobalIndex;
+    const today = new Date();
+    const weeks = [...this.activeProgram.weeks].sort((a, b) => a.weekNumber - b.weekNumber);
+    for (const week of weeks) {
+      for (const dow of this.allDays) {
+        const globalIndex = (week.weekNumber - 1) * 7 + (dow - 1);
+        const date = new Date(today);
+        date.setDate(today.getDate() + (globalIndex - todayIdx));
+        this.timelineDays.push({
+          globalIndex,
+          weekNumber: week.weekNumber,
+          dayOfWeek: dow,
+          date,
+          day: week.days.find(d => d.dayOfWeek === dow),
+        });
+      }
+    }
+  }
+
+  private scrollToToday() {
+    const strip = this.weekStripRef?.nativeElement;
+    const todayEl = strip?.querySelector<HTMLElement>('.day-cell.is-today');
+    if (!strip || !todayEl) return;
+    strip.scrollLeft = todayEl.offsetLeft - strip.clientWidth / 2 + todayEl.clientWidth / 2;
+    this.updateViewedWeek();
+  }
+
+  onStripScroll() {
+    if (this.scrollRaf) return;
+    this.scrollRaf = true;
+    requestAnimationFrame(() => {
+      this.updateViewedWeek();
+      this.scrollRaf = false;
+    });
+  }
+
+  private updateViewedWeek() {
+    const strip = this.weekStripRef?.nativeElement;
+    if (!strip) return;
+    const centerX = strip.scrollLeft + strip.clientWidth / 2;
+    let closestWeek = this.viewedWeekNumber;
+    let closestDist = Infinity;
+    for (const cell of Array.from(strip.querySelectorAll<HTMLElement>('.day-cell'))) {
+      const center = cell.offsetLeft + cell.offsetWidth / 2;
+      const dist = Math.abs(center - centerX);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestWeek = Number(cell.dataset['week']);
+      }
+    }
+    this.viewedWeekNumber = closestWeek;
+  }
+
+  get todayGlobalIndex(): number {
+    return (this.currentWeekNumber - 1) * 7 + (this.todayDow - 1);
   }
 
   // ── Programa ativo ─────────────────────────────────────────────────────────
@@ -106,6 +185,12 @@ export class WorkoutsPage implements OnInit {
     return week?.days.find(d => d.dayOfWeek === dow);
   }
 
+  get viewedMonthLabel(): string {
+    const day = this.timelineDays.find(d => d.weekNumber === this.viewedWeekNumber);
+    if (!day) return '';
+    return day.date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').toUpperCase();
+  }
+
   abbrev(name: string | undefined): string {
     if (!name) return '';
     return name.split(/[\s·—–]/)[0];
@@ -113,7 +198,54 @@ export class WorkoutsPage implements OnInit {
 
   getWorkoutForDay(day: ProgramDay | undefined): Workout | undefined {
     if (!day?.workoutId) return undefined;
-    return this.workouts.find(w => w.id === day.workoutId);
+    return [...this.workouts, ...this.presets].find(w => w.id === day.workoutId);
+  }
+
+  estimatedMinutes(w: Workout): number {
+    const secs = w.exercises.reduce((total, ex) => {
+      const rest = ex.restSeconds ?? 60;
+      return total + ex.plannedSets * (45 + rest);
+    }, 0);
+    const rounded = Math.round(secs / 60 / 5) * 5;
+    return rounded || 30;
+  }
+
+  formatReps(ex: { plannedSets: number; plannedRepsMin?: number; plannedRepsMax?: number }): string {
+    const { plannedSets: sets, plannedRepsMin: min, plannedRepsMax: max } = ex;
+    if (min && max && min !== max) return `${sets}×${min}–${max}`;
+    if (min) return `${sets}×${min}`;
+    return `${sets} séries`;
+  }
+
+  onDayClick(d: TimelineDay) {
+    if (d.globalIndex >= this.todayGlobalIndex) return;
+    if (!d.day || d.day.restDay) return;
+    const date = d.date;
+    const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    this.progressService.getHistoryForDate(iso).subscribe({
+      next: sessions => {
+        if (!Array.isArray(sessions) || sessions.length === 0) {
+          this.showToast('Nenhum treino registrado neste dia.');
+          return;
+        }
+        this.router.navigate(['/tabs/progress', sessions[0].sessionId]);
+      },
+      error: err => {
+        console.error('[onDayClick] erro ao buscar sessões:', err);
+        this.showToast('Erro ao carregar treinos deste dia.');
+      },
+    });
+  }
+
+  private async showToast(message: string) {
+    const t = await this.toast.create({ message, duration: 2000, position: 'bottom' });
+    await t.present();
+  }
+
+  editTodayWorkout() {
+    if (this.todayDay?.workoutId) {
+      this.router.navigate(['/tabs/workouts/builder', this.todayDay.workoutId]);
+    }
   }
 
   startWorkout(day: ProgramDay) {

@@ -9,15 +9,23 @@ public record ProgramDayResponse(
         int dayOfWeek,
         UUID workoutId,
         String workoutName,
-        boolean restDay
+        boolean restDay,
+        boolean completed,
+        UUID lastSessionId
 ) {
-    public static ProgramDayResponse from(ProgramDay day) {
+    public static ProgramDayResponse from(ProgramDay day, boolean completed, UUID lastSessionId) {
         return new ProgramDayResponse(
                 day.getId(),
                 day.getDayOfWeek(),
                 day.getWorkout() != null ? day.getWorkout().getId() : null,
                 day.getWorkout() != null ? day.getWorkout().getName() : null,
-                day.isRestDay()
+                day.isRestDay(),
+                completed,
+                lastSessionId
         );
+    }
+
+    public static ProgramDayResponse from(ProgramDay day) {
+        return from(day, false, null);
     }
 }

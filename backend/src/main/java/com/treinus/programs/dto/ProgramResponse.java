@@ -5,6 +5,7 @@ import com.treinus.programs.ProgramStatus;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public record ProgramResponse(
@@ -20,9 +21,9 @@ public record ProgramResponse(
         Instant createdAt,
         Instant updatedAt
 ) {
-    public static ProgramResponse from(Program program) {
+    public static ProgramResponse from(Program program, Map<UUID, UUID> completedDays) {
         List<ProgramWeekResponse> weeks = program.getWeeks().stream()
-                .map(ProgramWeekResponse::from)
+                .map(week -> ProgramWeekResponse.from(week, completedDays))
                 .toList();
 
         return new ProgramResponse(
@@ -38,5 +39,9 @@ public record ProgramResponse(
                 program.getCreatedAt(),
                 program.getUpdatedAt()
         );
+    }
+
+    public static ProgramResponse from(Program program) {
+        return from(program, Map.of());
     }
 }

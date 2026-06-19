@@ -86,24 +86,52 @@
           <span class="count-badge">{{ workout.exercises.length }}</span>
         </p>
 
-        <div class="ex-item added" *ngFor="let ex of workout.exercises">
-          <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
-          <div class="ex-info" (click)="editExercise(ex)">
-            <p class="ex-name">{{ ex.exerciseName }}</p>
-            <div class="ex-config">
-              <span class="config-chip sets">{{ ex.plannedSets }}</span>
-              <span class="config-x">×</span>
-              <span class="config-chip reps">{{ ex.plannedRepsMin ?? 10 }}</span>
-              <span class="config-label">reps</span>
-              <span class="config-chip weight" *ngIf="ex.plannedWeightKg">
-                {{ ex.plannedWeightKg }}kg
-              </span>
+        @for (ex of workout.exercises; track ex.id) {
+          <div class="ex-item added" [class.is-open]="isExpanded(ex.exerciseId)">
+            <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
+            <div class="ex-info" (click)="editExercise(ex)">
+              <p class="ex-name">{{ ex.exerciseName }}</p>
+              <div class="ex-config">
+                <span class="config-chip sets">{{ ex.plannedSets }}</span>
+                <span class="config-x">×</span>
+                <span class="config-chip reps">{{ ex.plannedRepsMin ?? 10 }}</span>
+                <span class="config-label">reps</span>
+                @if (ex.plannedWeightKg) {
+                  <span class="config-chip weight">{{ ex.plannedWeightKg }}kg</span>
+                }
+              </div>
             </div>
+            <button class="chevron-btn" (click)="toggleExpand(ex.exerciseId, $event)">
+              <ion-icon [name]="isExpanded(ex.exerciseId) ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </button>
+            <button class="remove-btn" (click)="removeExercise(ex)">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
           </div>
-          <button class="remove-btn" (click)="removeExercise(ex)">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
-        </div>
+          @if (isExpanded(ex.exerciseId)) {
+            @if (getExerciseInfo(ex.exerciseId); as info) {
+              <div class="ex-detail-panel">
+                @if (info.gifUrl) {
+                  <img [src]="info.gifUrl" class="ex-detail-img" loading="lazy" alt="{{ ex.exerciseName }}">
+                }
+                @if (info.description) {
+                  <p class="ex-detail-desc">{{ info.description }}</p>
+                }
+                <div class="ex-detail-tags">
+                  @if (info.primaryMuscleGroup) {
+                    <span class="ex-tag muscle">
+                      <ion-icon name="body-outline"></ion-icon>
+                      {{ info.primaryMuscleGroup }}
+                    </span>
+                  }
+                  @if (info.equipment) {
+                    <span class="ex-tag equip">{{ getEquipmentLabel(info.equipment) }}</span>
+                  }
+                </div>
+              </div>
+            }
+          }
+        }
       </div>
 
       <!-- Duração estimada -->
@@ -116,14 +144,40 @@
       <div class="section" *ngIf="searchResults.length > 0">
         <p class="section-label">ADICIONAR</p>
 
-        <div class="ex-item" *ngFor="let ex of searchResults" (click)="addExercise(ex)">
-          <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
-          <div class="ex-info">
-            <p class="ex-name">{{ ex.name }}</p>
-            <p class="ex-meta">{{ getCategoryLabel(ex.category) }}</p>
+        @for (ex of searchResults; track ex.id) {
+          <div class="ex-item" [class.is-open]="isExpanded(ex.id)" (click)="addExercise(ex)">
+            <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
+            <div class="ex-info">
+              <p class="ex-name">{{ ex.name }}</p>
+              <p class="ex-meta">{{ getCategoryLabel(ex.category) }}</p>
+            </div>
+            <button class="chevron-btn" (click)="toggleExpand(ex.id, $event)">
+              <ion-icon [name]="isExpanded(ex.id) ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </button>
+            <ion-icon name="add-circle-outline" class="add-icon"></ion-icon>
           </div>
-          <ion-icon name="add-circle-outline" class="add-icon"></ion-icon>
-        </div>
+          @if (isExpanded(ex.id)) {
+            <div class="ex-detail-panel">
+              @if (ex.gifUrl) {
+                <img [src]="ex.gifUrl" class="ex-detail-img" loading="lazy" alt="{{ ex.name }}">
+              }
+              @if (ex.description) {
+                <p class="ex-detail-desc">{{ ex.description }}</p>
+              }
+              <div class="ex-detail-tags">
+                @if (ex.primaryMuscleGroup) {
+                  <span class="ex-tag muscle">
+                    <ion-icon name="body-outline"></ion-icon>
+                    {{ ex.primaryMuscleGroup }}
+                  </span>
+                }
+                @if (ex.equipment) {
+                  <span class="ex-tag equip">{{ getEquipmentLabel(ex.equipment) }}</span>
+                }
+              </div>
+            </div>
+          }
+        }
       </div>
 
       <div class="empty-search" *ngIf="searchResults.length === 0 && searchQuery">

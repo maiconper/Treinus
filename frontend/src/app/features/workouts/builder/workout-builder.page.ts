@@ -42,6 +42,8 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
   searchQuery = '';
   allExercises: Exercise[] = [];
   searchResults: Exercise[] = [];
+  expandedIds = new Set<string>();
+  private exerciseMap = new Map<string, Exercise>();
   private searchSubject = new Subject<string>();
   private subs: any[] = [];
 
@@ -79,6 +81,7 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
   private loadExercises() {
     this.exerciseService.list({ size: 100 }).subscribe(page => {
       this.allExercises = page.content;
+      this.exerciseMap = new Map(page.content.map(e => [e.id, e]));
       this.refreshResults();
     });
   }
@@ -214,6 +217,32 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
       ARMS: '#F97316', CORE: '#EC4899', GLUTES: '#8B5CF6', CARDIO: '#06B6D4',
     };
     return map[category] ?? '#94A3B8';
+  }
+
+  toggleExpand(id: string, event: Event) {
+    event.stopPropagation();
+    if (this.expandedIds.has(id)) {
+      this.expandedIds.delete(id);
+    } else {
+      this.expandedIds.add(id);
+    }
+  }
+
+  isExpanded(id: string): boolean {
+    return this.expandedIds.has(id);
+  }
+
+  getExerciseInfo(exerciseId: string): Exercise | null {
+    return this.exerciseMap.get(exerciseId) ?? null;
+  }
+
+  getEquipmentLabel(equipment: string): string {
+    const map: Record<string, string> = {
+      BARBELL: 'Barra', DUMBBELL: 'Halteres', MACHINE: 'Máquina',
+      CABLE: 'Cabo', BODYWEIGHT: 'Peso corporal', KETTLEBELL: 'Kettlebell',
+      RESISTANCE_BAND: 'Elástico', SMITH_MACHINE: 'Smith', OTHER: 'Cardio',
+    };
+    return map[equipment] ?? equipment;
   }
 
   getCategoryLabel(category: string): string {

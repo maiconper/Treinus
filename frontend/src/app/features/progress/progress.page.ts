@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ProgressService } from '../../core/services/progress.service';
 import { ProgressSummary, WorkoutHistoryItem } from '../../core/models';
 
@@ -13,7 +14,7 @@ export class ProgressPage implements OnInit {
   history: WorkoutHistoryItem[] = [];
   loading = true;
 
-  constructor(private progressService: ProgressService) {}
+  constructor(private progressService: ProgressService, private router: Router) {}
 
   ngOnInit() { this.load(); }
   ionViewWillEnter() { this.load(); }
@@ -41,5 +42,9 @@ export class ProgressPage implements OnInit {
       day: d.getDate().toString(),
       month: d.toLocaleDateString('pt-BR', { month: 'short' }),
     };
+  }
+
+  openSession(h: WorkoutHistoryItem) {
+    this.router.navigate(['/tabs/progress', h.sessionId]);
   }
 }
