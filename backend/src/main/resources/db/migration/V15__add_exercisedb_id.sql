@@ -1,0 +1,1 @@
+ALTER TABLE exercises ADD COLUMN IF NOT EXISTS exercisedb_id VARCHAR(10);

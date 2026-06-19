@@ -34,8 +34,8 @@ server:
 
 jwt:
   secret: ${JWT_SECRET:change-this-secret-in-production-must-be-at-least-256-bits-long!!}
-  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900}       # 15 minutes in seconds
-  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800}  # 7 days in seconds
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900} # 15 minutes in seconds
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800} # 7 days in seconds
 
 springdoc:
   api-docs:
@@ -53,6 +53,9 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+
+exercisedb:
+  api-key: 69935c02b8msh86c09a5af20ca0bp1a1026jsn460e4113326e
 
 logging:
   level:

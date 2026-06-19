@@ -20,11 +20,14 @@ public record ExerciseResponse(
         Instant createdAt
 ) {
     public static ExerciseResponse from(Exercise exercise) {
+        String gifUrl = exercise.getExercisedbId() != null
+                ? "/api/v1/exercises/" + exercise.getId() + "/gif"
+                : exercise.getGifUrl();
         return new ExerciseResponse(
                 exercise.getId(),
                 exercise.getName(),
                 exercise.getDescription(),
-                exercise.getGifUrl(),
+                gifUrl,
                 exercise.getCategory(),
                 exercise.getPrimaryMuscleGroup(),
                 exercise.getEquipment(),

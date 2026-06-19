@@ -2,6 +2,8 @@ package com.treinus.exercises;
 
 import com.treinus.exercises.dto.CreateExerciseRequest;
 import com.treinus.exercises.dto.ExerciseResponse;
+import com.treinus.exercises.exercisedb.ExerciseSyncService;
+import com.treinus.exercises.exercisedb.SyncResult;
 import com.treinus.users.User;
 import com.treinus.users.UserRole;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,11 +13,15 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.TimeUnit;
 
 import java.util.UUID;
 
@@ -26,9 +32,11 @@ import java.util.UUID;
 public class ExerciseController {
 
     private final ExerciseService exerciseService;
+    private final ExerciseSyncService exerciseSyncService;
 
-    public ExerciseController(ExerciseService exerciseService) {
+    public ExerciseController(ExerciseService exerciseService, ExerciseSyncService exerciseSyncService) {
         this.exerciseService = exerciseService;
+        this.exerciseSyncService = exerciseSyncService;
     }
 
     @GetMapping
@@ -47,6 +55,27 @@ public class ExerciseController {
             @AuthenticationPrincipal User user,
             @PathVariable UUID id) {
         return ResponseEntity.ok(exerciseService.findById(id, user.getId()));
+    }
+
+    @GetMapping("/{id}/gif")
+    @Operation(hidden = true)
+    public ResponseEntity<byte[]> getGif(@PathVariable UUID id) {
+        try {
+            byte[] image = exerciseSyncService.getGif(id);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_GIF)
+                    .cacheControl(CacheControl.maxAge(90, TimeUnit.DAYS).cachePublic())
+                    .body(image);
+        } catch (java.util.NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/sync-gifs")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Sincronizar GIFs dos exercícios globais com ExerciseDB (admin)")
+    public ResponseEntity<SyncResult> syncGifs() {
+        return ResponseEntity.ok(exerciseSyncService.syncGifs());
     }
 
     @PostMapping("/global")

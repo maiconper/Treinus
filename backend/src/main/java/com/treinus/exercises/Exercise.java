@@ -29,6 +29,9 @@ public class Exercise {
     @Column(name = "gif_url", length = 500)
     private String gifUrl;
 
+    @Column(name = "exercisedb_id", length = 10)
+    private String exercisedbId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ExerciseCategory category;
