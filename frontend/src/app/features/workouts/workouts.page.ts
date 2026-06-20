@@ -5,7 +5,7 @@ import { WorkoutService } from '../../core/services/workout.service';
 import { ProgramService } from '../../core/services/program.service';
 import { UserService } from '../../core/services/user.service';
 import { ProgressService } from '../../core/services/progress.service';
-import { Workout, Program, ProgramWeek, ProgramDay, User } from '../../core/models';
+import { Workout, Program, ProgramWeek, ProgramDay, User, WorkoutHistoryItem } from '../../core/models';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -36,6 +36,7 @@ export class WorkoutsPage implements OnInit {
   presets: Workout[] = [];
   programs: Program[] = [];
   activeProgram: Program | null = null;
+  todaySessions: WorkoutHistoryItem[] = [];
   timelineDays: TimelineDay[] = [];
   viewedWeekNumber = 1;
   private scrollRaf = false;
@@ -62,6 +63,11 @@ export class WorkoutsPage implements OnInit {
   ngOnInit() { this.load(); }
   ionViewWillEnter() { this.load(); }
 
+  get todayIso(): string {
+    const t = new Date();
+    return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+  }
+
   load() {
     this.loading = true;
     forkJoin({
@@ -70,13 +76,15 @@ export class WorkoutsPage implements OnInit {
       presets: this.workoutService.listPresets(),
       programs: this.programService.list(),
       active: this.programService.getActive().pipe(catchError(() => of(null))),
+      todaySessions: this.progressService.getHistoryForDate(this.todayIso).pipe(catchError(() => of([]))),
     }).subscribe({
-      next: ({ user, workouts, presets, programs, active }) => {
+      next: ({ user, workouts, presets, programs, active, todaySessions }) => {
         this.user = user;
         this.workouts = workouts;
         this.presets = presets;
         this.programs = programs;
         this.activeProgram = active;
+        this.todaySessions = todaySessions;
         this.buildTimeline();
         this.loading = false;
         setTimeout(() => this.scrollToToday());
@@ -148,15 +156,6 @@ export class WorkoutsPage implements OnInit {
 
   // ── Programa ativo ─────────────────────────────────────────────────────────
 
-  // TODO: lastWorkoutDate indica que ALGUM treino foi feito hoje, não que o treino do programa de hoje
-  // foi concluído. Se o usuário trocar o treino do dia, o novo aparece como concluído incorretamente.
-  // Solução correta: rastrear a sessão concluída por programDayId ou workoutId específico.
-  get completedToday(): boolean {
-    if (!this.user?.lastWorkoutDate) return false;
-    const t = new Date();
-    const local = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
-    return this.user.lastWorkoutDate === local;
-  }
 
   get todayDow(): number {
     const d = new Date().getDay();
@@ -242,19 +241,17 @@ export class WorkoutsPage implements OnInit {
     await t.present();
   }
 
-  goToTodayHistory() {
-    const t = new Date();
-    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
-    this.progressService.getHistoryForDate(iso).subscribe({
-      next: sessions => {
-        if (Array.isArray(sessions) && sessions.length > 0) {
-          this.router.navigate(['/tabs/progress', sessions[0].sessionId]);
-        } else {
-          this.showToast('Nenhum treino registrado hoje.');
-        }
-      },
-      error: () => this.showToast('Erro ao carregar treino de hoje.'),
-    });
+  goToHistory(sessionId: string) {
+    this.router.navigate(['/tabs/progress', sessionId]);
+  }
+
+  formatTime(iso: string): string {
+    return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  formatDuration(seconds: number): string {
+    const m = Math.round(seconds / 60);
+    return m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`;
   }
 
   editTodayWorkout() {

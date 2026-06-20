@@ -54,11 +54,11 @@
           <!-- Treino de hoje -->
           <p class="section-label mt">TREINO DE HOJE</p>
 
-          @if (todayDay && !todayDay.restDay && todayDay.workoutId && completedToday) {
-            <div class="today-card done" (click)="goToTodayHistory()" style="cursor:pointer">
+          @for (s of todaySessions; track s.sessionId) {
+            <div class="today-card done" (click)="goToHistory(s.sessionId)" style="cursor:pointer">
               <div class="today-card-body">
-                <p class="today-sub">Semana {{ currentWeekNumber }} · Dia {{ todayDow }}</p>
-                <p class="today-title">{{ todayDay.workoutName }}</p>
+                <p class="today-sub">{{ formatTime(s.startedAt) }} · {{ formatDuration(s.durationSeconds) }}</p>
+                <p class="today-title">{{ s.workoutName }}</p>
               </div>
               <div class="done-badge">
                 <ion-icon name="checkmark-circle-outline"></ion-icon>
@@ -67,7 +67,7 @@
             </div>
           }
 
-          @if (todayDay && !todayDay.restDay && todayDay.workoutId && !completedToday) {
+          @if (todayDay && !todayDay.restDay && todayDay.workoutId) {
             <div class="today-card">
               <div class="today-card-body">
                 <div class="today-title-row">

@@ -6,7 +6,7 @@ import { SessionService } from '../../core/services/session.service';
 import { WorkoutService } from '../../core/services/workout.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ProgressService } from '../../core/services/progress.service';
-import { User, Program, Session, Workout, WorkoutExercise } from '../../core/models';
+import { User, Program, Session, Workout, WorkoutExercise, WorkoutHistoryItem } from '../../core/models';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -22,6 +22,7 @@ export class HomePage implements OnInit, OnDestroy {
   activeSession: Session | null = null;
   workouts: Workout[] = [];
   presets: Workout[] = [];
+  todaySessions: WorkoutHistoryItem[] = [];
   today = new Date();
   loading = true;
   private sessionSub?: Subscription;
@@ -57,6 +58,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   ionViewWillEnter() { this.load(); }
 
+  get todayIso(): string {
+    const t = this.today;
+    return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+  }
+
   load() {
     this.loading = true;
     this.sessionService.getCurrent().pipe(catchError(() => of(null))).subscribe();
@@ -65,27 +71,20 @@ export class HomePage implements OnInit, OnDestroy {
       program: this.programService.getActive().pipe(catchError(() => of(null))),
       workouts: this.workoutService.list().pipe(catchError(() => of([]))),
       presets: this.workoutService.listPresets().pipe(catchError(() => of([]))),
+      todaySessions: this.progressService.getHistoryForDate(this.todayIso).pipe(catchError(() => of([]))),
     }).subscribe({
-      next: ({ user, program, workouts, presets }) => {
+      next: ({ user, program, workouts, presets, todaySessions }) => {
         this.user = user;
         this.activeProgram = program;
         this.workouts = workouts;
         this.presets = presets;
+        this.todaySessions = todaySessions;
         this.loading = false;
       },
       error: () => { this.loading = false; },
     });
   }
 
-  // TODO: lastWorkoutDate indica que ALGUM treino foi feito hoje, não que o treino do programa de hoje
-  // foi concluído. Se o usuário trocar o treino do dia, o novo aparece como concluído incorretamente.
-  // Solução correta: rastrear a sessão concluída por programDayId ou workoutId específico.
-  get completedToday(): boolean {
-    if (!this.user?.lastWorkoutDate) return false;
-    const t = this.today;
-    const local = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
-    return this.user.lastWorkoutDate === local;
-  }
 
   get todayWorkout() {
     if (!this.activeProgram) return null;
@@ -181,16 +180,17 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  goToTodayHistory() {
-    const t = this.today;
-    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
-    this.progressService.getHistoryForDate(iso).subscribe({
-      next: sessions => {
-        if (Array.isArray(sessions) && sessions.length > 0) {
-          this.router.navigate(['/tabs/progress', sessions[0].sessionId]);
-        }
-      },
-    });
+  goToHistory(sessionId: string) {
+    this.router.navigate(['/tabs/progress', sessionId]);
+  }
+
+  formatTime(iso: string): string {
+    return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  formatDuration(seconds: number): string {
+    const m = Math.round(seconds / 60);
+    return m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`;
   }
 
   goToPrograms() { this.router.navigate(['/tabs/workouts']); }
