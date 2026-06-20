@@ -72,60 +72,95 @@
       </div>
     </div>
 
-    <!-- Inputs -->
-    <div class="inputs-row">
-      <div class="input-block">
-        <p class="ib-lbl">Carga</p>
-        <div class="ib-ctrl">
-          <button class="ctrl-btn" (click)="decWeight()">−</button>
-          <div class="ib-val">{{ weight }} <span>kg</span></div>
-          <button class="ctrl-btn" (click)="weight = weight + 2.5">+</button>
+    @if (!isExerciseDone) {
+      <!-- Inputs -->
+      <div class="inputs-row">
+        <div class="input-block">
+          <p class="ib-lbl">Carga</p>
+          <div class="ib-ctrl">
+            <button class="ctrl-btn" (click)="decWeight()">−</button>
+            <div class="ib-val">{{ weight }} <span>kg</span></div>
+            <button class="ctrl-btn" (click)="weight = weight + 2.5">+</button>
+          </div>
+        </div>
+        <div class="input-block">
+          <p class="ib-lbl">Reps</p>
+          <div class="ib-ctrl">
+            <button class="ctrl-btn" (click)="decReps()">−</button>
+            <div class="ib-val">{{ reps }} <span>reps</span></div>
+            <button class="ctrl-btn" (click)="reps = reps + 1">+</button>
+          </div>
         </div>
       </div>
-      <div class="input-block">
-        <p class="ib-lbl">Reps</p>
-        <div class="ib-ctrl">
-          <button class="ctrl-btn" (click)="decReps()">−</button>
-          <div class="ib-val">{{ reps }} <span>reps</span></div>
-          <button class="ctrl-btn" (click)="reps = reps + 1">+</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Rest timer -->
-    <div class="rest-block">
-      <div class="rest-info">
-        <p class="rest-lbl">Descanso</p>
-        <p class="rest-val">{{ restDisplay }}</p>
+      <!-- Rest timer -->
+      <div class="rest-block">
+        <div class="rest-info">
+          <p class="rest-lbl">Descanso</p>
+          <p class="rest-val">{{ restDisplay }}</p>
+        </div>
+        <div class="rest-btns">
+          <button class="rest-btn" (click)="adjustRest(-15)">−15s</button>
+          <button class="rest-btn" (click)="adjustRest(15)">+15s</button>
+          <button class="rest-btn" [class.active]="restRunning" (click)="startRest()">
+            {{ restRunning ? 'Pausar' : 'Iniciar' }}
+          </button>
+        </div>
       </div>
-      <div class="rest-btns">
-        <button class="rest-btn" (click)="adjustRest(-15)">−15s</button>
-        <button class="rest-btn" (click)="adjustRest(15)">+15s</button>
-        <button class="rest-btn" [class.active]="restRunning" (click)="startRest()">
-          {{ restRunning ? 'Pausar' : 'Iniciar' }}
+
+      <!-- Actions -->
+      <button class="btn-confirm" (click)="logSet()">
+        <ion-icon name="checkmark-outline"></ion-icon>
+        Confirmar série
+      </button>
+      <div class="secondary-actions">
+        <button class="btn-complete" (click)="completeExercise()">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          Concluir exercício
         </button>
+        <button class="btn-skip" (click)="skipExercise()">Pular exercício</button>
       </div>
-    </div>
 
-    <!-- Actions -->
-    <button class="btn-confirm" (click)="logSet()" *ngIf="!isExerciseDone">
-      <ion-icon name="checkmark-outline"></ion-icon>
-      Confirmar série
-    </button>
-    <button class="btn-skip" (click)="skipExercise()" *ngIf="!isExerciseDone">Pular exercício</button>
-
-    <button class="btn-next" (click)="nextExercise()" *ngIf="isExerciseDone && !isLastExercise">
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-      Próximo exercício
-    </button>
-    <button class="btn-finish" (click)="finish()" *ngIf="isExerciseDone && isLastExercise">
-      <ion-icon name="trophy-outline"></ion-icon>
-      Finalizar treino
-    </button>
-
-    <!-- Finalizar antecipado -->
-    @if (!(isExerciseDone && isLastExercise)) {
       <button class="btn-end-early" (click)="finish()">Finalizar treino</button>
+    }
+
+    <!-- Estado de conclusão -->
+    @if (isExerciseDone) {
+      @if (currentExercise.status === 'SKIPPED') {
+        <div class="done-card skipped">
+          <ion-icon name="remove-circle" class="done-icon"></ion-icon>
+          <p class="done-title">Exercício pulado</p>
+          @if (currentExercise.skipReason) {
+            <p class="done-sub">{{ currentExercise.skipReason }}</p>
+          }
+        </div>
+      } @else {
+        <div class="done-card">
+          <ion-icon name="checkmark-circle" class="done-icon"></ion-icon>
+          <p class="done-title">Exercício concluído!</p>
+          <p class="done-sub">
+            {{ completedSets }} série{{ completedSets !== 1 ? 's' : '' }}
+            @if (currentExerciseVolume > 0) { · {{ currentExerciseVolume | number:'1.0-1' }} kg }
+          </p>
+          @if (currentExerciseHasPR) {
+            <span class="done-pr">
+              <ion-icon name="star"></ion-icon> Novo recorde pessoal!
+            </span>
+          }
+        </div>
+      }
+
+      @if (!isLastExercise) {
+        <button class="btn-next" (click)="nextExercise()">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+          Próximo exercício
+        </button>
+      } @else {
+        <button class="btn-finish" (click)="finish()">
+          <ion-icon name="trophy-outline"></ion-icon>
+          Finalizar treino
+        </button>
+      }
     }
 
     <!-- Nav between exercises -->

@@ -38,6 +38,12 @@ export class SessionService {
     );
   }
 
+  completeExercise(sessionId: string, exerciseId: string): Observable<Session> {
+    return this.http.post<Session>(`${this.url}/${sessionId}/exercises/${exerciseId}/complete`, {}).pipe(
+      tap(s => this._active.next(s))
+    );
+  }
+
   skipExercise(sessionId: string, exerciseId: string, req: SkipExerciseRequest): Observable<Session> {
     return this.http.post<Session>(`${this.url}/${sessionId}/exercises/${exerciseId}/skip`, req).pipe(
       tap(s => this._active.next(s))

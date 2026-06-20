@@ -1,5 +1,59 @@
 # Changelog — Treinus
 
+## [2026-06-20] — Conclusão explícita de exercício na execução de treino
+
+### Backend
+
+#### `SessionService.java`
+
+- Novo método `completeExercise(sessionId, sessionExerciseId, userId)`:
+  - Valida que a sessão está ativa e o exercício pertence a ela
+  - Lança `BusinessException` se o exercício já está `SKIPPED` ou `COMPLETED`
+  - Seta `status = COMPLETED` e persiste
+
+#### `SessionController.java`
+
+- Novo endpoint `POST /api/v1/sessions/{id}/exercises/{sessionExerciseId}/complete`
+- Retorna `SessionResponse` atualizado
+
+> **Mudança de comportamento:** anteriormente `COMPLETED` só era atribuído aos exercícios pelo método `finish()` ao encerrar a sessão. A partir desta versão, `COMPLETED` pode ser setado explicitamente durante a sessão ativa via este endpoint.
+
+### Frontend
+
+#### `session.service.ts`
+
+- Novo método `completeExercise(sessionId, exerciseId): Observable<Session>` → `POST .../complete`
+
+#### `active-session.page.ts`
+
+| Mudança | Detalhe |
+|---|---|
+| `isExerciseDone` | Inclui `status === 'COMPLETED'` como condição adicional (além de `sets >= planned` e `SKIPPED`) |
+| `nextExercise()` | Antes de navegar, verifica se `status === 'IN_PROGRESS' && isExerciseDone`: se sim, chama `completeExercise` e aguarda a resposta antes de mover para o próximo |
+| `moveToNext()` | Extrato privado com a lógica de navegação, chamado de `nextExercise()` para evitar duplicação |
+| `completeExercise()` | Async; exibe `AlertController` de confirmação; se `plannedSets - completedSets > 0`, a mensagem do alert informa quantas séries ainda restam |
+| `currentExerciseVolume` | Getter: soma `weightKg × reps` de todas as séries registradas no exercício atual |
+| `currentExerciseHasPR` | Getter: `true` se alguma série do exercício atual tem `personalRecord === true` |
+
+#### `active-session.page.html`
+
+- Inputs de carga/reps, timer de descanso e botões de ação (`btn-confirm`, secondary-actions, `btn-end-early`) encapsulados em `@if (!isExerciseDone)` — somem ao concluir o exercício
+- Botão **"Concluir exercício"** (`.btn-complete`, outline azul) adicionado em `.secondary-actions` ao lado de "Pular exercício"
+- **Card de conclusão** (`.done-card`) exibido quando `isExerciseDone`:
+  - Estado `COMPLETED`: ícone `checkmark-circle` (48px, azul), título "Exercício concluído!", linha com número de séries e volume total em kg; badge dourado "Novo recorde pessoal!" se `currentExerciseHasPR`
+  - Estado `SKIPPED`: ícone `remove-circle` (cinza), "Exercício pulado", motivo se preenchido
+- Botões "Próximo exercício" / "Finalizar treino" posicionados abaixo do card de conclusão (dentro do `@if (isExerciseDone)`)
+- Todo HTML novo usa `@if`/`@else` (Angular 17+) — sem `*ngIf` introduzido
+
+#### `active-session.page.scss`
+
+- `.done-card`: `background: var(--blue-bg)`, `border: 1px solid #85B7EB`, `border-radius: 16px`, flex coluna centrado; variante `.skipped` com `var(--surface2)` e textos em cinza
+- `.done-pr`: badge inline dourado (`#FFF8DC` / `#DAA520`)
+- `.secondary-actions`: flex coluna, `margin-top: 8px`
+- `.btn-complete`: outline azul (`border: 1.5px solid var(--blue)`, `color: var(--blue)`)
+
+---
+
 ## [2026-06-19] — Catálogo de exercícios: descrições, imagens e painel expansível no builder
 
 ### Backend

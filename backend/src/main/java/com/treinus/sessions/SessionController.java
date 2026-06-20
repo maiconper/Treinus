@@ -57,6 +57,15 @@ public class SessionController {
         return ResponseEntity.ok(sessionService.recordSet(id, sessionExerciseId, request, user.getId()));
     }
 
+    @PostMapping("/{id}/exercises/{sessionExerciseId}/complete")
+    @Operation(summary = "Concluir exercício manualmente")
+    public ResponseEntity<SessionResponse> completeExercise(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @PathVariable UUID sessionExerciseId) {
+        return ResponseEntity.ok(sessionService.completeExercise(id, sessionExerciseId, user.getId()));
+    }
+
     @PostMapping("/{id}/exercises/{sessionExerciseId}/skip")
     @Operation(summary = "Pular exercício")
     public ResponseEntity<SessionResponse> skipExercise(

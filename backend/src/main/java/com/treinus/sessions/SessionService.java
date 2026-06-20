@@ -150,6 +150,26 @@ public class SessionService {
     }
 
     @Transactional
+    public SessionResponse completeExercise(UUID sessionId, UUID sessionExerciseId, UUID userId) {
+        findActiveSession(sessionId, userId);
+        SessionExercise se = sessionExerciseRepository.findByIdAndSessionId(sessionExerciseId, sessionId)
+                .orElseThrow(() -> ResourceNotFoundException.of("SessionExercise", sessionExerciseId));
+
+        if (se.getStatus() == SessionExerciseStatus.SKIPPED) {
+            throw new BusinessException("Cannot complete a skipped exercise");
+        }
+        if (se.getStatus() == SessionExerciseStatus.COMPLETED) {
+            throw new BusinessException("Exercise is already completed");
+        }
+
+        se.setStatus(SessionExerciseStatus.COMPLETED);
+        sessionExerciseRepository.save(se);
+
+        return SessionResponse.from(sessionRepository.findById(sessionId)
+                .orElseThrow(() -> ResourceNotFoundException.of("TrainingSession", sessionId)));
+    }
+
+    @Transactional
     public SessionResponse skipExercise(UUID sessionId, UUID sessionExerciseId,
             SkipExerciseRequest request, UUID userId) {
         findActiveSession(sessionId, userId);

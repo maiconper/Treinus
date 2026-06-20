@@ -121,9 +121,44 @@ ion-content.session-content { --background: var(--surface); }
   ion-icon { font-size: 16px; }
 }
 
+.secondary-actions {
+  display: flex; flex-direction: column; margin-top: 8px;
+}
+
+.btn-complete {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px;
+  background: transparent; border: 1.5px solid var(--blue); color: var(--blue);
+  border-radius: 99px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+  ion-icon { font-size: 16px; }
+}
+
 .btn-skip {
   width: 100%; background: transparent; border: none;
   color: var(--text3); font-size: 13px; padding: 10px; cursor: pointer; text-align: center; display: block; margin-top: 4px;
+}
+
+.done-card {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--blue-bg); border: 1px solid #85B7EB;
+  border-radius: 16px; padding: 24px 20px; margin-bottom: 16px; text-align: center;
+
+  &.skipped {
+    background: var(--surface2); border-color: var(--border);
+    .done-icon { color: var(--text3); }
+    .done-title { color: var(--text2); }
+  }
+
+  .done-icon { font-size: 48px; color: var(--blue); margin-bottom: 8px; }
+  .done-title { font-size: 18px; font-weight: 700; color: var(--text1); margin-bottom: 4px; }
+  .done-sub { font-size: 14px; color: var(--text2); }
+
+  .done-pr {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 10px; font-size: 12px; font-weight: 600;
+    color: #B8860B; background: #FFF8DC; border-radius: 99px;
+    padding: 4px 12px; border: 1px solid #DAA520;
+    ion-icon { font-size: 12px; }
+  }
 }
 
 .btn-next {

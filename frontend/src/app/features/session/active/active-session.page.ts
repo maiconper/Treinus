@@ -70,7 +70,8 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   get isExerciseDone(): boolean {
     return (
       this.completedSets >= this.plannedSets ||
-      this.currentExercise?.status === 'SKIPPED'
+      this.currentExercise?.status === 'SKIPPED' ||
+      this.currentExercise?.status === 'COMPLETED'
     );
   }
 
@@ -78,6 +79,14 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
     return (
       this.currentExerciseIndex === (this.session?.exercises.length ?? 1) - 1
     );
+  }
+
+  get currentExerciseVolume(): number {
+    return this.currentExercise?.sets.reduce((sum, s) => sum + s.weightKg * s.reps, 0) ?? 0;
+  }
+
+  get currentExerciseHasPR(): boolean {
+    return this.currentExercise?.sets.some(s => s.personalRecord) ?? false;
   }
 
   get pendingExerciseCount(): number {
@@ -172,6 +181,19 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   }
 
   nextExercise() {
+    if (!this.session || !this.currentExercise) return;
+    const ex = this.currentExercise;
+    if (ex.status === 'IN_PROGRESS' && this.isExerciseDone) {
+      this.sessionService.completeExercise(this.session.id, ex.id).subscribe((s) => {
+        this.session = s;
+        this.moveToNext();
+      });
+    } else {
+      this.moveToNext();
+    }
+  }
+
+  private moveToNext() {
     if (!this.session) return;
     if (this.currentExerciseIndex < this.session.exercises.length - 1) {
       this.currentExerciseIndex++;
@@ -181,6 +203,33 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
       this.infoExpanded = false;
       this.resetInputsForCurrentExercise();
     }
+  }
+
+  async completeExercise() {
+    if (!this.session || !this.currentExercise) return;
+    const remaining = this.plannedSets - this.completedSets;
+    const message =
+      remaining > 0
+        ? `Ainda ${remaining > 1 ? 'restam' : 'resta'} ${remaining} série${remaining > 1 ? 's' : ''} planejada${remaining > 1 ? 's' : ''}. Deseja concluir mesmo assim?`
+        : undefined;
+    const a = await this.alert.create({
+      header: 'Concluir exercício?',
+      message,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Concluir',
+          handler: () => {
+            this.sessionService
+              .completeExercise(this.session!.id, this.currentExercise!.id)
+              .subscribe((s) => {
+                this.session = s;
+              });
+          },
+        },
+      ],
+    });
+    await a.present();
   }
 
   prevExercise() {
