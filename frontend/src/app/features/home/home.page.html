@@ -45,7 +45,7 @@
     <!-- Today's workout -->
     <p class="section-lbl">Treino de hoje</p>
 
-    <div class="workout-card done-card" *ngIf="todayWorkout && completedToday">
+    <div class="workout-card done-card" *ngIf="todayWorkout && completedToday" (click)="goToTodayHistory()" style="cursor:pointer">
       <p class="wc-meta">Concluído hoje</p>
       <p class="wc-title">{{ todayWorkout?.workoutName }}</p>
       <div class="done-badge">

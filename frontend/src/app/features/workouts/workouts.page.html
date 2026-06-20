@@ -55,7 +55,7 @@
           <p class="section-label mt">TREINO DE HOJE</p>
 
           @if (todayDay && !todayDay.restDay && todayDay.workoutId && completedToday) {
-            <div class="today-card done">
+            <div class="today-card done" (click)="goToTodayHistory()" style="cursor:pointer">
               <div class="today-card-body">
                 <p class="today-sub">Semana {{ currentWeekNumber }} · Dia {{ todayDow }}</p>
                 <p class="today-title">{{ todayDay.workoutName }}</p>

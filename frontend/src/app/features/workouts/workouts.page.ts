@@ -242,6 +242,21 @@ export class WorkoutsPage implements OnInit {
     await t.present();
   }
 
+  goToTodayHistory() {
+    const t = new Date();
+    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    this.progressService.getHistoryForDate(iso).subscribe({
+      next: sessions => {
+        if (Array.isArray(sessions) && sessions.length > 0) {
+          this.router.navigate(['/tabs/progress', sessions[0].sessionId]);
+        } else {
+          this.showToast('Nenhum treino registrado hoje.');
+        }
+      },
+      error: () => this.showToast('Erro ao carregar treino de hoje.'),
+    });
+  }
+
   editTodayWorkout() {
     if (this.todayDay?.workoutId) {
       this.router.navigate(['/tabs/workouts/builder', this.todayDay.workoutId]);

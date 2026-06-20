@@ -5,6 +5,7 @@ import { ProgramService } from '../../core/services/program.service';
 import { SessionService } from '../../core/services/session.service';
 import { WorkoutService } from '../../core/services/workout.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ProgressService } from '../../core/services/progress.service';
 import { User, Program, Session, Workout, WorkoutExercise } from '../../core/models';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -42,6 +43,7 @@ export class HomePage implements OnInit, OnDestroy {
     private workoutService: WorkoutService,
     private auth: AuthService,
     private router: Router,
+    private progressService: ProgressService,
   ) {}
 
   ngOnInit() {
@@ -177,6 +179,18 @@ export class HomePage implements OnInit, OnDestroy {
         this.router.navigate(['/session', s.id]);
       });
     }
+  }
+
+  goToTodayHistory() {
+    const t = this.today;
+    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    this.progressService.getHistoryForDate(iso).subscribe({
+      next: sessions => {
+        if (Array.isArray(sessions) && sessions.length > 0) {
+          this.router.navigate(['/tabs/progress', sessions[0].sessionId]);
+        }
+      },
+    });
   }
 
   goToPrograms() { this.router.navigate(['/tabs/workouts']); }
