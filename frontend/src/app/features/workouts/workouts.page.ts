@@ -180,6 +180,12 @@ export class WorkoutsPage implements OnInit {
     return this.currentWeek?.days.find(d => d.dayOfWeek === this.todayDow);
   }
 
+  get isTodayWorkoutDone(): boolean {
+    const id = this.todayDay?.workoutId;
+    if (!id) return false;
+    return this.todaySessions.some(s => s.workoutId === id);
+  }
+
   getWeekDay(week: ProgramWeek | undefined, dow: number): ProgramDay | undefined {
     return week?.days.find(d => d.dayOfWeek === dow);
   }

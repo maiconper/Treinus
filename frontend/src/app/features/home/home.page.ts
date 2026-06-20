@@ -96,6 +96,12 @@ export class HomePage implements OnInit, OnDestroy {
     return null;
   }
 
+  get isTodayWorkoutDone(): boolean {
+    const id = this.todayWorkout?.workoutId;
+    if (!id) return false;
+    return this.todaySessions.some(s => s.workoutId === id);
+  }
+
   get todayWorkoutDetails(): Workout | undefined {
     const id = this.todayWorkout?.workoutId;
     if (!id) return undefined;

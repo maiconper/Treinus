@@ -67,7 +67,7 @@
             </div>
           }
 
-          @if (todayDay && !todayDay.restDay && todayDay.workoutId) {
+          @if (todayDay && !todayDay.restDay && todayDay.workoutId && !isTodayWorkoutDone) {
             <div class="today-card">
               <div class="today-card-body">
                 <div class="today-title-row">

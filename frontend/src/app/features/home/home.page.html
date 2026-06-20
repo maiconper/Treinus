@@ -58,9 +58,8 @@
     }
 
     <!-- Today's workout -->
-    <p class="section-lbl">Treino de hoje</p>
-
-    @if (todayWorkout) {
+    @if (todayWorkout && !isTodayWorkoutDone) {
+      <p class="section-lbl">Treino de hoje</p>
       <div class="workout-card">
         <div class="wc-title-row">
           <div>
@@ -102,7 +101,8 @@
           {{ activeSession ? 'Continuar treino' : 'Iniciar treino' }}
         </button>
       </div>
-    } @else {
+    } @else if (!todayWorkout) {
+      <p class="section-lbl">Treino de hoje</p>
       <div class="no-workout-card">
         <ion-icon name="calendar-outline"></ion-icon>
         <p>Nenhum treino para hoje.</p>
