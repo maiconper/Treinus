@@ -25,7 +25,37 @@
 
     <!-- Exercise name -->
     <span class="ex-badge">{{ currentExercise.exerciseName }}</span>
-    <p class="ex-name">{{ currentExercise.exerciseName }}</p>
+    <div class="ex-name-row">
+      <p class="ex-name">{{ currentExercise.exerciseName }}</p>
+      @if (currentExerciseInfo) {
+        <button class="info-btn" (click)="toggleInfo($event)">
+          <ion-icon [name]="infoExpanded ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <!-- Exercise detail panel -->
+    @if (infoExpanded && currentExerciseInfo) {
+      <div class="ex-detail-panel">
+        @if (currentExerciseInfo.gifUrl) {
+          <img [src]="currentExerciseInfo.gifUrl" class="ex-detail-img" loading="lazy" [alt]="currentExercise.exerciseName">
+        }
+        @if (currentExerciseInfo.description) {
+          <p class="ex-detail-desc">{{ currentExerciseInfo.description }}</p>
+        }
+        <div class="ex-detail-tags">
+          @if (currentExerciseInfo.primaryMuscleGroup) {
+            <span class="ex-tag muscle">
+              <ion-icon name="body-outline"></ion-icon>
+              {{ currentExerciseInfo.primaryMuscleGroup }}
+            </span>
+          }
+          @if (currentExerciseInfo.equipment) {
+            <span class="ex-tag equip">{{ currentExerciseInfo.equipment }}</span>
+          }
+        </div>
+      </div>
+    }
 
     <!-- Sets progress -->
     <p class="sets-label">Séries</p>
@@ -92,6 +122,11 @@
       <ion-icon name="trophy-outline"></ion-icon>
       Finalizar treino
     </button>
+
+    <!-- Finalizar antecipado -->
+    @if (!(isExerciseDone && isLastExercise)) {
+      <button class="btn-end-early" (click)="finish()">Finalizar treino</button>
+    }
 
     <!-- Nav between exercises -->
     <div class="ex-nav">

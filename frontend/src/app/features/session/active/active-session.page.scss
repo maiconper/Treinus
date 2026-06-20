@@ -15,6 +15,46 @@ ion-content.session-content { --background: var(--surface); }
   padding: 3px 12px; border-radius: 99px; font-weight: 500; margin-bottom: 6px;
 }
 
+.ex-name-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+
+  .ex-name { font-size: 22px; font-weight: 700; color: var(--text1); margin-bottom: 0; flex: 1; }
+}
+
+.info-btn {
+  flex-shrink: 0; background: transparent; border: none; padding: 2px;
+  color: var(--blue); cursor: pointer; display: flex; align-items: center;
+  ion-icon { font-size: 22px; }
+}
+
+.ex-detail-panel {
+  background: var(--surface2); border-radius: 12px;
+  border: 0.5px solid var(--border); margin-bottom: 16px; overflow: hidden;
+}
+
+.ex-detail-img {
+  width: 100%; max-height: 240px; object-fit: contain;
+  display: block; background: var(--surface);
+}
+
+.ex-detail-desc {
+  font-size: 13px; color: var(--text2); line-height: 1.5;
+  padding: 10px 12px 6px;
+}
+
+.ex-detail-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 12px 10px;
+
+  .ex-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500; padding: 3px 10px;
+    border-radius: 99px; border: 0.5px solid var(--border);
+    &.muscle { background: var(--blue-bg); color: var(--blue-dark); border-color: #85B7EB; }
+    &.equip { background: var(--surface); color: var(--text2); }
+    ion-icon { font-size: 12px; }
+  }
+}
+
 .ex-name { font-size: 22px; font-weight: 700; color: var(--text1); margin-bottom: 16px; }
 
 .sets-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 8px; }
@@ -98,6 +138,12 @@ ion-content.session-content { --background: var(--surface); }
   background: #2ecc71; color: #fff; border: none; border-radius: 99px;
   padding: 13px; font-size: 14px; font-weight: 600; cursor: pointer;
   ion-icon { font-size: 16px; }
+}
+
+.btn-end-early {
+  width: 100%; background: transparent; border: none;
+  color: var(--text3); font-size: 13px; padding: 10px; cursor: pointer;
+  text-align: center; display: block; margin-top: 4px;
 }
 
 .ex-nav {

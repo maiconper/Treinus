@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { SessionService } from '../../../core/services/session.service';
-import { Session, SessionExercise } from '../../../core/models';
+import { ExerciseService } from '../../../core/services/exercise.service';
+import { Session, SessionExercise, Exercise } from '../../../core/models';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -21,20 +22,24 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   private restTimer?: Subscription;
   private timerSub?: Subscription;
   elapsedSeconds = 0;
+  infoExpanded = false;
+  private exerciseInfoMap = new Map<string, Exercise>();
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private sessionService: SessionService,
+    private exerciseService: ExerciseService,
     private alert: AlertController,
     private loading: LoadingController,
   ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.sessionService.get(id).subscribe(s => {
+    this.sessionService.get(id).subscribe((s) => {
       this.session = s;
       this.resetInputsForCurrentExercise();
+      this.loadExerciseInfo(s);
     });
     this.timerSub = interval(1000).subscribe(() => this.elapsedSeconds++);
   }
@@ -51,7 +56,7 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   get progress(): number {
     if (!this.session) return 0;
     const total = this.session.exercises.length;
-    return total ? ((this.currentExerciseIndex) / total) * 100 : 0;
+    return total ? (this.currentExerciseIndex / total) * 100 : 0;
   }
 
   get completedSets(): number {
@@ -63,11 +68,23 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   }
 
   get isExerciseDone(): boolean {
-    return this.completedSets >= this.plannedSets || this.currentExercise?.status === 'SKIPPED';
+    return (
+      this.completedSets >= this.plannedSets ||
+      this.currentExercise?.status === 'SKIPPED'
+    );
   }
 
   get isLastExercise(): boolean {
-    return this.currentExerciseIndex === (this.session?.exercises.length ?? 1) - 1;
+    return (
+      this.currentExerciseIndex === (this.session?.exercises.length ?? 1) - 1
+    );
+  }
+
+  get pendingExerciseCount(): number {
+    if (!this.session) return 0;
+    return this.session.exercises.filter(
+      (ex) => ex.status !== 'SKIPPED' && ex.status !== 'COMPLETED',
+    ).length;
   }
 
   get formattedTime(): string {
@@ -100,38 +117,53 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
     this.restSeconds = Math.max(0, this.restSeconds + delta);
   }
 
-  decWeight() { this.weight = Math.max(0, this.weight - 2.5); }
-  decReps() { this.reps = Math.max(1, this.reps - 1); }
+  decWeight() {
+    this.weight = Math.max(0, this.weight - 2.5);
+  }
+  decReps() {
+    this.reps = Math.max(1, this.reps - 1);
+  }
 
   async logSet() {
     if (!this.session || !this.currentExercise) return;
-    const loader = await this.loading.create({ spinner: 'crescent', duration: 500 });
-    await loader.present();
-    this.sessionService.logSet(this.session.id, this.currentExercise.id, {
-      reps: this.reps,
-      weightKg: this.weight,
-    }).subscribe({
-      next: s => {
-        this.session = s;
-        this.startRest(this.currentExercise?.restSeconds ?? 90);
-      },
+    const loader = await this.loading.create({
+      spinner: 'crescent',
+      duration: 500,
     });
+    await loader.present();
+    this.sessionService
+      .logSet(this.session.id, this.currentExercise.id, {
+        reps: this.reps,
+        weightKg: this.weight,
+      })
+      .subscribe({
+        next: (s) => {
+          this.session = s;
+          this.startRest(this.currentExercise?.restSeconds ?? 90);
+        },
+      });
   }
 
   async skipExercise() {
     if (!this.session || !this.currentExercise) return;
     const a = await this.alert.create({
       header: 'Pular exercício?',
-      inputs: [{ name: 'reason', type: 'text', placeholder: 'Motivo (opcional)' }],
+      inputs: [
+        { name: 'reason', type: 'text', placeholder: 'Motivo (opcional)' },
+      ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Pular',
-          handler: data => {
-            this.sessionService.skipExercise(this.session!.id, this.currentExercise!.id, { reason: data.reason }).subscribe(s => {
-              this.session = s;
-              this.nextExercise();
-            });
+          handler: (data) => {
+            this.sessionService
+              .skipExercise(this.session!.id, this.currentExercise!.id, {
+                reason: data.reason,
+              })
+              .subscribe((s) => {
+                this.session = s;
+                this.nextExercise();
+              });
           },
         },
       ],
@@ -146,6 +178,7 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
       this.restTimer?.unsubscribe();
       this.restRunning = false;
       this.restSeconds = 0;
+      this.infoExpanded = false;
       this.resetInputsForCurrentExercise();
     }
   }
@@ -153,8 +186,29 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   prevExercise() {
     if (this.currentExerciseIndex > 0) {
       this.currentExerciseIndex--;
+      this.infoExpanded = false;
       this.resetInputsForCurrentExercise();
     }
+  }
+
+  private loadExerciseInfo(s: Session) {
+    s.exercises.forEach((ex) => {
+      if (!this.exerciseInfoMap.has(ex.exerciseId)) {
+        this.exerciseService.get(ex.exerciseId).subscribe((info) => {
+          this.exerciseInfoMap.set(ex.exerciseId, info);
+        });
+      }
+    });
+  }
+
+  get currentExerciseInfo(): Exercise | null {
+    const id = this.currentExercise?.exerciseId;
+    return id ? (this.exerciseInfoMap.get(id) ?? null) : null;
+  }
+
+  toggleInfo(event: Event) {
+    event.stopPropagation();
+    this.infoExpanded = !this.infoExpanded;
   }
 
   private resetInputsForCurrentExercise() {
@@ -165,18 +219,26 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
 
   async finish() {
     if (!this.session) return;
+    const pending = this.pendingExerciseCount;
+    const message =
+      pending > 0
+        ? `Você ainda tem ${pending} exercício${pending > 1 ? 's' : ''} não concluído${pending > 1 ? 's' : ''}. Deseja finalizar mesmo assim?`
+        : undefined;
     const a = await this.alert.create({
       header: 'Finalizar treino?',
+      message,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'Finalizar',
+          text: pending > 0 ? 'Finalizar mesmo assim' : 'Finalizar',
           handler: () => {
-            this.sessionService.finishSession(this.session!.id).subscribe(summary => {
-              this.router.navigate(['/session', this.session!.id, 'finish'], {
-                state: { summary },
+            this.sessionService
+              .finishSession(this.session!.id)
+              .subscribe((summary) => {
+                this.router.navigate(['/session', this.session!.id, 'finish'], {
+                  state: { summary },
+                });
               });
-            });
           },
         },
       ],
@@ -192,11 +254,14 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
       buttons: [
         { text: 'Continuar treinando', role: 'cancel' },
         {
-          text: 'Abandonar', role: 'destructive',
+          text: 'Abandonar',
+          role: 'destructive',
           handler: () => {
-            this.sessionService.abandonSession(this.session!.id).subscribe(() => {
-              this.router.navigate(['/tabs/home']);
-            });
+            this.sessionService
+              .abandonSession(this.session!.id)
+              .subscribe(() => {
+                this.router.navigate(['/tabs/home']);
+              });
           },
         },
       ],
