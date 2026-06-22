@@ -1,5 +1,31 @@
 # Changelog — Treinus
 
+## [2026-06-20] — Ocultar card de treino após conclusão (home + workouts)
+
+### Frontend
+
+#### `home.page.ts`
+
+- Getter `isTodayWorkoutDone`: retorna `true` se algum item de `todaySessions` tem `workoutId` igual ao `workoutId` do treino de hoje (`todayWorkout?.workoutId`)
+
+#### `home.page.html`
+
+- `workout-card` (seção "Treino de hoje") agora usa `@if (todayWorkout && !isTodayWorkoutDone)` — some após o treino ser concluído
+- Label `section-lbl` "Treino de hoje" movido para dentro do bloco condicional — some junto com o card; evita label órfão sem conteúdo abaixo
+- Bloco `@else if (!todayWorkout)` mantém o label + card "Nenhum treino para hoje" quando não há treino agendado
+- O card "Concluídos hoje" (seção `todaySessions`, acima) já exibia o treino concluído — agora é a única referência visual ao treino do dia quando done
+
+#### `workouts.page.ts`
+
+- Getter `isTodayWorkoutDone`: análogo ao da home — compara `todayDay?.workoutId` com os `workoutId` de `todaySessions`
+
+#### `workouts.page.html`
+
+- `today-card` de iniciar treino usa `@if (todayDay && !todayDay.restDay && todayDay.workoutId && !isTodayWorkoutDone)` — some após conclusão
+- O card `done` do loop `@for (s of todaySessions)` (exibido acima, com badge "Concluído!") permanece visível como referência
+
+---
+
 ## [2026-06-20] — Conclusão explícita de exercício na execução de treino
 
 ### Backend
