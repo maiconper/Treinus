@@ -1,9 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ExerciseConfigModal, ExerciseConfig } from './exercise-config.modal';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ExercisePickerModal } from './exercise-picker.modal';
 import { WorkoutService } from '../../../core/services/workout.service';
 import { ExerciseService } from '../../../core/services/exercise.service';
 import { SessionService } from '../../../core/services/session.service';
@@ -26,7 +25,7 @@ const MUSCLE_GROUPS = [
   styleUrls: ['./workout-builder.page.scss'],
   standalone: false,
 })
-export class WorkoutBuilderPage implements OnInit, OnDestroy {
+export class WorkoutBuilderPage implements OnInit {
   step = 1;
   workoutId: string | null = null;
   workout: Workout | null = null;
@@ -39,13 +38,9 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
   saving = false;
 
   // Step 2
-  searchQuery = '';
   allExercises: Exercise[] = [];
-  searchResults: Exercise[] = [];
   expandedIds = new Set<string>();
   private exerciseMap = new Map<string, Exercise>();
-  private searchSubject = new Subject<string>();
-  private subs: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -65,43 +60,17 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
       this.workoutService.get(this.workoutId).subscribe(w => {
         this.workout = w;
         this.name = w.name;
-        this.refreshResults();
       });
     }
 
     this.loadExercises();
-
-    const sub = this.searchSubject.pipe(debounceTime(250), distinctUntilChanged())
-      .subscribe(q => this.filterResults(q));
-    this.subs.push(sub);
   }
-
-  ngOnDestroy() { this.subs.forEach(s => s.unsubscribe()); }
 
   private loadExercises() {
     this.exerciseService.list({ size: 100 }).subscribe(page => {
       this.allExercises = page.content;
       this.exerciseMap = new Map(page.content.map(e => [e.id, e]));
-      this.refreshResults();
     });
-  }
-
-  private refreshResults() {
-    this.filterResults(this.searchQuery);
-  }
-
-  private filterResults(query: string) {
-    const addedIds = new Set(this.workout?.exercises.map(e => e.exerciseId) ?? []);
-    let results = this.allExercises.filter(e => !addedIds.has(e.id));
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      results = results.filter(e => e.name.toLowerCase().includes(q));
-    }
-    this.searchResults = results.slice(0, 30);
-  }
-
-  onSearchChange(query: string) {
-    this.searchSubject.next(query);
   }
 
   toggleGroup(category: string) {
@@ -133,14 +102,33 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
         this.workoutId = w.id;
         this.saving = false;
         this.step = 2;
-        this.refreshResults();
       },
       error: () => { this.saving = false; },
     });
   }
 
-  async addExercise(exercise: Exercise) {
+  async openExercisePicker() {
     if (!this.workout) return;
+    const picker = await this.modalCtrl.create({
+      component: ExercisePickerModal,
+      componentProps: {
+        allExercises: this.allExercises,
+        initialAddedIds: this.workout.exercises.map(e => e.exerciseId),
+        onExerciseSelected: (exercise: Exercise) => this.openConfigAndAdd(exercise),
+      },
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      handle: false,
+    });
+    await picker.present();
+    const { data } = await picker.onWillDismiss<{ added: number }>();
+    if (data?.added && this.workoutId) {
+      this.workoutService.get(this.workoutId).subscribe(w => { this.workout = w; });
+    }
+  }
+
+  private async openConfigAndAdd(exercise: Exercise): Promise<boolean> {
+    if (!this.workout) return false;
     const modal = await this.modalCtrl.create({
       component: ExerciseConfigModal,
       componentProps: { exerciseName: exercise.name },
@@ -150,16 +138,15 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
     });
     await modal.present();
     const { data, role } = await modal.onWillDismiss<ExerciseConfig>();
-    if (role !== 'confirm' || !data) return;
-    this.workoutService.addExercise(this.workout.id, {
-      exerciseId: exercise.id,
-      plannedSets: data.sets,
-      plannedRepsMin: data.reps,
-      plannedRepsMax: data.reps,
-      plannedWeightKg: data.weightKg ?? undefined,
-    }).subscribe(w => {
-      this.workout = w;
-      this.refreshResults();
+    if (role !== 'confirm' || !data) return false;
+    return new Promise(resolve => {
+      this.workoutService.addExercise(this.workout!.id, {
+        exerciseId: exercise.id,
+        plannedSets: data.sets,
+        plannedRepsMin: data.reps,
+        plannedRepsMax: data.reps,
+        plannedWeightKg: data.weightKg ?? undefined,
+      }).subscribe({ next: () => resolve(true), error: () => resolve(false) });
     });
   }
 
@@ -190,10 +177,7 @@ export class WorkoutBuilderPage implements OnInit, OnDestroy {
 
   removeExercise(ex: WorkoutExercise) {
     if (!this.workout) return;
-    this.workoutService.removeExercise(this.workout.id, ex.id).subscribe(w => {
-      this.workout = w;
-      this.refreshResults();
-    });
+    this.workoutService.removeExercise(this.workout.id, ex.id).subscribe(w => { this.workout = w; });
   }
 
   finish() {

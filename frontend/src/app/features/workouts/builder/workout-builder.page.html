@@ -67,18 +67,6 @@
   <div class="step-panel" *ngIf="step === 2">
     <div class="content-inner">
 
-      <!-- Search -->
-      <div class="search-wrap">
-        <ion-icon name="search-outline" class="search-icon"></ion-icon>
-        <input
-          class="search-input"
-          type="text"
-          placeholder="Buscar exercício..."
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="onSearchChange($event)"
-        />
-      </div>
-
       <!-- Exercises in workout -->
       <div class="section" *ngIf="workout && workout.exercises.length > 0">
         <p class="section-label">
@@ -140,49 +128,11 @@
         <span>Duração estimada: <strong>{{ estimatedDuration }}</strong></span>
       </div>
 
-      <!-- Search results -->
-      <div class="section" *ngIf="searchResults.length > 0">
-        <p class="section-label">ADICIONAR</p>
-
-        @for (ex of searchResults; track ex.id) {
-          <div class="ex-item" [class.is-open]="isExpanded(ex.id)" (click)="addExercise(ex)">
-            <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
-            <div class="ex-info">
-              <p class="ex-name">{{ ex.name }}</p>
-              <p class="ex-meta">{{ getCategoryLabel(ex.category) }}</p>
-            </div>
-            <button class="chevron-btn" (click)="toggleExpand(ex.id, $event)">
-              <ion-icon [name]="isExpanded(ex.id) ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-            </button>
-            <ion-icon name="add-circle-outline" class="add-icon"></ion-icon>
-          </div>
-          @if (isExpanded(ex.id)) {
-            <div class="ex-detail-panel">
-              @if (ex.gifUrl) {
-                <img [src]="ex.gifUrl" class="ex-detail-img" loading="lazy" alt="{{ ex.name }}">
-              }
-              @if (ex.description) {
-                <p class="ex-detail-desc">{{ ex.description }}</p>
-              }
-              <div class="ex-detail-tags">
-                @if (ex.primaryMuscleGroup) {
-                  <span class="ex-tag muscle">
-                    <ion-icon name="body-outline"></ion-icon>
-                    {{ ex.primaryMuscleGroup }}
-                  </span>
-                }
-                @if (ex.equipment) {
-                  <span class="ex-tag equip">{{ getEquipmentLabel(ex.equipment) }}</span>
-                }
-              </div>
-            </div>
-          }
-        }
-      </div>
-
-      <div class="empty-search" *ngIf="searchResults.length === 0 && searchQuery">
-        <p>Nenhum exercício encontrado para "{{ searchQuery }}"</p>
-      </div>
+      <!-- Botão adicionar -->
+      <button class="btn-add-exercise" (click)="openExercisePicker()">
+        <ion-icon name="add-outline"></ion-icon>
+        Adicionar exercício
+      </button>
 
     </div>
   </div>

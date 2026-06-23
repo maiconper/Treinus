@@ -1,0 +1,80 @@
+<div class="picker-wrap">
+
+  <div class="picker-header">
+    <button class="close-btn" (click)="dismiss()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <p class="picker-title">Exercícios</p>
+    <div class="header-spacer"></div>
+  </div>
+
+  <!-- Busca -->
+  <div class="picker-search">
+    <ion-icon name="search-outline" class="search-icon"></ion-icon>
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Buscar exercício..."
+      [(ngModel)]="searchQuery"
+      (ngModelChange)="onSearchChange()"
+    />
+  </div>
+
+  <!-- Filtros por grupo muscular -->
+  <div class="filter-scroll">
+    @for (g of filterGroups; track g.label) {
+      <button
+        class="filter-chip"
+        [class.selected]="selectedCategory === g.category"
+        (click)="selectCategory(g.category)"
+      >
+        {{ g.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Lista de exercícios -->
+  <div class="picker-list">
+    @if (filteredExercises.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="barbell-outline"></ion-icon>
+        <p>Nenhum exercício encontrado</p>
+      </div>
+    }
+    @for (ex of filteredExercises; track ex.id) {
+      <div class="picker-item" [class.is-open]="isExpanded(ex.id)" (click)="select(ex)">
+        <div class="ex-dot" [style.background]="getCategoryColor(ex.category)"></div>
+        <div class="ex-info">
+          <p class="ex-name">{{ ex.name }}</p>
+          <p class="ex-meta">{{ getCategoryLabel(ex.category) }}</p>
+        </div>
+        <button class="chevron-btn" (click)="toggleExpand(ex.id, $event)">
+          <ion-icon [name]="isExpanded(ex.id) ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+        </button>
+        <ion-icon name="add-circle-outline" class="add-icon"></ion-icon>
+      </div>
+      @if (isExpanded(ex.id)) {
+        <div class="ex-detail-panel">
+          @if (ex.gifUrl) {
+            <img [src]="ex.gifUrl" class="ex-detail-img" loading="lazy" alt="{{ ex.name }}">
+          }
+          @if (ex.description) {
+            <p class="ex-detail-desc">{{ ex.description }}</p>
+          }
+          <div class="ex-detail-tags">
+            @if (ex.primaryMuscleGroup) {
+              <span class="ex-tag muscle">
+                <ion-icon name="body-outline"></ion-icon>
+                {{ ex.primaryMuscleGroup }}
+              </span>
+            }
+            @if (ex.equipment) {
+              <span class="ex-tag equip">{{ getEquipmentLabel(ex.equipment) }}</span>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+</div>
