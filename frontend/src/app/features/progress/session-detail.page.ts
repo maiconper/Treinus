@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../../core/services/session.service';
 import { Session } from '../../core/models';
 
@@ -16,6 +16,7 @@ export class SessionDetailPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private location: Location,
     private sessionService: SessionService,
   ) {}
@@ -52,6 +53,15 @@ export class SessionDetailPage implements OnInit {
     return new Date(iso).toLocaleDateString('pt-BR', {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
     }) + ' · ' + new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  registerAnotherWorkout() {
+    if (!this.session) return;
+    const d = new Date(this.session.startedAt);
+    const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    this.router.navigate(['/tabs/workouts/register'], {
+      queryParams: { date, workoutId: this.session.workoutId ?? null, workoutName: this.session.workoutName },
+    });
   }
 
   get totalSets(): number {

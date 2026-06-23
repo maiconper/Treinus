@@ -30,7 +30,7 @@ public record SessionResponse(
                 session.getId(),
                 session.getUser().getId(),
                 session.getWorkout() != null ? session.getWorkout().getId() : null,
-                session.getWorkout() != null ? session.getWorkout().getName() : null,
+                session.getName() != null ? session.getName() : (session.getWorkout() != null ? session.getWorkout().getName() : "Treino"),
                 session.getStatus(),
                 session.getStartedAt(),
                 session.getFinishedAt(),

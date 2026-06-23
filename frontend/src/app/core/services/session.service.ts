@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Session, StartSessionRequest, LogSetRequest, SkipExerciseRequest, SessionSummary } from '../models';
+import { Session, StartSessionRequest, ManualSessionRequest, LogSetRequest, SkipExerciseRequest, SessionSummary } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
@@ -30,6 +30,10 @@ export class SessionService {
     return this.http.post<Session>(`${this.url}/start`, req).pipe(
       tap(s => this._active.next(s))
     );
+  }
+
+  registerManual(req: ManualSessionRequest): Observable<Session> {
+    return this.http.post<Session>(`${this.url}/manual`, req);
   }
 
   logSet(sessionId: string, exerciseId: string, req: LogSetRequest): Observable<Session> {

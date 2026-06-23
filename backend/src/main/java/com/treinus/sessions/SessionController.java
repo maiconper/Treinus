@@ -39,6 +39,14 @@ public class SessionController {
         return ResponseEntity.ok(sessionService.getById(id, user.getId()));
     }
 
+    @PostMapping("/manual")
+    @Operation(summary = "Registrar treino realizado sem o aplicativo")
+    public ResponseEntity<SessionResponse> registerManual(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody ManualSessionRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(sessionService.registerManual(request, user.getId()));
+    }
+
     @PostMapping("/start")
     @Operation(summary = "Iniciar sessão de treino")
     public ResponseEntity<SessionResponse> start(

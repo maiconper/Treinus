@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,19 +36,22 @@ public class SessionService {
     private final UserProfileRepository userProfileRepository;
     private final WorkoutRepository workoutRepository;
     private final ProgramDayRepository programDayRepository;
+    private final ExerciseRepository exerciseRepository;
 
     public SessionService(TrainingSessionRepository sessionRepository,
             SessionExerciseRepository sessionExerciseRepository,
             UserRepository userRepository,
             UserProfileRepository userProfileRepository,
             WorkoutRepository workoutRepository,
-            ProgramDayRepository programDayRepository) {
+            ProgramDayRepository programDayRepository,
+            ExerciseRepository exerciseRepository) {
         this.sessionRepository = sessionRepository;
         this.sessionExerciseRepository = sessionExerciseRepository;
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.workoutRepository = workoutRepository;
         this.programDayRepository = programDayRepository;
+        this.exerciseRepository = exerciseRepository;
     }
 
     public SessionResponse getCurrent(UUID userId) {
@@ -116,9 +120,89 @@ public class SessionService {
     }
 
     @Transactional
+    public SessionResponse registerManual(ManualSessionRequest request, UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> ResourceNotFoundException.of("User", userId));
+
+        TrainingSession session = new TrainingSession();
+        session.setUser(user);
+
+        Instant startedAt = request.date().atTime(12, 0).toInstant(ZoneOffset.UTC);
+        session.setStartedAt(startedAt);
+        session.setFinishedAt(startedAt.plusSeconds(3600));
+        session.setStatus(SessionStatus.COMPLETED);
+
+        if (request.programDayId() != null) {
+            ProgramDay programDay = programDayRepository.findById(request.programDayId())
+                    .orElseThrow(() -> ResourceNotFoundException.of("ProgramDay", request.programDayId()));
+            session.setProgramDay(programDay);
+            if (programDay.getWorkout() != null && request.workoutId() == null) {
+                session.setWorkout(programDay.getWorkout());
+            }
+        }
+
+        if (request.workoutId() != null) {
+            Workout workout = workoutRepository.findByIdAndUserId(request.workoutId(), userId)
+                    .or(() -> workoutRepository.findByIdAndUserRole(request.workoutId(), UserRole.SYSTEM))
+                    .orElseThrow(() -> ResourceNotFoundException.of("Workout", request.workoutId()));
+            session.setWorkout(workout);
+        }
+
+        String resolvedName = (request.name() != null && !request.name().isBlank())
+                ? request.name()
+                : (session.getWorkout() != null ? session.getWorkout().getName() : "Treino");
+        session.setName(resolvedName);
+
+        BigDecimal totalVolume = BigDecimal.ZERO;
+
+        if (request.exercises() != null && !request.exercises().isEmpty()) {
+            int exIndex = 0;
+            for (ManualExerciseEntry entry : request.exercises()) {
+                Exercise exercise = exerciseRepository.findById(entry.exerciseId())
+                        .orElseThrow(() -> ResourceNotFoundException.of("Exercise", entry.exerciseId()));
+
+                SessionExercise se = new SessionExercise();
+                se.setSession(session);
+                se.setExercise(exercise);
+                se.setOrderIndex(exIndex++);
+                se.setStatus(SessionExerciseStatus.COMPLETED);
+
+                if (!entry.sets().isEmpty()) {
+                    int setNumber = 1;
+                    for (ManualSetEntry setEntry : entry.sets()) {
+                        boolean isPR = sessionExerciseRepository
+                                .findPersonalRecord(exercise.getId(), userId)
+                                .map(pr -> setEntry.weightKg().compareTo(pr) > 0)
+                                .orElse(true);
+
+                        SessionSet set = new SessionSet();
+                        set.setSessionExercise(se);
+                        set.setSetNumber(setNumber++);
+                        set.setReps(setEntry.reps());
+                        set.setWeightKg(setEntry.weightKg());
+                        set.setPersonalRecord(isPR);
+                        se.getSets().add(set);
+
+                        totalVolume = totalVolume.add(
+                                setEntry.weightKg().multiply(BigDecimal.valueOf(setEntry.reps())));
+                    }
+                }
+                session.getExercises().add(se);
+            }
+        }
+
+        session.setTotalVolumeKg(totalVolume);
+        session.setXpEarned(0);
+
+        updateUserProgress(userId);
+
+        return SessionResponse.from(sessionRepository.save(session));
+    }
+
+    @Transactional
     public SessionResponse recordSet(UUID sessionId, UUID sessionExerciseId,
             RecordSetRequest request, UUID userId) {
-        TrainingSession session = findActiveSession(sessionId, userId);
+        findActiveSession(sessionId, userId);
         SessionExercise se = sessionExerciseRepository.findByIdAndSessionId(sessionExerciseId, sessionId)
                 .orElseThrow(() -> ResourceNotFoundException.of("SessionExercise", sessionExerciseId));
 

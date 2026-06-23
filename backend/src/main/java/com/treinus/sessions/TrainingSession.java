@@ -47,6 +47,9 @@ public class TrainingSession {
     @Column(name = "finished_at")
     private Instant finishedAt;
 
+    @Column(length = 100)
+    private String name;
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 
@@ -63,6 +66,6 @@ public class TrainingSession {
 
     @PrePersist
     void prePersist() {
-        startedAt = Instant.now();
+        if (startedAt == null) startedAt = Instant.now();
     }
 }

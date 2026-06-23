@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="dark" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Registrar treino</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="manual-content">
+
+  <!-- Step 1: intro -->
+  @if (step === 'intro') {
+    <div class="intro-inner">
+      <div class="hero-icon">
+        <ion-icon name="barbell-outline"></ion-icon>
+      </div>
+      <input
+        class="workout-name-input"
+        type="text"
+        [(ngModel)]="workoutName"
+        (ngModelChange)="onWorkoutNameChange()"
+        placeholder="Nome do treino"
+      />
+      <p class="workout-date">{{ formattedDate }}</p>
+      <p class="description">
+        Você fez esse treino mas não registrou pelo aplicativo.
+        Registre agora para manter seu histórico atualizado.
+      </p>
+      <button class="btn-register" (click)="step = 'exercises'">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Registrar treino feito
+      </button>
+    </div>
+  }
+
+  <!-- Step 2: exercise entry -->
+  @if (step === 'exercises') {
+    <div class="inner">
+      <input
+        class="workout-name-input inline"
+        type="text"
+        [(ngModel)]="workoutName"
+        (ngModelChange)="onWorkoutNameChange()"
+        placeholder="Nome do treino"
+      />
+      <p class="workout-date">{{ formattedDate }}</p>
+
+      @for (ex of exercises; track ex.exerciseId; let i = $index) {
+        <div class="exercise-card">
+          <div class="ex-header">
+            <p class="ex-name">{{ ex.exerciseName }}</p>
+            <button class="btn-icon" (click)="removeExercise(i)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+
+          <div class="sets-table">
+            <div class="set-row header-row">
+              <span>Série</span>
+              <span>Peso (kg)</span>
+              <span>Reps</span>
+              <span></span>
+            </div>
+            @for (s of ex.sets; track $index; let si = $index) {
+              <div class="set-row">
+                <span class="set-num">{{ si + 1 }}</span>
+                <input
+                  class="set-input"
+                  type="number"
+                  inputmode="decimal"
+                  min="0"
+                  placeholder="0"
+                  [(ngModel)]="s.weightKg"
+                  (ngModelChange)="si === 0 && propagateFirstSet(i)"
+                />
+                <input
+                  class="set-input"
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  placeholder="0"
+                  [(ngModel)]="s.reps"
+                  (ngModelChange)="si === 0 && propagateFirstSet(i)"
+                />
+                <button class="btn-icon small" (click)="removeSet(i, si)" [disabled]="ex.sets.length === 1">
+                  <ion-icon name="close-outline"></ion-icon>
+                </button>
+              </div>
+            }
+          </div>
+
+          <button class="btn-add-set" (click)="addSet(i)">
+            <ion-icon name="add-outline"></ion-icon>
+            Série
+          </button>
+        </div>
+      }
+
+      <button class="btn-add-exercise" (click)="openPicker()">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        Adicionar exercício
+      </button>
+    </div>
+  }
+
+</ion-content>
+
+@if (step === 'exercises') {
+  <ion-footer class="footer-safe">
+    <div class="footer-inner">
+      <button
+        class="btn-register"
+        [class.saving]="saving"
+        [disabled]="saving || !canRegister"
+        (click)="register()"
+      >
+        @if (!saving) {
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          Registrar treino
+        } @else {
+          <ion-spinner name="crescent"></ion-spinner>
+          Salvando...
+        }
+      </button>
+    </div>
+  </ion-footer>
+}

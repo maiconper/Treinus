@@ -1,5 +1,46 @@
 # Changelog — Treinus
 
+## [2026-06-23] — Confirmação ao clicar dia sem treinos + fix nome no registro manual
+
+### Bug fix: nome personalizado do treino não salvo após registro manual
+
+**Causa raiz:** `workoutName` no `ManualRegisterPage` iniciava como `''` porque os callers não passavam o parâmetro. `register()` enviava `name: '' || undefined` → campo omitido do JSON → backend recebia `name = null` → fallback para o nome do treino planejado ("Legs — Pernas e Glúteos").
+
+#### `workouts.page.ts`
+
+- `onDayClick` (caminho 0 sessões) e action sheet "Registrar outro treino": adicionado `workoutName: this.getWorkoutForDay(d.day)?.name ?? ''` aos query params de navegação para `/tabs/workouts/register`
+
+#### `session-detail.page.ts`
+
+- `registerAnotherWorkout()`: adicionado `workoutName: this.session.workoutName` aos query params
+
+#### `SessionService.java`
+
+- `registerManual()`: o nome agora é resolvido **após** associar `programDay` e `workout`, garantindo que `session.getName()` nunca seja null:
+  ```java
+  String resolvedName = (request.name() != null && !request.name().isBlank())
+          ? request.name()
+          : (session.getWorkout() != null ? session.getWorkout().getName() : "Treino");
+  session.setName(resolvedName);
+  ```
+  Isso elimina o fallback via relacionamento de workout em `SessionResponse.from()` para sessões registradas manualmente.
+
+---
+
+### Nova feature: alerta de confirmação ao clicar dia sem treinos registrados
+
+#### `workouts.page.ts`
+
+- `onDayClick()`: quando `sessions.length === 0`, exibe `AlertController` em vez de navegar diretamente:
+  - **Header:** "Nenhum treino registrado"
+  - **Message:** `"Nenhum treino registrado neste dia. Gostaria de registrar 'NomeDoTreino'?"` (com nome se disponível, genérico caso contrário)
+  - **Botões:** "Cancelar" e "Registrar treino"
+  - O botão "Registrar treino" navega para `/tabs/workouts/register` com `date`, `dayId`, `workoutId` e `workoutName`
+
+> **Nota técnica:** `AlertController.message` no Ionic renderiza como texto puro — tags HTML (`<br>`, `<strong>`) aparecem literalmente. Usar texto plano com aspas normais para ênfase.
+
+---
+
 ## [2026-06-20] — Ocultar card de treino após conclusão (home + workouts)
 
 ### Frontend

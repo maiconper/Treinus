@@ -1,0 +1,177 @@
+ion-content.manual-content { --background: var(--bg); }
+
+.inner {
+  padding: 0 16px 24px;
+}
+
+.workout-name-input {
+  width: 100%;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text1);
+  margin-bottom: 12px;
+
+  &.inline { margin-top: 14px; }
+  &::placeholder { color: var(--text3); font-weight: 400; }
+  &:focus { outline: none; border-color: var(--blue); }
+}
+
+.workout-date {
+  font-size: 13px;
+  color: var(--text3);
+  text-transform: capitalize;
+  margin: 14px 0 18px;
+}
+
+/* Exercise cards */
+.exercise-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.ex-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ex-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text1);
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  color: var(--text3);
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+
+  &.small { font-size: 15px; }
+  &:disabled { opacity: 0.3; cursor: default; }
+}
+
+/* Sets table */
+.sets-table {
+  margin-bottom: 10px;
+}
+
+.set-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 1fr 28px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  border-top: 0.5px solid var(--border);
+
+  &.header-row {
+    border-top: none;
+    padding-bottom: 4px;
+
+    span {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+    }
+  }
+}
+
+.set-num {
+  font-size: 13px;
+  color: var(--text3);
+  text-align: center;
+}
+
+.set-input {
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 8px;
+  font-size: 14px;
+  color: var(--text1);
+  width: 100%;
+  text-align: center;
+
+  &:focus { outline: none; border-color: var(--blue); }
+  &::placeholder { color: var(--text3); }
+}
+
+.btn-add-set {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 2px 0;
+  cursor: pointer;
+
+  ion-icon { font-size: 16px; }
+}
+
+/* Add exercise */
+.btn-add-exercise {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 16px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue);
+  cursor: pointer;
+  margin-top: 4px;
+
+  ion-icon { font-size: 18px; }
+}
+
+/* Footer */
+ion-footer.footer-safe {
+  background: var(--bg);
+  border-top: 0.5px solid var(--border);
+}
+
+.footer-inner {
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+}
+
+.btn-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  ion-icon { font-size: 20px; }
+  ion-spinner { --color: #fff; width: 20px; height: 20px; }
+
+  &.saving, &:disabled { opacity: 0.6; cursor: default; }
+}

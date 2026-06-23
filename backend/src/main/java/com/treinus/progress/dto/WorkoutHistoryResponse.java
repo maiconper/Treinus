@@ -26,7 +26,7 @@ public record WorkoutHistoryResponse(
         return new WorkoutHistoryResponse(
                 session.getId(),
                 session.getWorkout() != null ? session.getWorkout().getId() : null,
-                session.getWorkout() != null ? session.getWorkout().getName() : "Free Session",
+                session.getName() != null ? session.getName() : (session.getWorkout() != null ? session.getWorkout().getName() : "Treino"),
                 session.getStartedAt(),
                 session.getFinishedAt(),
                 duration,

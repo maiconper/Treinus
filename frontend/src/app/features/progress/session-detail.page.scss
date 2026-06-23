@@ -80,6 +80,25 @@ ion-content.detail-content { --background: var(--bg); }
   .pr-icon { font-size: 12px; }
 }
 
+.btn-add-workout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px 16px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue);
+  cursor: pointer;
+
+  ion-icon { font-size: 18px; }
+}
+
 .loading-wrap {
   display: flex; align-items: center; justify-content: center;
   height: 60vh;

@@ -44,6 +44,24 @@ export interface StartSessionRequest {
   notes?: string;
 }
 
+export interface ManualSetEntry {
+  reps: number;
+  weightKg: number;
+}
+
+export interface ManualExerciseEntry {
+  exerciseId: string;
+  sets: ManualSetEntry[];
+}
+
+export interface ManualSessionRequest {
+  workoutId?: string;
+  programDayId?: string;
+  name?: string;
+  date: string; // YYYY-MM-DD
+  exercises?: ManualExerciseEntry[];
+}
+
 export interface LogSetRequest {
   reps: number;
   weightKg: number;
