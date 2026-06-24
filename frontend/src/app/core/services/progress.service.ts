@@ -20,7 +20,11 @@ export class ProgressService {
   }
 
   getHistoryForDate(date: string): Observable<WorkoutHistoryItem[]> {
-    const params = new HttpParams().set('date', date);
+    const offsetMin = -new Date().getTimezoneOffset();
+    const sign = offsetMin >= 0 ? '+' : '-';
+    const abs = Math.abs(offsetMin);
+    const zone = `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
+    const params = new HttpParams().set('date', date).set('zone', zone);
     return this.http.get<WorkoutHistoryItem[]>(`${this.url}/history`, { params });
   }
 

@@ -41,9 +41,10 @@ public class ProgressController {
     public ResponseEntity<?> getHistory(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) String zone,
             @PageableDefault(size = 20) Pageable pageable) {
         if (date != null) {
-            List<WorkoutHistoryResponse> result = progressService.getHistoryForDate(user.getId(), date);
+            List<WorkoutHistoryResponse> result = progressService.getHistoryForDate(user.getId(), date, zone);
             return ResponseEntity.ok(result);
         }
         return ResponseEntity.ok(progressService.getHistory(user.getId(), pageable));

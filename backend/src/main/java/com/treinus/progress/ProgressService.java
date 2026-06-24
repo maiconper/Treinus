@@ -94,9 +94,10 @@ public class ProgressService {
                 });
     }
 
-    public List<WorkoutHistoryResponse> getHistoryForDate(UUID userId, LocalDate date) {
-        Instant from = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant to = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+    public List<WorkoutHistoryResponse> getHistoryForDate(UUID userId, LocalDate date, String zone) {
+        ZoneOffset offset = (zone != null && !zone.isBlank()) ? ZoneOffset.of(zone) : ZoneOffset.UTC;
+        Instant from = date.atStartOfDay(offset).toInstant();
+        Instant to = date.plusDays(1).atStartOfDay(offset).toInstant();
         return sessionRepository
                 .findByUserIdAndStatusAndFinishedAtBetween(userId, SessionStatus.COMPLETED, from, to)
                 .stream()
