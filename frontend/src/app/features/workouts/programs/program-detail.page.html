@@ -40,6 +40,12 @@
         Concluir programa
       </button>
     </div>
+    <div class="action-row" *ngIf="program.status === 'COMPLETED' || program.status === 'CANCELLED'">
+      <button class="btn-repeat" (click)="repeatProgram()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Repetir programa
+      </button>
+    </div>
 
     <!-- Semanas -->
     <p class="section-label">SEMANAS</p>

@@ -87,6 +87,25 @@
   &:active { opacity: 0.8; }
 }
 
+.btn-repeat {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--blue-bg);
+  color: var(--blue-mid);
+  border: 1px solid var(--blue-mid);
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  ion-icon { font-size: 18px; }
+  &:active { opacity: 0.8; }
+}
+
 /* ── Section label ── */
 .section-label {
   font-size: 11px;

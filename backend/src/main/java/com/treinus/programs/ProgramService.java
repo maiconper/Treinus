@@ -183,6 +183,41 @@ public class ProgramService {
     }
 
     @Transactional
+    public ProgramResponse repeat(UUID id, UUID userId) {
+        Program original = findProgram(id, userId);
+
+        if (original.getStatus() == ProgramStatus.DRAFT || original.getStatus() == ProgramStatus.ACTIVE) {
+            throw new BusinessException("Cannot repeat a " + original.getStatus().name().toLowerCase() + " program");
+        }
+
+        Program copy = new Program();
+        copy.setName(original.getName());
+        copy.setDescription(original.getDescription());
+        copy.setWeeksCount(original.getWeeksCount());
+        copy.setUser(original.getUser());
+        copy.setStatus(ProgramStatus.DRAFT);
+
+        for (ProgramWeek originalWeek : original.getWeeks()) {
+            ProgramWeek newWeek = new ProgramWeek();
+            newWeek.setProgram(copy);
+            newWeek.setWeekNumber(originalWeek.getWeekNumber());
+            newWeek.setName(originalWeek.getName());
+
+            for (ProgramDay originalDay : originalWeek.getDays()) {
+                ProgramDay newDay = new ProgramDay();
+                newDay.setProgramWeek(newWeek);
+                newDay.setDayOfWeek(originalDay.getDayOfWeek());
+                newDay.setWorkout(originalDay.getWorkout());
+                newDay.setRestDay(originalDay.isRestDay());
+                newWeek.getDays().add(newDay);
+            }
+            copy.getWeeks().add(newWeek);
+        }
+
+        return ProgramResponse.from(programRepository.save(copy));
+    }
+
+    @Transactional
     public void delete(UUID id, UUID userId) {
         Program program = findProgram(id, userId);
         if (program.getStatus() == ProgramStatus.ACTIVE) {

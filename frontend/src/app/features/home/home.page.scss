@@ -166,10 +166,10 @@ ion-content.home-content { --background: var(--bg); }
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; color: var(--text3);
 
-    &.done    { background: var(--green-bg); border-color: #9FE1CB; color: var(--green); }
-    &.today   { border: 1.5px solid var(--purple); color: var(--purple); }
-    &.rest    { background: var(--surface2); color: var(--text3); }
-    &.workout { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+    &.done     { background: var(--green-bg); border-color: #9FE1CB; color: var(--green); }
+    &.today    { border: 1.5px solid var(--purple); color: var(--purple); }
+    &.rest     { background: var(--surface2); border-color: transparent; color: var(--text3); }
+    &.upcoming { background: var(--blue-bg); border-color: transparent; color: var(--blue-mid); }
   }
 }
 

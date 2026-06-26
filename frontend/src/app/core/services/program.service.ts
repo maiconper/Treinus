@@ -34,6 +34,10 @@ export class ProgramService {
     return this.http.post<Program>(`${this.url}/${id}/finish`, {});
   }
 
+  repeat(id: string): Observable<Program> {
+    return this.http.post<Program>(`${this.url}/${id}/repeat`, {});
+  }
+
   addWeek(programId: string, req: AddWeekRequest): Observable<Program> {
     return this.http.post<Program>(`${this.url}/${programId}/weeks`, req);
   }

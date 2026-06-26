@@ -286,4 +286,23 @@ export class ProgramDetailPage implements OnInit {
     });
     await a.present();
   }
+
+  async repeatProgram() {
+    const a = await this.alert.create({
+      header: 'Repetir programa?',
+      message: 'Um novo programa será criado com a mesma estrutura, pronto para iniciar.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Repetir',
+          handler: () => {
+            this.programService.repeat(this.programId).subscribe(p => {
+              this.router.navigate(['/tabs/workouts/programs', p.id]);
+            });
+          },
+        },
+      ],
+    });
+    await a.present();
+  }
 }

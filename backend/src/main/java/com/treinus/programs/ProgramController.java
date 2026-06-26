@@ -72,6 +72,14 @@ public class ProgramController {
         return ResponseEntity.ok(programService.finish(id, user.getId()));
     }
 
+    @PostMapping("/{id}/repeat")
+    @Operation(summary = "Repetir programa concluído (cria cópia como DRAFT)")
+    public ResponseEntity<ProgramResponse> repeat(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(programService.repeat(id, user.getId()));
+    }
+
     @PostMapping("/{id}/weeks")
     @Operation(summary = "Adicionar semana ao programa")
     public ResponseEntity<ProgramResponse> addWeek(
