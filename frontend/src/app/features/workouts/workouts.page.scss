@@ -66,6 +66,11 @@ ion-content.workouts-content { --background: var(--bg); }
     .tag-rest    { background: var(--surface2); color: var(--text3); }
     .tag-empty   { background: transparent; color: var(--text3); }
 
+    .day-done-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+    }
+
     &.is-today {
       .day-date  { color: var(--blue); font-weight: 700; }
       .day-label { color: var(--blue); font-weight: 700; }

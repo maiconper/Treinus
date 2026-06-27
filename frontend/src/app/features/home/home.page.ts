@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { ActionSheetController, AlertController } from '@ionic/angular';
 import { UserService } from '../../core/services/user.service';
 import { ProgramService } from '../../core/services/program.service';
 import { SessionService } from '../../core/services/session.service';
@@ -9,6 +10,7 @@ import { ProgressService } from '../../core/services/progress.service';
 import {
   User,
   Program,
+  ProgramWeek,
   Session,
   Workout,
   WorkoutExercise,
@@ -54,6 +56,8 @@ export class HomePage implements OnInit, OnDestroy {
     private auth: AuthService,
     private router: Router,
     private progressService: ProgressService,
+    private actionSheet: ActionSheetController,
+    private alertCtrl: AlertController,
   ) {}
 
   ngOnInit() {
@@ -146,6 +150,37 @@ export class HomePage implements OnInit, OnDestroy {
         this.loading = false;
       },
     });
+  }
+
+  get todayProgramWeek(): ProgramWeek | null {
+    if (!this.activeProgram?.startedAt) return null;
+    const start = new Date(this.activeProgram.startedAt);
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const todayDay = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate());
+    const daysDiff = Math.floor((todayDay.getTime() - startDay.getTime()) / 86_400_000);
+    const weekNumber = Math.floor(daysDiff / 7) + 1;
+    return this.activeProgram.weeks.find(w => w.weekNumber === weekNumber) ?? null;
+  }
+
+  get todayDayNumber(): number {
+    if (!this.activeProgram?.startedAt || !this.todayProgramWeek) return 0;
+    const startBackendDay = this.toBackendDay(new Date(this.activeProgram.startedAt).getDay());
+    const todayKey = this.toBackendDay(this.today.getDay());
+    const currentWeekNum = this.todayProgramWeek.weekNumber;
+    let count = 0;
+    for (const week of this.activeProgram.weeks) {
+      if (week.weekNumber > currentWeekNum) break;
+      const trainingDays = week.days
+        .filter(d => !d.restDay)
+        .map(d => d.dayOfWeek)
+        .sort((a, b) => a - b);
+      for (const day of trainingDays) {
+        if (week.weekNumber === 1 && day < startBackendDay) continue;
+        if (week.weekNumber === currentWeekNum && day > todayKey) continue;
+        count++;
+      }
+    }
+    return count;
   }
 
   private toBackendDay(jsDay: number): number {
@@ -261,11 +296,86 @@ export class HomePage implements OnInit, OnDestroy {
     return order.indexOf(key) > order.indexOf(this.today.getDay());
   }
 
-  editWorkout() {
-    const workoutId = this.todayWorkout?.workoutId;
-    if (workoutId) {
-      this.router.navigate(['/tabs/workouts/builder', workoutId]);
-    }
+  async openWorkoutOptions() {
+    const sheet = await this.actionSheet.create({
+      header: 'Treino de hoje',
+      buttons: [
+        {
+          text: 'Editar',
+          icon: 'pencil-outline',
+          handler: () => {
+            const workoutId = this.todayWorkout?.workoutId;
+            if (workoutId) this.router.navigate(['/tabs/workouts/builder', workoutId]);
+          },
+        },
+        {
+          text: 'Substituir',
+          icon: 'swap-horizontal-outline',
+          handler: () => { this.openSubstituteSheet(); },
+        },
+        {
+          text: 'Remover',
+          icon: 'trash-outline',
+          role: 'destructive',
+          handler: () => { this.confirmRemoveWorkout(); },
+        },
+        { text: 'Cancelar', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  private async openSubstituteSheet() {
+    const allWorkouts = [...this.workouts, ...this.presets];
+    if (!allWorkouts.length) return;
+
+    const sheet = await this.actionSheet.create({
+      header: 'Selecionar treino',
+      buttons: [
+        ...this.workouts.map(w => ({
+          text: w.name,
+          handler: () => { this.applySubstitution(w.id); },
+        })),
+        ...this.presets.map(w => ({
+          text: `${w.name} ★`,
+          handler: () => { this.applySubstitution(w.id); },
+        })),
+        { text: 'Cancelar', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  private applySubstitution(workoutId: string) {
+    const programId = this.activeProgram?.id;
+    const weekId = this.todayProgramWeek?.id;
+    const dayId = this.todayWorkout?.id;
+    if (!programId || !weekId || !dayId) return;
+    this.programService.updateDay(programId, weekId, dayId, { workoutId, restDay: false })
+      .subscribe(() => this.load());
+  }
+
+  private async confirmRemoveWorkout() {
+    const alert = await this.alertCtrl.create({
+      header: 'Remover treino?',
+      message: 'O treino de hoje será removido do programa.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Remover',
+          role: 'destructive',
+          handler: () => {
+            const programId = this.activeProgram?.id;
+            const weekId = this.todayProgramWeek?.id;
+            const dayId = this.todayWorkout?.id;
+            if (!programId || !weekId || !dayId) return;
+            this.programService.removeDay(programId, weekId, dayId)
+              .subscribe(() => this.load());
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   openTomorrowWorkout() {

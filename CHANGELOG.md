@@ -1,5 +1,54 @@
 # Changelog — Treinus
 
+## [2026-06-26] — Timeline completa com todos os treinos históricos
+
+### `ProgressService.getAllHistory()` — `progress.service.ts`
+
+- Novo método que busca todas as sessões do usuário sem limite, percorrendo as páginas automaticamente via RxJS `expand` + `reduce` (100 itens por página)
+- Retorna `Observable<WorkoutHistoryItem[]>` já concatenado
+- `workouts.page.ts`: substituiu `getHistory(0, 200)` por `getAllHistory()`; `allHistory = history` (não mais `history.content`)
+
+### `buildTimeline()` reescrito — `workouts.page.ts`
+
+**Antes:** iterava apenas as semanas do programa ativo; sem programa, não mostrava nada; sessões avulsas nunca apareciam.
+
+**Agora:** itera dia a dia de `startDate` até `endDate`, incluindo qualquer dia com sessão registrada, independente de programa.
+
+#### Detalhes da nova lógica
+
+| Conceito | Valor |
+|---|---|
+| `programStart` | `activeProgram.startedAt` — ancora o lookup de dias no programa |
+| `startDate` | mínimo entre `programStart` e sessão mais antiga do histórico, alinhado para segunda-feira |
+| `endDate` | último dia da última semana do programa, ou hoje (o que for maior) |
+| `globalIndex` | dias desde `startDate` — consistente para todos os dias |
+| `weekNumber` | semanas desde `startDate` (para display e agrupamento) |
+| Lookup `programDayMap` | usa `programWeek = daysSinceProgram / 7 + 1` relativo ao `programStart` — **desacoplado** do `weekNumber` da timeline |
+
+**Por que separar `programWeek` de `weekNumber`:** sem a separação, dias do programa que caem após semanas de história pré-programa recebem um `weekNumber` maior que o número real da semana no programa, resultando em `programDay = undefined` e os treinos atuais sumindo do strip.
+
+#### Helper `toIso(d: Date)` extraído
+
+Lógica de formatação `YYYY-MM-DD` era repetida inline; agora método privado reutilizável.
+
+#### Campo `_todayGlobalIndex`
+
+Calculado em `buildTimeline()` e retornado pelo getter `todayGlobalIndex`. O getter antigo calculava `(currentWeekNumber - 1) * 7 + (todayDow - 1)`, que não era mais válido com o novo indexing relativo a `startDate`.
+
+### Fix: `tag-empty` em dias com treino avulso — `workouts.page.html`
+
+Dias com sessão avulsa (sem `ProgramDay`) exibem o nome abreviado do treino com `tag-workout` (azul), em vez de `—` vazio:
+
+```html
+} @else if (d.sessions.length > 0) {
+  <span class="day-tag tag-workout">{{ abbrev(d.sessions[0].workoutName) }}</span>
+} @else {
+  <span class="day-tag tag-empty">—</span>
+}
+```
+
+---
+
 ## [2026-06-23] — Confirmação ao clicar dia sem treinos + fix nome no registro manual
 
 ### Bug fix: nome personalizado do treino não salvo após registro manual

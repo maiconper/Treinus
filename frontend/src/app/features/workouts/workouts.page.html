@@ -34,7 +34,7 @@
                 [attr.data-week]="d.weekNumber"
                 [class.is-today]="d.globalIndex === todayGlobalIndex"
                 [class.is-past]="d.globalIndex < todayGlobalIndex"
-                [class.is-clickable]="d.globalIndex < todayGlobalIndex && !!d.day && !d.day.restDay"
+                [class.is-clickable]="d.globalIndex < todayGlobalIndex && (d.sessions.length > 0 || (!!d.day && !d.day.restDay))"
                 [class.week-end]="d.dayOfWeek === 7"
                 (click)="onDayClick(d)"
               >
@@ -44,6 +44,8 @@
                   <span class="day-tag" [class.tag-rest]="d.day.restDay" [class.tag-workout]="!d.day.restDay">
                     {{ d.day.restDay ? 'Desc' : abbrev(d.day.workoutName) }}
                   </span>
+                } @else if (d.sessions.length > 0) {
+                  <span class="day-tag tag-workout">{{ abbrev(d.sessions[0].workoutName) }}</span>
                 } @else {
                   <span class="day-tag tag-empty">—</span>
                 }

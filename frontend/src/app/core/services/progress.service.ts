@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress } from '../models';
+import { expand, reduce, takeWhile } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class ProgressService {
@@ -17,6 +18,21 @@ export class ProgressService {
   getHistory(page = 0, size = 20): Observable<WorkoutHistory> {
     const params = new HttpParams().set('page', page).set('size', size);
     return this.http.get<WorkoutHistory>(`${this.url}/history`, { params });
+  }
+
+  getAllHistory(): Observable<WorkoutHistoryItem[]> {
+    return this.getHistory(0, 100).pipe(
+      expand((res) =>
+        res.number + 1 < res.totalPages
+          ? this.getHistory(res.number + 1, 100)
+          : [],
+      ),
+      takeWhile((res) => !!res.content, true),
+      reduce(
+        (acc: WorkoutHistoryItem[], res: WorkoutHistory) => acc.concat(res.content),
+        [],
+      ),
+    );
   }
 
   getHistoryForDate(date: string): Observable<WorkoutHistoryItem[]> {

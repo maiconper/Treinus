@@ -1,10 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  ActionSheetController,
-  AlertController,
-  ToastController,
-} from '@ionic/angular';
+import { ActionSheetController, AlertController } from '@ionic/angular';
 import { WorkoutService } from '../../core/services/workout.service';
 import { ProgramService } from '../../core/services/program.service';
 import { UserService } from '../../core/services/user.service';
@@ -36,6 +32,7 @@ interface TimelineDay {
   dayOfWeek: number;
   date: Date;
   day?: ProgramDay;
+  sessions: WorkoutHistoryItem[];
 }
 
 @Component({
@@ -54,8 +51,10 @@ export class WorkoutsPage implements OnInit {
   programs: Program[] = [];
   activeProgram: Program | null = null;
   todaySessions: WorkoutHistoryItem[] = [];
+  allHistory: WorkoutHistoryItem[] = [];
   timelineDays: TimelineDay[] = [];
   viewedWeekNumber = 1;
+  private _todayGlobalIndex = 0;
   private scrollRaf = false;
 
   get allWorkouts(): Workout[] {
@@ -74,7 +73,6 @@ export class WorkoutsPage implements OnInit {
     private router: Router,
     private alert: AlertController,
     private actionSheet: ActionSheetController,
-    private toast: ToastController,
   ) {}
 
   ngOnInit() {
@@ -100,14 +98,18 @@ export class WorkoutsPage implements OnInit {
       todaySessions: this.progressService
         .getHistoryForDate(this.todayIso)
         .pipe(catchError(() => of([]))),
+      history: this.progressService
+        .getAllHistory()
+        .pipe(catchError(() => of([] as WorkoutHistoryItem[]))),
     }).subscribe({
-      next: ({ user, workouts, presets, programs, active, todaySessions }) => {
+      next: ({ user, workouts, presets, programs, active, todaySessions, history }) => {
         this.user = user;
         this.workouts = workouts;
         this.presets = presets;
         this.programs = programs;
         this.activeProgram = active;
         this.todaySessions = todaySessions;
+        this.allHistory = history;
         this.buildTimeline();
         this.loading = false;
         setTimeout(() => this.scrollToToday());
@@ -118,28 +120,103 @@ export class WorkoutsPage implements OnInit {
     });
   }
 
+  private toIso(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   private buildTimeline() {
     this.timelineDays = [];
-    this.viewedWeekNumber = this.currentWeekNumber;
-    if (!this.activeProgram) return;
-    const todayIdx = this.todayGlobalIndex;
+
+    const sessionsByDate = new Map<string, WorkoutHistoryItem[]>();
+    for (const s of this.allHistory) {
+      const d = new Date(s.startedAt);
+      const iso = this.toIso(d);
+      if (!sessionsByDate.has(iso)) sessionsByDate.set(iso, []);
+      sessionsByDate.get(iso)!.push(s);
+    }
+
     const today = new Date();
-    const weeks = [...this.activeProgram.weeks].sort(
-      (a, b) => a.weekNumber - b.weekNumber,
+    today.setHours(0, 0, 0, 0);
+
+    // Program anchor date (for week number lookups in programDayMap)
+    let programStart: Date | null = null;
+    if (this.activeProgram?.startedAt) {
+      programStart = new Date(this.activeProgram.startedAt);
+      programStart.setHours(0, 0, 0, 0);
+    }
+
+    // Timeline start: minimum of program start and earliest session
+    let startDate: Date = programStart ? new Date(programStart) : new Date(today);
+
+    if (this.allHistory.length > 0) {
+      const earliest = new Date(
+        Math.min(...this.allHistory.map((s) => new Date(s.startedAt).getTime())),
+      );
+      earliest.setHours(0, 0, 0, 0);
+      if (earliest < startDate) startDate = new Date(earliest);
+    }
+
+    if (this.allHistory.length === 0 && !this.activeProgram) return;
+
+    // Align startDate to Monday of its week
+    const startDow = startDate.getDay();
+    startDate.setDate(startDate.getDate() - (startDow === 0 ? 6 : startDow - 1));
+
+    // Determine end: last program week end, or today (whichever is later)
+    let endDate = new Date(today);
+    if (this.activeProgram?.weeks?.length && programStart) {
+      const lastWeekNum = Math.max(...this.activeProgram.weeks.map((w) => w.weekNumber));
+      const programEnd = new Date(programStart);
+      programEnd.setDate(programStart.getDate() + lastWeekNum * 7 - 1);
+      if (programEnd > endDate) endDate = programEnd;
+    }
+
+    // Program day lookup keyed by PROGRAM week number (relative to programStart)
+    const programDayMap = new Map<string, ProgramDay>();
+    if (this.activeProgram) {
+      for (const week of this.activeProgram.weeks) {
+        for (const day of week.days) {
+          programDayMap.set(`${week.weekNumber}-${day.dayOfWeek}`, day);
+        }
+      }
+    }
+
+    this._todayGlobalIndex = Math.floor(
+      (today.getTime() - startDate.getTime()) / 86400000,
     );
-    for (const week of weeks) {
-      for (const dow of this.allDays) {
-        const globalIndex = (week.weekNumber - 1) * 7 + (dow - 1);
-        const date = new Date(today);
-        date.setDate(today.getDate() + (globalIndex - todayIdx));
+    this.viewedWeekNumber = this.currentWeekNumber;
+
+    const cur = new Date(startDate);
+    while (cur <= endDate) {
+      const iso = this.toIso(cur);
+      const daysSince = Math.floor((cur.getTime() - startDate.getTime()) / 86400000);
+      const timelineWeek = Math.floor(daysSince / 7) + 1;
+      const jsDay = cur.getDay();
+      const dow = jsDay === 0 ? 7 : jsDay;
+      const sessions = sessionsByDate.get(iso) ?? [];
+
+      // Look up program day using PROGRAM week (days since programStart)
+      let programDay: ProgramDay | undefined;
+      if (programStart) {
+        const daysSinceProgram = Math.floor((cur.getTime() - programStart.getTime()) / 86400000);
+        if (daysSinceProgram >= 0) {
+          const programWeek = Math.floor(daysSinceProgram / 7) + 1;
+          programDay = programDayMap.get(`${programWeek}-${dow}`);
+        }
+      }
+
+      if (programDay !== undefined || sessions.length > 0) {
         this.timelineDays.push({
-          globalIndex,
-          weekNumber: week.weekNumber,
+          globalIndex: daysSince,
+          weekNumber: timelineWeek,
           dayOfWeek: dow,
-          date,
-          day: week.days.find((d) => d.dayOfWeek === dow),
+          date: new Date(cur),
+          day: programDay,
+          sessions,
         });
       }
+
+      cur.setDate(cur.getDate() + 1);
     }
   }
 
@@ -181,7 +258,7 @@ export class WorkoutsPage implements OnInit {
   }
 
   get todayGlobalIndex(): number {
-    return (this.currentWeekNumber - 1) * 7 + (this.todayDow - 1);
+    return this._todayGlobalIndex;
   }
 
   // ── Programa ativo ─────────────────────────────────────────────────────────
@@ -275,88 +352,74 @@ export class WorkoutsPage implements OnInit {
     return `${sets} séries`;
   }
 
-  onDayClick(d: TimelineDay) {
+  async onDayClick(d: TimelineDay) {
     if (d.globalIndex >= this.todayGlobalIndex) return;
-    if (!d.day || d.day.restDay) return;
+    if (d.sessions.length === 0 && (!d.day || d.day.restDay)) return;
+
     const date = d.date;
     const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    this.progressService.getHistoryForDate(iso).subscribe({
-      next: async (sessions) => {
-        if (!Array.isArray(sessions) || sessions.length === 0) {
-          const workoutName = this.getWorkoutForDay(d.day)?.name ?? '';
-          const a = await this.alert.create({
-            header: 'Nenhum treino registrado',
-            message: workoutName
-              ? `Nenhum treino registrado neste dia. Gostaria de registrar "${workoutName}"?`
-              : 'Nenhum treino registrado neste dia. Gostaria de registrar um treino?',
-            buttons: [
-              { text: 'Cancelar', role: 'cancel' },
-              {
-                text: 'Registrar treino',
-                handler: () => {
-                  this.router.navigate(['/tabs/workouts/register'], {
-                    queryParams: {
-                      date: iso,
-                      dayId: d.day!.id,
-                      workoutId: d.day!.workoutId ?? null,
-                      workoutName,
-                    },
-                  });
+    const sessions = d.sessions;
+
+    if (sessions.length === 0) {
+      const workoutName = this.getWorkoutForDay(d.day)?.name ?? '';
+      const a = await this.alert.create({
+        header: 'Nenhum treino registrado',
+        message: workoutName
+          ? `Nenhum treino registrado neste dia. Gostaria de registrar "${workoutName}"?`
+          : 'Nenhum treino registrado neste dia. Gostaria de registrar um treino?',
+        buttons: [
+          { text: 'Cancelar', role: 'cancel' },
+          {
+            text: 'Registrar treino',
+            handler: () => {
+              this.router.navigate(['/tabs/workouts/register'], {
+                queryParams: {
+                  date: iso,
+                  dayId: d.day?.id ?? null,
+                  workoutId: d.day?.workoutId ?? null,
+                  workoutName,
                 },
-              },
-            ],
-          });
-          await a.present();
-          return;
-        }
-
-        if (sessions.length === 1) {
-          this.router.navigate(['/tabs/progress', sessions[0].sessionId]);
-          return;
-        }
-
-        const sheet = await this.actionSheet.create({
-          header: 'Treinos do dia',
-          buttons: [
-            ...sessions.map((s) => ({
-              text: `${s.workoutName} · ${this.formatTime(s.startedAt)}`,
-              handler: () => {
-                this.router.navigate(['/tabs/progress', s.sessionId]);
-              },
-            })),
-            {
-              text: 'Registrar outro treino',
-              icon: 'add-circle-outline',
-              handler: () => {
-                this.router.navigate(['/tabs/workouts/register'], {
-                  queryParams: {
-                    date: iso,
-                    dayId: d.day!.id,
-                    workoutId: d.day!.workoutId ?? null,
-                    workoutName: '',
-                  },
-                });
-              },
+              });
             },
-            { text: 'Cancelar', role: 'cancel' },
-          ],
-        });
-        await sheet.present();
-      },
-      error: (err) => {
-        console.error('[onDayClick] erro ao buscar sessões:', err);
-        this.showToast('Erro ao carregar treinos deste dia.');
-      },
-    });
-  }
+          },
+        ],
+      });
+      await a.present();
+      return;
+    }
 
-  private async showToast(message: string) {
-    const t = await this.toast.create({
-      message,
-      duration: 2000,
-      position: 'bottom',
+    if (sessions.length === 1) {
+      this.router.navigate(['/tabs/progress', sessions[0].sessionId]);
+      return;
+    }
+
+    const sheet = await this.actionSheet.create({
+      header: 'Treinos do dia',
+      buttons: [
+        ...sessions.map((s) => ({
+          text: `${s.workoutName} · ${this.formatTime(s.startedAt)}`,
+          handler: () => {
+            this.router.navigate(['/tabs/progress', s.sessionId]);
+          },
+        })),
+        {
+          text: 'Registrar outro treino',
+          icon: 'add-circle-outline',
+          handler: () => {
+            this.router.navigate(['/tabs/workouts/register'], {
+              queryParams: {
+                date: iso,
+                dayId: d.day?.id ?? null,
+                workoutId: d.day?.workoutId ?? null,
+                workoutName: '',
+              },
+            });
+          },
+        },
+        { text: 'Cancelar', role: 'cancel' },
+      ],
     });
-    await t.present();
+    await sheet.present();
   }
 
   goToHistory(sessionId: string) {
