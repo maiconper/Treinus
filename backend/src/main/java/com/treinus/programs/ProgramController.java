@@ -72,6 +72,14 @@ public class ProgramController {
         return ResponseEntity.ok(programService.finish(id, user.getId()));
     }
 
+    @PostMapping("/{id}/cancel")
+    @Operation(summary = "Abandonar programa ativo")
+    public ResponseEntity<ProgramResponse> cancel(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id) {
+        return ResponseEntity.ok(programService.cancel(id, user.getId()));
+    }
+
     @PostMapping("/{id}/repeat")
     @Operation(summary = "Repetir programa concluído (cria cópia como DRAFT)")
     public ResponseEntity<ProgramResponse> repeat(

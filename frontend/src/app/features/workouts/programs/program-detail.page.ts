@@ -287,6 +287,25 @@ export class ProgramDetailPage implements OnInit {
     await a.present();
   }
 
+  async abandonProgram() {
+    const a = await this.alert.create({
+      header: 'Abandonar programa?',
+      message: 'O programa será marcado como cancelado. O histórico de treinos será mantido.',
+      buttons: [
+        { text: 'Voltar', role: 'cancel' },
+        {
+          text: 'Abandonar',
+          role: 'destructive',
+          handler: () => {
+            this.programService.cancel(this.programId)
+              .subscribe(p => { this.program = p; });
+          },
+        },
+      ],
+    });
+    await a.present();
+  }
+
   async repeatProgram() {
     const a = await this.alert.create({
       header: 'Repetir programa?',

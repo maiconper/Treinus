@@ -122,6 +122,19 @@ public class ProgramService {
     }
 
     @Transactional
+    public ProgramResponse cancel(UUID id, UUID userId) {
+        Program program = findProgram(id, userId);
+
+        if (program.getStatus() != ProgramStatus.ACTIVE) {
+            throw new BusinessException("Program is not active");
+        }
+
+        program.setStatus(ProgramStatus.CANCELLED);
+        program.setEndedAt(Instant.now());
+        return ProgramResponse.from(programRepository.save(program));
+    }
+
+    @Transactional
     public ProgramResponse addWeek(UUID programId, CreateProgramWeekRequest request, UUID userId) {
         Program program = findProgram(programId, userId);
 

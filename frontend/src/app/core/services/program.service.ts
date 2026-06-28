@@ -34,6 +34,10 @@ export class ProgramService {
     return this.http.post<Program>(`${this.url}/${id}/finish`, {});
   }
 
+  cancel(id: string): Observable<Program> {
+    return this.http.post<Program>(`${this.url}/${id}/cancel`, {});
+  }
+
   repeat(id: string): Observable<Program> {
     return this.http.post<Program>(`${this.url}/${id}/repeat`, {});
   }

@@ -207,6 +207,16 @@ export class HomePage implements OnInit, OnDestroy {
     return false;
   }
 
+  get todayProgramDay() {
+    if (!this.activeProgram) return null;
+    const todayKey = this.toBackendDay(this.today.getDay());
+    for (const week of this.activeProgram.weeks) {
+      const day = week.days.find((d) => d.dayOfWeek === todayKey);
+      if (day) return day;
+    }
+    return null;
+  }
+
   get isTodayWorkoutDone(): boolean {
     const id = this.todayWorkout?.workoutId;
     if (!id) return false;
@@ -304,6 +314,124 @@ export class HomePage implements OnInit, OnDestroy {
   private isFutureDay(key: number): boolean {
     const order = [1, 2, 3, 4, 5, 6, 0];
     return order.indexOf(key) > order.indexOf(this.today.getDay());
+  }
+
+  async openRestDayOptions() {
+    const sheet = await this.actionSheet.create({
+      header: 'Dia de descanso',
+      buttons: [
+        {
+          text: 'Adicionar treino ao programa',
+          icon: 'barbell-outline',
+          handler: () => { this.openRestDayWorkoutPicker(); },
+        },
+        {
+          text: 'Registrar treino feito',
+          icon: 'checkmark-circle-outline',
+          handler: () => {
+            this.router.navigate(['/tabs/workouts/register'], {
+              queryParams: { date: this.todayIso },
+            });
+          },
+        },
+        { text: 'Cancelar', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  private async openRestDayWorkoutPicker() {
+    const allWorkouts = [...this.workouts, ...this.presets];
+    if (!allWorkouts.length) return;
+    const sheet = await this.actionSheet.create({
+      header: 'Selecionar treino',
+      buttons: [
+        ...this.workouts.map((w) => ({
+          text: w.name,
+          handler: () => { this.assignWorkoutToRestDay(w.id); },
+        })),
+        ...this.presets.map((w) => ({
+          text: `${w.name} ★`,
+          handler: () => { this.assignWorkoutToRestDay(w.id); },
+        })),
+        { text: 'Cancelar', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  async openNoWorkoutOptions() {
+    const buttons: any[] = [];
+
+    if (this.activeProgram && this.todayProgramWeek) {
+      buttons.push({
+        text: 'Adicionar treino ao programa',
+        icon: 'barbell-outline',
+        handler: () => { this.openNoWorkoutPicker(); },
+      });
+    }
+
+    buttons.push(
+      {
+        text: 'Registrar treino feito',
+        icon: 'checkmark-circle-outline',
+        handler: () => {
+          this.router.navigate(['/tabs/workouts/register'], {
+            queryParams: { date: this.todayIso },
+          });
+        },
+      },
+      {
+        text: 'Iniciar treino livre',
+        icon: 'play-outline',
+        handler: () => { this.router.navigate(['/tabs/workouts']); },
+      },
+      { text: 'Cancelar', role: 'cancel' },
+    );
+
+    const sheet = await this.actionSheet.create({
+      header: 'O que deseja fazer?',
+      buttons,
+    });
+    await sheet.present();
+  }
+
+  private async openNoWorkoutPicker() {
+    const allWorkouts = [...this.workouts, ...this.presets];
+    if (!allWorkouts.length) return;
+    const sheet = await this.actionSheet.create({
+      header: 'Selecionar treino',
+      buttons: [
+        ...this.workouts.map((w) => ({
+          text: w.name,
+          handler: () => { this.addWorkoutToToday(w.id); },
+        })),
+        ...this.presets.map((w) => ({
+          text: `${w.name} ★`,
+          handler: () => { this.addWorkoutToToday(w.id); },
+        })),
+        { text: 'Cancelar', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  private addWorkoutToToday(workoutId: string) {
+    const programId = this.activeProgram?.id;
+    const weekId = this.todayProgramWeek?.id;
+    const todayKey = this.toBackendDay(this.today.getDay());
+    if (!programId || !weekId) return;
+    this.programService.addDay(programId, weekId, { dayOfWeek: todayKey, workoutId, restDay: false })
+      .subscribe(() => this.load());
+  }
+
+  private assignWorkoutToRestDay(workoutId: string) {
+    const programId = this.activeProgram?.id;
+    const weekId = this.todayProgramWeek?.id;
+    const dayId = this.todayProgramDay?.id;
+    if (!programId || !weekId || !dayId) return;
+    this.programService.updateDay(programId, weekId, dayId, { workoutId, restDay: false })
+      .subscribe(() => this.load());
   }
 
   async openWorkoutOptions() {

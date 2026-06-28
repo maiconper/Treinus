@@ -1,5 +1,91 @@
 # Changelog — Treinus
 
+## [2026-06-28] — Dia de descanso na home, opções de ação nos cards e abandono de programa
+
+### Dia de descanso na home (`home.page`)
+
+**Antes:** quando `todayWorkout` era null o template sempre exibia "Nenhum treino para hoje", mesmo que o programa ativo marcasse o dia como descanso.
+
+**Agora:** dois caminhos distintos:
+- **Dia de descanso** (`isTodayRestDay = true`): card `.rest-day-card` com ícone lua, título "Dia de descanso" e subtítulo com semana do programa inline ("Semana 1 · Aproveite para recuperar. O descanso é parte do treino.")
+- **Sem treino marcado** (`!isTodayRestDay`): card `.no-workout-card` original (inalterado)
+
+**Novos getters em `home.page.ts`:**
+
+| Getter | Descrição |
+|---|---|
+| `isTodayRestDay` | Percorre semanas do programa ativo procurando entry com `restDay: true` para hoje |
+| `todayProgramDay` | Mesmo que `todayWorkout` mas sem filtrar `!restDay` — retorna qualquer entrada do dia |
+
+### Treino de amanhã no card de descanso
+
+Quando hoje é dia de descanso e `tomorrowWorkout` existe, exibe a seção "Treino de amanhã" logo abaixo do card de descanso — mesmo card já usado no fluxo pós-treino (nome, stats, prévia dos 3 primeiros exercícios, clicável para o builder).
+
+### Botão de opções (⋮) no card de descanso
+
+Botão `btn-edit` posicionado absolutamente no canto superior direito do `.rest-day-card` (`position: relative` + `.rest-day-menu { position: absolute; top: 10px; right: 10px }`).
+
+**Action sheet "Dia de descanso" — novos métodos em `home.page.ts`:**
+
+| Método | Descrição |
+|---|---|
+| `openRestDayOptions()` | Abre action sheet com as duas opções abaixo |
+| `openRestDayWorkoutPicker()` | Lista treinos do usuário + presets para seleção |
+| `assignWorkoutToRestDay(workoutId)` | Chama `programService.updateDay(..., { workoutId, restDay: false })` usando `todayProgramDay.id` — converte descanso em treino |
+
+Opções do action sheet:
+- **Adicionar treino ao programa** → picker → `updateDay` converte o dia de descanso em treino
+- **Registrar treino feito** → navega para `/tabs/workouts/register?date=<hoje>`
+
+### Botão de opções (⋮) no card "Nenhum treino para hoje"
+
+Mesmo padrão visual do card de descanso (`.no-workout-menu`, `position: absolute`).
+
+**Action sheet "O que deseja fazer?" — novos métodos em `home.page.ts`:**
+
+| Método | Descrição |
+|---|---|
+| `openNoWorkoutOptions()` | Action sheet dinâmico: "Adicionar ao programa" só aparece se `activeProgram && todayProgramWeek` |
+| `openNoWorkoutPicker()` | Lista treinos + presets para seleção |
+| `addWorkoutToToday(workoutId)` | Chama `programService.addDay(programId, weekId, { dayOfWeek, workoutId, restDay: false })` — cria nova entrada para o dia |
+
+Opções do action sheet:
+- **Adicionar treino ao programa** (condicional) → picker → `addDay` cria entrada do dia
+- **Registrar treino feito** → `/tabs/workouts/register?date=<hoje>`
+- **Iniciar treino livre** → `/tabs/workouts`
+
+### Abandonar programa ativo (`program-detail.page` + backend)
+
+**Backend — `ProgramService.java`:**
+- Novo método `cancel(UUID id, UUID userId)`: valida que o programa está `ACTIVE`, seta `CANCELLED` + `endedAt`, salva
+
+**Backend — `ProgramController.java`:**
+- `POST /api/v1/programs/{id}/cancel` → `programService.cancel(id, user.getId())`
+
+**Frontend — `program.service.ts`:**
+- `cancel(id: string): Observable<Program>` → `POST /programs/{id}/cancel`
+
+**Frontend — `program-detail.page.ts`:**
+- `abandonProgram()`: alert de confirmação ("O programa será marcado como cancelado. O histórico de treinos será mantido.") com botão destructive "Abandonar"
+
+**Frontend — `program-detail.page.html`:**
+- Botão `.btn-abandon` adicionado abaixo do `.btn-finish` quando `program.status === 'ACTIVE'`
+
+**Frontend — `program-detail.page.scss`:**
+- `.btn-abandon`: `background: transparent`, `border: 1px solid var(--ion-color-danger)`, `color: var(--ion-color-danger)`, `margin-top: 10px` — visualmente secundário em relação ao "Concluir"
+
+### Week strip visível sem programa ativo (`workouts.page.html`)
+
+**Antes:** todo o bloco week-strip + label estava dentro de `@if (activeProgram)` — sem programa ativo, mesmo com histórico de treinos, o strip nunca aparecia.
+
+**Agora:**
+- Week strip e label movidos para `@if (timelineDays.length > 0)` — independente de programa ativo
+- Label adaptado: mostra `· NOME DO PROGRAMA` apenas quando `activeProgram` existe
+- "Treino de hoje" e "Próxima semana" continuam dentro de `@if (activeProgram)` (dependem de programa)
+- `buildTimeline()` já construía `timelineDays` quando havia histórico sem programa (o early return `if (allHistory.length === 0 && !activeProgram) return` só bloqueia quando não há nada a mostrar)
+
+---
+
 ## [2026-06-26] — Timeline completa com todos os treinos históricos
 
 ### `ProgressService.getAllHistory()` — `progress.service.ts`

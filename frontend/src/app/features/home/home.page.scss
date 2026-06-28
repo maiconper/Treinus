@@ -143,6 +143,7 @@ ion-content.home-content { --background: var(--bg); }
 }
 
 .rest-day-card {
+  position: relative;
   background: var(--surface2);
   border: 0.5px solid var(--border);
   border-radius: var(--radius); padding: 24px 16px;
@@ -152,13 +153,24 @@ ion-content.home-content { --background: var(--bg); }
   ion-icon { font-size: 30px; color: var(--purple); }
   .rest-title { font-size: 15px; font-weight: 600; color: var(--text1); }
   .rest-sub { font-size: 13px; color: var(--text3); line-height: 1.5; }
+
+  .rest-day-menu {
+    position: absolute; top: 10px; right: 10px;
+    ion-icon { font-size: 15px; }
+  }
 }
 
 .no-workout-card {
+  position: relative;
   background: var(--surface); border: 0.5px solid var(--border);
   border-radius: var(--radius); padding: 24px 16px;
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   margin-bottom: 16px; text-align: center;
+
+  .no-workout-menu {
+    position: absolute; top: 10px; right: 10px;
+    ion-icon { font-size: 15px; }
+  }
 
   ion-icon { font-size: 28px; color: var(--text3); }
   p { font-size: 13px; color: var(--text2); }

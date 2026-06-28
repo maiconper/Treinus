@@ -22,11 +22,13 @@
       <!-- ── MEUS TREINOS ──────────────────────────────────────────────────── -->
       @if (segment === 'workouts') {
 
-        @if (activeProgram) {
+        @if (timelineDays.length > 0) {
+          <p class="section-label">
+            SEMANA {{ viewedWeekNumber }} · {{ viewedMonthLabel }}
+            @if (activeProgram) { · {{ activeProgram.name | uppercase }} }
+          </p>
 
-          <p class="section-label">SEMANA {{ viewedWeekNumber }} · {{ viewedMonthLabel }} · {{ activeProgram.name | uppercase }}</p>
-
-          <!-- Linha do tempo do programa -->
+          <!-- Linha do tempo -->
           <div class="week-strip" #weekStrip (scroll)="onStripScroll()">
             @for (d of timelineDays; track d.globalIndex) {
               <div
@@ -52,6 +54,9 @@
               </div>
             }
           </div>
+        }
+
+        @if (activeProgram) {
 
           <!-- Treino de hoje -->
           <p class="section-label mt">TREINO DE HOJE</p>
