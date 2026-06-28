@@ -197,6 +197,16 @@ export class HomePage implements OnInit, OnDestroy {
     return null;
   }
 
+  get isTodayRestDay(): boolean {
+    if (!this.activeProgram) return false;
+    const todayKey = this.toBackendDay(this.today.getDay());
+    for (const week of this.activeProgram.weeks) {
+      const day = week.days.find((d) => d.dayOfWeek === todayKey && d.restDay);
+      if (day) return true;
+    }
+    return false;
+  }
+
   get isTodayWorkoutDone(): boolean {
     const id = this.todayWorkout?.workoutId;
     if (!id) return false;

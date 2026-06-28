@@ -142,6 +142,18 @@ ion-content.home-content { --background: var(--bg); }
   ion-icon { font-size: 16px; }
 }
 
+.rest-day-card {
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 24px 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  margin-bottom: 16px; text-align: center;
+
+  ion-icon { font-size: 30px; color: var(--purple); }
+  .rest-title { font-size: 15px; font-weight: 600; color: var(--text1); }
+  .rest-sub { font-size: 13px; color: var(--text3); line-height: 1.5; }
+}
+
 .no-workout-card {
   background: var(--surface); border: 0.5px solid var(--border);
   border-radius: var(--radius); padding: 24px 16px;
