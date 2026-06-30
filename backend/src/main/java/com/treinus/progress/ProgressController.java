@@ -1,6 +1,7 @@
 package com.treinus.progress;
 
 import com.treinus.progress.dto.ExerciseProgressResponse;
+import com.treinus.progress.dto.MuscleSetStatResponse;
 import com.treinus.progress.dto.ProgressSummaryResponse;
 import com.treinus.progress.dto.WorkoutHistoryResponse;
 import com.treinus.users.User;
@@ -48,6 +49,14 @@ public class ProgressController {
             return ResponseEntity.ok(result);
         }
         return ResponseEntity.ok(progressService.getHistory(user.getId(), pageable));
+    }
+
+    @GetMapping("/sets-by-muscle")
+    @Operation(summary = "Total de séries por grupo muscular")
+    public ResponseEntity<List<MuscleSetStatResponse>> getSetsByMuscle(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "MONTH") String period) {
+        return ResponseEntity.ok(progressService.getSetsByMuscle(user.getId(), period));
     }
 
     @GetMapping("/exercises/{exerciseId}")

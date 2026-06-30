@@ -35,6 +35,11 @@ export interface WorkoutHistory {
   size: number;
 }
 
+export interface MuscleSetStat {
+  category: string;
+  sets: number;
+}
+
 export interface ExerciseProgressEntry {
   completedAt: string;
   reps: number;

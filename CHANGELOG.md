@@ -1,5 +1,72 @@
 # Changelog — Treinus
 
+## [2026-06-30] — Gráfico de pizza: séries por músculo na tela de Progresso
+
+### Backend
+
+**Novo DTO — `MuscleSetStatResponse.java`** (`com.treinus.progress.dto`):
+```java
+public record MuscleSetStatResponse(String category, long sets) {}
+```
+
+**`ProgressService.getSetsByMuscle(UUID userId, String period)`:**
+
+| `period` | Filtro aplicado |
+|---|---|
+| `WEEK` | `finishedAt` nos últimos 7 dias |
+| `MONTH` | `finishedAt` nos últimos 30 dias |
+| `YEAR` | `finishedAt` nos últimos 365 dias |
+| `ALL` | Sem filtro de data |
+
+- Filtra via `findByUserIdAndStatusAndFinishedAtBetween` para períodos com data; `findByUserIdAndStatusOrderByStartedAtDesc(Pageable.unpaged())` para `ALL`
+- Agrupa séries COMPLETED por `exercise.category.name()` via `Collectors.groupingBy` + `summingLong(se -> se.getSets().size())`
+- Ignora exercícios sem categoria ou sem séries registradas
+- Retorna lista ordenada por `sets` decrescente
+
+**`ProgressController`:** `GET /api/v1/progress/sets-by-muscle?period=MONTH`
+- `@RequestParam(defaultValue = "MONTH")` — padrão é Mês
+
+### Frontend
+
+**Modelo — `progress.model.ts`:**
+```typescript
+export interface MuscleSetStat { category: string; sets: number; }
+```
+
+**Service — `progress.service.ts`:**
+```typescript
+getSetsByMuscle(period = 'ALL'): Observable<MuscleSetStat[]>
+// passa period como HttpParams
+```
+
+**Componente — `progress.page.ts`:**
+
+| Adição | Detalhe |
+|---|---|
+| `MusclePeriod` | Tipo `'WEEK' \| 'MONTH' \| 'YEAR' \| 'ALL'` |
+| `musclePeriod` | Estado local, inicializado como `'MONTH'` |
+| `periods` | Array `['WEEK', 'MONTH', 'YEAR', 'ALL']` para iterar no template |
+| `periodLabels` | Mapa de rótulos PT-BR (`WEEK → Semana`, etc.) |
+| `loadMuscleChart()` | Chamada isolada ao service; atualiza `muscleSlices` e `totalMusclesSets` |
+| `selectPeriod(p)` | Early-return se mesmo período; atualiza estado e chama `loadMuscleChart()` |
+| `buildPieSlices(data)` | Gera paths SVG de donut: raio externo 80, interno 52, centro 100×100, início no topo (`-π/2`); retorna `PieSlice[]` com `path`, `color`, `label`, `sets`, `percentage` |
+
+Cores por grupo muscular (constante `MUSCLE_COLORS` no módulo): CHEST `#f97316`, BACK `#3b82f6`, LEGS `#22c55e`, SHOULDERS `#a855f7`, ARMS `#ec4899`, CORE `#eab308`, CARDIO `#06b6d4`, FULL_BODY `#ef4444`, GLUTES `#f43f5e`, CALVES `#84cc16`, FOREARMS `#14b8a6`, NECK `#8b5cf6`.
+
+**Template — `progress.page.html`:** card `.muscle-chart-card` inserido entre o card de XP e o Histórico:
+- `.chart-header` (flex, `space-between`): título "Séries por músculo" + `.period-selector` com 4 botões pill
+- `<svg viewBox="0 0 200 200">`: slices via `@for <path>` + `<text>` central com total de séries
+- `.muscle-legend` em grid 2 colunas: dot colorido · nome · quantidade · percentual
+- Card só renderizado quando `muscleSlices.length > 0`
+
+**Estilos — `progress.page.scss`:**
+- `.period-btn`: pill `border-radius: 99px`, estado `.active` com fundo e borda `var(--blue)`, cor `#fff`
+- `.pie-svg`: 180×180px; `.pie-total-num` 22px bold; `.pie-total-lbl` 10px `var(--text3)`
+- `.muscle-legend`: grid 2 colunas, gap 6px×12px
+- `.legend-dot`: 8px circle; `.legend-name`: 11px, truncado; `.legend-sets`: 11px bold; `.legend-pct`: 10px `var(--text3)`
+
+---
+
 ## [2026-06-30] — XP real, níveis progressivos, PRs no histórico e melhorias na tela de Progresso
 
 ### Fórmula de XP por treino

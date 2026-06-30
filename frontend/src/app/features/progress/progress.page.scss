@@ -38,6 +38,49 @@ ion-content.progress-content { --background: var(--bg); }
   .xp-sub { font-size: 11px; color: var(--text3); }
 }
 
+.muscle-chart-card {
+  .chart-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
+  }
+  .period-selector {
+    display: flex; gap: 4px;
+  }
+  .period-btn {
+    padding: 3px 8px; border-radius: 99px; border: 1px solid var(--border);
+    background: none; font-size: 11px; font-weight: 500; color: var(--text3);
+    cursor: pointer;
+    &.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    &:active { opacity: 0.75; }
+  }
+  .pie-wrapper {
+    display: flex; justify-content: center; margin: 8px 0 12px;
+  }
+  .pie-svg {
+    width: 180px; height: 180px;
+    .pie-slice { transition: opacity 0.15s; }
+    .pie-total-num { font-size: 22px; font-weight: 700; fill: var(--text1); }
+    .pie-total-lbl { font-size: 10px; fill: var(--text3); }
+  }
+  .muscle-legend {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .legend-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .legend-name {
+    font-size: 11px; color: var(--text2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .legend-sets {
+    font-size: 11px; font-weight: 600; color: var(--text1);
+  }
+  .legend-pct {
+    font-size: 10px; color: var(--text3); min-width: 28px; text-align: right;
+  }
+}
+
 .hist-item {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 0; border-bottom: 0.5px solid var(--border);

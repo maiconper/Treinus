@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress } from '../models';
+import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress, MuscleSetStat } from '../models';
 import { expand, reduce, takeWhile } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
@@ -42,6 +42,11 @@ export class ProgressService {
     const zone = `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
     const params = new HttpParams().set('date', date).set('zone', zone);
     return this.http.get<WorkoutHistoryItem[]>(`${this.url}/history`, { params });
+  }
+
+  getSetsByMuscle(period: string = 'ALL'): Observable<MuscleSetStat[]> {
+    const params = new HttpParams().set('period', period);
+    return this.http.get<MuscleSetStat[]>(`${this.url}/sets-by-muscle`, { params });
   }
 
   getExerciseProgress(exerciseId: string): Observable<ExerciseProgress> {

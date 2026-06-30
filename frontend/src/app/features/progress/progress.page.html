@@ -69,6 +69,41 @@
         <p class="xp-sub">{{ summary.xpForCurrentLevel - summary.xpInCurrentLevel }} XP para o Nível {{ summary.level + 1 }}</p>
       </div>
 
+      <!-- Séries por músculo -->
+      @if (muscleSlices.length > 0) {
+        <div class="card muscle-chart-card">
+          <div class="chart-header">
+            <p class="card-title">Séries por músculo</p>
+            <div class="period-selector">
+              @for (p of periods; track p) {
+                <button class="period-btn" [class.active]="musclePeriod === p" (click)="selectPeriod(p)">
+                  {{ periodLabels[p] }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="pie-wrapper">
+            <svg viewBox="0 0 200 200" class="pie-svg">
+              @for (slice of muscleSlices; track slice.label) {
+                <path [attr.d]="slice.path" [attr.fill]="slice.color" class="pie-slice" />
+              }
+              <text x="100" y="96" text-anchor="middle" class="pie-total-num">{{ totalMusclesSets }}</text>
+              <text x="100" y="110" text-anchor="middle" class="pie-total-lbl">séries</text>
+            </svg>
+          </div>
+          <div class="muscle-legend">
+            @for (slice of muscleSlices; track slice.label) {
+              <div class="legend-item">
+                <span class="legend-dot" [style.background]="slice.color"></span>
+                <span class="legend-name">{{ slice.label }}</span>
+                <span class="legend-sets">{{ slice.sets }}</span>
+                <span class="legend-pct">{{ slice.percentage }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
       <!-- History -->
       <p class="section-lbl" style="margin-top: 4px">Histórico</p>
 

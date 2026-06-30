@@ -3,6 +3,7 @@ package com.treinus.progress;
 import com.treinus.exercises.Exercise;
 import com.treinus.exercises.ExerciseRepository;
 import com.treinus.progress.dto.ExerciseProgressResponse;
+import com.treinus.progress.dto.MuscleSetStatResponse;
 import com.treinus.progress.dto.ProgressSummaryResponse;
 import com.treinus.progress.dto.WorkoutHistoryResponse;
 import com.treinus.sessions.SessionSet;
@@ -25,8 +26,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -139,6 +142,39 @@ public class ProgressService {
                             .count();
                     return WorkoutHistoryResponse.from(session, totalSets, newPersonalRecords);
                 })
+                .toList();
+    }
+
+    public List<MuscleSetStatResponse> getSetsByMuscle(UUID userId, String period) {
+        List<TrainingSession> sessions;
+
+        if ("ALL".equalsIgnoreCase(period)) {
+            sessions = sessionRepository
+                    .findByUserIdAndStatusOrderByStartedAtDesc(userId, SessionStatus.COMPLETED, Pageable.unpaged())
+                    .getContent();
+        } else {
+            Instant from = switch (period.toUpperCase()) {
+                case "WEEK"  -> Instant.now().minusSeconds(7L * 24 * 3600);
+                case "MONTH" -> Instant.now().minusSeconds(30L * 24 * 3600);
+                case "YEAR"  -> Instant.now().minusSeconds(365L * 24 * 3600);
+                default      -> Instant.EPOCH;
+            };
+            sessions = sessionRepository
+                    .findByUserIdAndStatusAndFinishedAtBetween(userId, SessionStatus.COMPLETED, from, Instant.now());
+        }
+
+        return sessions.stream()
+                .flatMap(s -> s.getExercises().stream())
+                .filter(se -> se.getExercise() != null
+                        && se.getExercise().getCategory() != null
+                        && !se.getSets().isEmpty())
+                .collect(Collectors.groupingBy(
+                        se -> se.getExercise().getCategory().name(),
+                        Collectors.summingLong(se -> se.getSets().size())
+                ))
+                .entrySet().stream()
+                .map(e -> new MuscleSetStatResponse(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparingLong(MuscleSetStatResponse::sets).reversed())
                 .toList();
     }
 
