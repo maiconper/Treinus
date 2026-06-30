@@ -167,17 +167,17 @@ export class HomePage implements OnInit, OnDestroy {
     const startBackendDay = this.toBackendDay(new Date(this.activeProgram.startedAt).getDay());
     const todayKey = this.toBackendDay(this.today.getDay());
     const currentWeekNum = this.todayProgramWeek.weekNumber;
+    // offset within a program week relative to the start day (0 = start day, 1 = next day, ..., 6 = last day)
+    const todayOffset = (todayKey - startBackendDay + 7) % 7;
     let count = 0;
     for (const week of this.activeProgram.weeks) {
       if (week.weekNumber > currentWeekNum) break;
-      const trainingDays = week.days
-        .filter(d => !d.restDay)
-        .map(d => d.dayOfWeek)
-        .sort((a, b) => a - b);
-      for (const day of trainingDays) {
-        if (week.weekNumber === 1 && day < startBackendDay) continue;
-        if (week.weekNumber === currentWeekNum && day > todayKey) continue;
-        count++;
+      for (const d of week.days) {
+        if (d.restDay) continue;
+        const dayOffset = (d.dayOfWeek - startBackendDay + 7) % 7;
+        if (week.weekNumber < currentWeekNum || dayOffset <= todayOffset) {
+          count++;
+        }
       }
     }
     return count;
