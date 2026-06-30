@@ -69,4 +69,9 @@ export class SessionDetailPage implements OnInit {
       .filter(e => e.status !== 'SKIPPED')
       .reduce((acc, e) => acc + e.sets.length, 0) ?? 0;
   }
+
+  get totalPRs(): number {
+    return this.session?.exercises
+      .reduce((acc, e) => acc + e.sets.filter(s => s.personalRecord).length, 0) ?? 0;
+  }
 }

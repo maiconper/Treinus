@@ -5,9 +5,11 @@ import com.treinus.exercises.ExerciseRepository;
 import com.treinus.progress.dto.ExerciseProgressResponse;
 import com.treinus.progress.dto.ProgressSummaryResponse;
 import com.treinus.progress.dto.WorkoutHistoryResponse;
+import com.treinus.sessions.SessionSet;
 import com.treinus.sessions.SessionStatus;
 import com.treinus.sessions.TrainingSession;
 import com.treinus.sessions.TrainingSessionRepository;
+import com.treinus.shared.XpCalculator;
 import com.treinus.shared.exception.ResourceNotFoundException;
 import com.treinus.users.UserProfile;
 import com.treinus.users.UserProfileRepository;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -72,14 +75,35 @@ public class ProgressService {
                 .map(TrainingSession::getTotalVolumeKg)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        Integer rawXp = profile != null ? profile.getXp() : null;
+        int xp = rawXp != null ? rawXp : 0;
+        Integer rawStreak = profile != null ? profile.getStreak() : null;
+        int streak = rawStreak != null ? rawStreak : 0;
+        int level = XpCalculator.levelFromXp(xp);
+
+        long totalSets = sessionRepository.countTotalSetsByUserId(userId);
+
+        long totalDurationSeconds = completedSessions.getContent().stream()
+                .filter(s -> s.getStartedAt() != null && s.getFinishedAt() != null)
+                .mapToLong(s -> Duration.between(s.getStartedAt(), s.getFinishedAt()).getSeconds())
+                .sum();
+
+        long avgDurationSeconds = totalWorkouts > 0 ? totalDurationSeconds / totalWorkouts : 0;
+
         return new ProgressSummaryResponse(
-                profile != null ? profile.getXp() : 0,
-                profile != null ? profile.getStreak() : 0,
+                xp,
+                streak,
+                level,
+                XpCalculator.xpInCurrentLevel(xp),
+                XpCalculator.xpForCurrentLevel(level),
                 totalWorkouts,
                 workoutsThisWeek,
                 volumeThisWeek,
                 volumeLastWeek,
-                profile != null ? profile.getLastWorkoutDate() : null
+                profile != null ? profile.getLastWorkoutDate() : null,
+                totalSets,
+                totalDurationSeconds,
+                avgDurationSeconds
         );
     }
 
@@ -90,7 +114,11 @@ public class ProgressService {
                     int totalSets = session.getExercises().stream()
                             .mapToInt(se -> se.getSets().size())
                             .sum();
-                    return WorkoutHistoryResponse.from(session, totalSets);
+                    int newPersonalRecords = (int) session.getExercises().stream()
+                            .flatMap(se -> se.getSets().stream())
+                            .filter(SessionSet::isPersonalRecord)
+                            .count();
+                    return WorkoutHistoryResponse.from(session, totalSets, newPersonalRecords);
                 });
     }
 
@@ -105,7 +133,11 @@ public class ProgressService {
                     int totalSets = session.getExercises().stream()
                             .mapToInt(se -> se.getSets().size())
                             .sum();
-                    return WorkoutHistoryResponse.from(session, totalSets);
+                    int newPersonalRecords = (int) session.getExercises().stream()
+                            .flatMap(se -> se.getSets().stream())
+                            .filter(SessionSet::isPersonalRecord)
+                            .count();
+                    return WorkoutHistoryResponse.from(session, totalSets, newPersonalRecords);
                 })
                 .toList();
     }

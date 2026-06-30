@@ -22,6 +22,18 @@
           <p class="ms-val">{{ summary.workoutsThisWeek }}</p>
           <p class="ms-lbl">Esta semana</p>
         </div>
+        <div class="mini-stat">
+          <p class="ms-val">{{ summary.totalSets }}</p>
+          <p class="ms-lbl">Séries totais</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-val">{{ formatDuration(summary.avgDurationSeconds) }}</p>
+          <p class="ms-lbl">Tempo médio</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-val">{{ formatDuration(summary.totalDurationSeconds) }}</p>
+          <p class="ms-lbl">Tempo total</p>
+        </div>
       </div>
 
       <!-- Volume card -->
@@ -45,15 +57,16 @@
       <div class="card xp-card">
         <div class="xp-header">
           <div>
-            <p class="card-title">XP Total</p>
+            <p class="card-title">Nível {{ summary.level }}</p>
             <p class="xp-val">{{ summary.xp }} XP</p>
           </div>
           <ion-icon name="star-outline" style="font-size: 24px; color: var(--amber)"></ion-icon>
         </div>
         <div class="xp-bar">
-          <div class="xp-fill" [style.width.%]="(summary.xp % 1000) / 10"></div>
+          <div class="xp-fill"
+               [style.width.%]="(summary.xpInCurrentLevel / summary.xpForCurrentLevel) * 100"></div>
         </div>
-        <p class="xp-sub">{{ 1000 - (summary.xp % 1000) }} XP para o próximo nível</p>
+        <p class="xp-sub">{{ summary.xpForCurrentLevel - summary.xpInCurrentLevel }} XP para o Nível {{ summary.level + 1 }}</p>
       </div>
 
       <!-- History -->
@@ -77,9 +90,19 @@
             <p class="hi-name">{{ h.workoutName }}</p>
             <p class="hi-meta">{{ formatDuration(h.durationSeconds) }} · {{ h.totalSets }} séries · {{ h.totalVolumeKg | number:'1.0-0' }} kg</p>
           </div>
+          @if (h.newPersonalRecords > 0) {
+            <span class="pr-badge">
+              <ion-icon name="trophy-outline"></ion-icon>
+              {{ h.newPersonalRecords }}
+            </span>
+          }
           <span class="xp-badge">+{{ h.xpEarned }} XP</span>
           <ion-icon name="chevron-forward-outline" class="hist-arrow"></ion-icon>
         </div>
+      }
+
+      @if (hasMore) {
+        <button class="btn-load-more" (click)="loadMore()">Ver mais 20 treinos</button>
       }
 
     </div>

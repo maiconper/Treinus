@@ -15,5 +15,7 @@ public record SessionSummaryResponse(
         BigDecimal totalVolumeKg,
         int xpEarned,
         int newPersonalRecords,
+        boolean leveledUp,
+        int newLevel,
         List<SessionExerciseResponse> exercises
 ) {}

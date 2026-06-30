@@ -49,10 +49,25 @@ ion-content.progress-content { --background: var(--bg); }
   .hist-info { flex: 1; }
   .hi-name { font-size: 13px; font-weight: 600; color: var(--text1); margin-bottom: 2px; }
   .hi-meta { font-size: 11px; color: var(--text3); }
+  .pr-badge {
+    display: flex; align-items: center; gap: 3px;
+    font-size: 11px; font-weight: 600; color: var(--amber);
+    white-space: nowrap;
+    ion-icon { font-size: 13px; }
+  }
   .xp-badge { font-size: 11px; color: var(--amber-dark); font-weight: 600; white-space: nowrap; }
   .hist-arrow { font-size: 15px; color: var(--text3); flex-shrink: 0; }
   cursor: pointer;
   &:active { background: var(--surface2); border-radius: 8px; }
+}
+
+.btn-load-more {
+  display: block; width: 100%; margin-top: 12px;
+  padding: 11px; background: none;
+  border: 1px solid var(--border); border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: var(--blue);
+  cursor: pointer;
+  &:active { opacity: 0.7; }
 }
 
 .empty-history {

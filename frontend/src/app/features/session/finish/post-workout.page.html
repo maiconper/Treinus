@@ -35,6 +35,12 @@
       </div>
     </div>
 
+    <!-- Level-up -->
+    <div class="levelup-banner" *ngIf="summary.leveledUp">
+      <ion-icon name="trophy-outline" style="color: var(--amber); font-size: 22px"></ion-icon>
+      <p>Você chegou ao <strong>Nível {{ summary.newLevel }}</strong>!</p>
+    </div>
+
     <!-- Exercises summary -->
     <p class="section-lbl" style="margin-top: 8px">Exercícios</p>
     <div class="ex-row" *ngFor="let ex of summary.exercises">

@@ -22,7 +22,8 @@
       </div>
       <div class="stat-pill">
         <ion-icon name="star-outline" style="color: var(--amber)"></ion-icon>
-        <strong>{{ user?.xp ?? 0 }}</strong> XP
+        <strong>Nível {{ user?.level ?? 0 }}</strong>
+        <span style="opacity:.6">· {{ user?.xp ?? 0 }} XP</span>
       </div>
     </div>
 

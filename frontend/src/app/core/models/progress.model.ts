@@ -1,11 +1,17 @@
 export interface ProgressSummary {
   xp: number;
+  level: number;
+  xpInCurrentLevel: number;
+  xpForCurrentLevel: number;
   streak: number;
   totalWorkouts: number;
   workoutsThisWeek: number;
   volumeThisWeek: number;
   volumeLastWeek: number;
   lastWorkoutDate?: string;
+  totalSets: number;
+  totalDurationSeconds: number;
+  avgDurationSeconds: number;
 }
 
 export interface WorkoutHistoryItem {
@@ -18,6 +24,7 @@ export interface WorkoutHistoryItem {
   totalSets: number;
   totalVolumeKg: number;
   xpEarned: number;
+  newPersonalRecords: number;
 }
 
 export interface WorkoutHistory {

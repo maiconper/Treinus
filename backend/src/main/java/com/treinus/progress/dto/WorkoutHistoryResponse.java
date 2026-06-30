@@ -15,9 +15,10 @@ public record WorkoutHistoryResponse(
         long durationSeconds,
         int totalSets,
         BigDecimal totalVolumeKg,
-        int xpEarned
+        int xpEarned,
+        int newPersonalRecords
 ) {
-    public static WorkoutHistoryResponse from(TrainingSession session, int totalSets) {
+    public static WorkoutHistoryResponse from(TrainingSession session, int totalSets, int newPersonalRecords) {
         long duration = 0;
         if (session.getFinishedAt() != null) {
             duration = java.time.Duration.between(session.getStartedAt(), session.getFinishedAt()).getSeconds();
@@ -32,7 +33,8 @@ public record WorkoutHistoryResponse(
                 duration,
                 totalSets,
                 session.getTotalVolumeKg(),
-                session.getXpEarned() != null ? session.getXpEarned() : 0
+                session.getXpEarned() != null ? session.getXpEarned() : 0,
+                newPersonalRecords
         );
     }
 }

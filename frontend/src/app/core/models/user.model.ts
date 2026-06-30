@@ -14,6 +14,7 @@ export interface User {
   heightCm?: number;
   birthDate?: string;
   xp: number;
+  level: number;
   streak: number;
   lastWorkoutDate?: string;
   onboardingCompleted: boolean;

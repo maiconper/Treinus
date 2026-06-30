@@ -33,6 +33,12 @@
           <p class="stat-val xp">+{{ session.xpEarned }}</p>
           <p class="stat-lbl">XP</p>
         </div>
+        @if (totalPRs > 0) {
+          <div class="stat-cell">
+            <p class="stat-val pr">{{ totalPRs }} <ion-icon name="trophy-outline"></ion-icon></p>
+            <p class="stat-lbl">PRs</p>
+          </div>
+        }
       </div>
 
       <!-- Exercises -->

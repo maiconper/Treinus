@@ -7,7 +7,7 @@ ion-content.detail-content { --background: var(--bg); }
 }
 
 .stats-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   gap: 8px; margin-bottom: 22px;
 
   .stat-cell {
@@ -18,6 +18,11 @@ ion-content.detail-content { --background: var(--bg); }
       font-size: 15px; font-weight: 700; color: var(--text1);
       span { font-size: 11px; color: var(--text3); font-weight: 400; }
       &.xp { color: var(--amber-dark); }
+      &.pr {
+        color: var(--amber);
+        display: flex; align-items: center; justify-content: center; gap: 3px;
+        ion-icon { font-size: 13px; }
+      }
     }
     .stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
   }

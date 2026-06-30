@@ -1,5 +1,141 @@
 # Changelog — Treinus
 
+## [2026-06-30] — XP real, níveis progressivos, PRs no histórico e melhorias na tela de Progresso
+
+### Fórmula de XP por treino
+
+**`SessionService.java` — `calculateXp(int newPRs, int currentStreak)`** (método privado):
+
+| Componente | Valor |
+|---|---|
+| Base | +100 XP por treino concluído |
+| Recorde pessoal | +50 XP por série com `is_personal_record = true` |
+| Streak 3–6 dias | +25 XP |
+| Streak 7–13 dias | +50 XP |
+| Streak 14+ dias | +75 XP |
+
+- `updateUserProgress(UUID userId, int xpEarned)`: assinatura atualizada para receber o XP como parâmetro e somá-lo ao XP existente do perfil (antes sempre incrementava valor fixo)
+- `finish()` e `registerManual()`: ambos calculam XP via `calculateXp()` antes de salvar a sessão
+
+### Backfill de XP histórico — `V17__backfill_xp_earned.sql`
+
+Nova migration Flyway que preenche o XP das sessões já registradas no banco:
+1. Recalcula `xp_earned` de todas as sessões `COMPLETED` com `xp_earned = 0`: `100 + (COUNT(séries PR) × 50)` — streak ignorado (não havia como saber o streak na época)
+2. Recalcula `user_profiles.xp` somando todos os `xp_earned` de sessões COMPLETED por usuário
+
+### Sistema de níveis progressivos
+
+#### `XpCalculator.java` — novo utilitário (`com.treinus.shared`)
+
+Curva progressiva com 20% de crescimento por nível:
+- Nível N → N+1 custa `1000 × 1.2^N` XP
+- XP total para atingir nível N: `5000 × (1.2^N − 1)`
+
+| Nível | XP para subir | XP acumulado |
+|---|---|---|
+| 0 → 1 | 1.000 | 1.000 |
+| 1 → 2 | 1.200 | 2.200 |
+| 2 → 3 | 1.440 | 3.640 |
+| 3 → 4 | 1.728 | 5.368 |
+| 5 → 6 | 2.488 | 9.930 |
+| 9 → 10 | 5.160 | 25.959 |
+
+Métodos públicos: `levelFromXp(int)`, `totalXpForLevel(int)`, `xpInCurrentLevel(int)`, `xpForCurrentLevel(int)`.
+O nível **não é armazenado no banco** — calculado sob demanda em cada resposta.
+
+#### Detecção de level-up em `SessionService.finish()`
+
+Lê XP do perfil antes de atualizar → calcula `levelBefore` → após `updateUserProgress` calcula `levelAfter` → `leveledUp = levelAfter > levelBefore`.
+
+#### DTOs e respostas atualizadas
+
+| Arquivo | Campos adicionados |
+|---|---|
+| `SessionSummaryResponse.java` | `boolean leveledUp`, `int newLevel` |
+| `UserResponse.java` | `Integer level` (calculado via `XpCalculator.levelFromXp`) |
+| `ProgressSummaryResponse.java` | `int level`, `int xpInCurrentLevel`, `int xpForCurrentLevel` |
+| `ProgressService.getSummary()` | Computa os 3 campos de nível via `XpCalculator` |
+
+#### Frontend — modelos TypeScript
+
+| Arquivo | Campos adicionados |
+|---|---|
+| `session.model.ts` (`SessionSummary`) | `leveledUp: boolean`, `newLevel: number` |
+| `user.model.ts` (`User`) | `level: number` |
+| `progress.model.ts` (`ProgressSummary`) | `level`, `xpInCurrentLevel`, `xpForCurrentLevel` |
+
+#### Frontend — telas
+
+| Tela | Mudança |
+|---|---|
+| `post-workout.page.html` | Banner "Você chegou ao Nível X!" exibido quando `summary.leveledUp` |
+| `home.page.html` | Stat-pill exibe `Nível X · N XP` (antes só mostrava XP) |
+| `profile.page.html` | Terceiro `stat-card` com o nível atual |
+| `progress.page.html` | Card XP: título "Nível X", barra de progresso via `xpInCurrentLevel / xpForCurrentLevel`, texto "N XP para o Nível X+1" |
+
+---
+
+### Troféu de PRs no histórico de treinos
+
+**`WorkoutHistoryResponse.java`** — novo campo `int newPersonalRecords`; `from()` recebe parâmetro adicional.
+
+**`ProgressService.getHistory()` e `getHistoryForDate()`** — adicionada contagem de séries com `isPersonalRecord = true` para cada sessão via stream (exercises/sets já carregados nesse contexto).
+
+**Frontend:**
+- `progress.model.ts` (`WorkoutHistoryItem`): `newPersonalRecords: number`
+- `progress.page.html`: badge `<span class="pr-badge">` com `ion-icon name="trophy-outline"` e contagem, visível apenas quando `> 0`
+- `progress.page.scss`: `.pr-badge` — flex, ícone 13px, cor `var(--amber)`
+
+---
+
+### PRs no stats-grid do detalhe da sessão
+
+Sem mudança no backend — `personalRecord` já era retornado em cada `SessionSet` do endpoint `GET /sessions/{id}`.
+
+**`session-detail.page.ts`** — getter `totalPRs`: `exercises.reduce(...sets.filter(s => s.personalRecord).length)`
+
+**`session-detail.page.html`** — novo `stat-cell` com troféu e contagem, exibido apenas quando `totalPRs > 0`.
+
+**`session-detail.page.scss`:**
+- Grid alterado de `repeat(4, 1fr)` para `repeat(auto-fit, minmax(60px, 1fr))` — acomoda 4 ou 5 células sem quebrar layout
+- Estilo `.stat-val.pr`: cor âmbar, `display: flex`, `align-items: center`, ícone 13px
+
+---
+
+### Estatísticas adicionais na tela de Progresso
+
+Novas métricas exibidas nos `mini-stats` (passa de 3 para 6 cells em 2 linhas de 3):
+
+| Métrica | Fonte |
+|---|---|
+| Séries totais | Query JPQL dedicada em `TrainingSessionRepository` (COUNT via JOIN, sem carregar exercises lazily) |
+| Tempo médio | `totalDurationSeconds / totalWorkouts` calculado em `ProgressService.getSummary()` |
+| Tempo total | Soma de `Duration.between(startedAt, finishedAt)` das sessões já carregadas |
+
+**Arquivos modificados:**
+- `TrainingSessionRepository.java`: `countTotalSetsByUserId(@Param UUID userId)` com `@Query` JPQL
+- `ProgressSummaryResponse.java`: `long totalSets`, `long totalDurationSeconds`, `long avgDurationSeconds`
+- `ProgressService.java`: import `java.time.Duration` adicionado; lógica de cálculo dos 3 campos
+- `progress.model.ts`: 3 campos adicionados em `ProgressSummary`
+- `progress.page.html`: 3 novos `mini-stat` cells usando `formatDuration()` já existente
+
+---
+
+### Paginação do histórico — botão "Ver mais 20 treinos"
+
+Sem mudança no backend — endpoint `GET /progress/history?page=N&size=20` já existia.
+
+**`progress.page.ts`:**
+- `private page = 0` e `hasMore = false` para controle de estado
+- `load()`: reseta `page = 0`, atualiza `hasMore` com `h.number + 1 < h.totalPages`
+- `loadMore()`: incrementa `page`, acumula resultados via `[...history, ...h.content]`
+
+**`progress.page.html`:** botão `btn-load-more` abaixo da lista, visível apenas quando `hasMore`.
+
+**`progress.page.scss`:** `.btn-load-more` — largura 100%, borda `1px solid var(--border)`, cor `var(--blue)`.
+
+---
+
 ## [2026-06-28] — Dia de descanso na home, opções de ação nos cards e abandono de programa
 
 ### Dia de descanso na home (`home.page`)

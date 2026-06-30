@@ -1,5 +1,6 @@
 package com.treinus.users.dto;
 
+import com.treinus.shared.XpCalculator;
 import com.treinus.users.FitnessGoal;
 import com.treinus.users.FitnessLevel;
 import com.treinus.users.User;
@@ -22,12 +23,15 @@ public record UserResponse(
         Integer heightCm,
         LocalDate birthDate,
         Integer xp,
+        Integer level,
         Integer streak,
         LocalDate lastWorkoutDate,
         boolean onboardingCompleted,
         Instant createdAt
 ) {
     public static UserResponse from(User user, UserProfile profile) {
+        Integer profileXp = profile != null ? profile.getXp() : null;
+        int xp = profileXp != null ? profileXp.intValue() : 0;
         return new UserResponse(
                 user.getId(),
                 user.getName(),
@@ -39,7 +43,8 @@ public record UserResponse(
                 profile != null ? profile.getBodyWeightKg() : null,
                 profile != null ? profile.getHeightCm() : null,
                 profile != null ? profile.getBirthDate() : null,
-                profile != null ? profile.getXp() : 0,
+                xp,
+                XpCalculator.levelFromXp(xp),
                 profile != null ? profile.getStreak() : 0,
                 profile != null ? profile.getLastWorkoutDate() : null,
                 profile != null && Boolean.TRUE.equals(profile.getOnboardingCompleted()),

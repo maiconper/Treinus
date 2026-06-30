@@ -5,6 +5,7 @@ import com.treinus.exercises.ExerciseRepository;
 import com.treinus.programs.ProgramDay;
 import com.treinus.programs.ProgramDayRepository;
 import com.treinus.sessions.dto.*;
+import com.treinus.shared.XpCalculator;
 import com.treinus.shared.exception.BusinessException;
 import com.treinus.shared.exception.ResourceNotFoundException;
 import com.treinus.users.User;
@@ -191,10 +192,19 @@ public class SessionService {
             }
         }
 
-        session.setTotalVolumeKg(totalVolume);
-        session.setXpEarned(0);
+        int manualPRs = (int) session.getExercises().stream()
+                .flatMap(se -> se.getSets().stream())
+                .filter(SessionSet::isPersonalRecord)
+                .count();
+        int currentStreakManual = userProfileRepository.findByUserId(userId)
+                .map(UserProfile::getStreak)
+                .orElse(0);
+        int manualXp = calculateXp(manualPRs, currentStreakManual);
 
-        updateUserProgress(userId);
+        session.setTotalVolumeKg(totalVolume);
+        session.setXpEarned(manualXp);
+
+        updateUserProgress(userId, manualXp);
 
         return SessionResponse.from(sessionRepository.save(session));
     }
@@ -303,16 +313,23 @@ public class SessionService {
             }
         }
 
+        UserProfile profileBefore = userProfileRepository.findByUserId(userId).orElse(null);
+        int currentStreak = profileBefore != null && profileBefore.getStreak() != null ? profileBefore.getStreak() : 0;
+        int xpBefore = profileBefore != null && profileBefore.getXp() != null ? profileBefore.getXp() : 0;
+        int levelBefore = XpCalculator.levelFromXp(xpBefore);
+        int xp = calculateXp(newPRs, currentStreak);
+
         session.setStatus(SessionStatus.COMPLETED);
         session.setFinishedAt(Instant.now());
         session.setTotalVolumeKg(totalVolume);
-        // XP calculation: TODO — implement formula
-        session.setXpEarned(0);
+        session.setXpEarned(xp);
 
         sessionRepository.save(session);
 
-        // Update user profile streak and last workout date
-        updateUserProgress(userId);
+        updateUserProgress(userId, xp);
+
+        int levelAfter = XpCalculator.levelFromXp(xpBefore + xp);
+        boolean leveledUp = levelAfter > levelBefore;
 
         long durationSeconds = Duration.between(session.getStartedAt(), session.getFinishedAt()).getSeconds();
 
@@ -327,8 +344,10 @@ public class SessionService {
                 totalSets,
                 totalReps,
                 totalVolume,
-                session.getXpEarned(),
+                xp,
                 newPRs,
+                leveledUp,
+                levelAfter,
                 exercises);
     }
 
@@ -340,21 +359,19 @@ public class SessionService {
         sessionRepository.save(session);
     }
 
-    private void updateUserProgress(UUID userId) {
+    private void updateUserProgress(UUID userId, int xpEarned) {
         userProfileRepository.findByUserId(userId).ifPresent(profile -> {
             LocalDate today = LocalDate.now();
             LocalDate lastWorkout = profile.getLastWorkoutDate();
 
             if (lastWorkout == null || lastWorkout.isBefore(today.minusDays(1))) {
-                // Streak broken
                 profile.setStreak(1);
             } else if (lastWorkout.equals(today.minusDays(1))) {
-                // Consecutive day
                 profile.setStreak(profile.getStreak() + 1);
             }
-            // If same day, streak stays the same
 
             profile.setLastWorkoutDate(today);
+            profile.setXp(profile.getXp() + xpEarned);
             userProfileRepository.save(profile);
         });
     }
@@ -365,6 +382,14 @@ public class SessionService {
             throw new BusinessException("Session is not in progress");
         }
         return session;
+    }
+
+    private int calculateXp(int newPRs, int currentStreak) {
+        int streakBonus = currentStreak >= 14 ? 75
+                        : currentStreak >= 7  ? 50
+                        : currentStreak >= 3  ? 25
+                        : 0;
+        return 100 + (newPRs * 50) + streakBonus;
     }
 
     private TrainingSession findSession(UUID id, UUID userId) {

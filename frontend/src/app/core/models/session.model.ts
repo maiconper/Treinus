@@ -80,5 +80,7 @@ export interface SessionSummary {
   totalVolumeKg: number;
   xpEarned: number;
   newPersonalRecords: number;
+  leveledUp: boolean;
+  newLevel: number;
   exercises: SessionExercise[];
 }

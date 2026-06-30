@@ -6,9 +6,15 @@ import java.time.LocalDate;
 public record ProgressSummaryResponse(
         int xp,
         int streak,
+        int level,
+        int xpInCurrentLevel,
+        int xpForCurrentLevel,
         int totalWorkouts,
         int workoutsThisWeek,
         BigDecimal volumeThisWeek,
         BigDecimal volumeLastWeek,
-        LocalDate lastWorkoutDate
+        LocalDate lastWorkoutDate,
+        long totalSets,
+        long totalDurationSeconds,
+        long avgDurationSeconds
 ) {}
