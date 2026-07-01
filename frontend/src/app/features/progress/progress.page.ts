@@ -362,11 +362,17 @@ export class ProgressPage implements OnInit {
     this.heatmapTrainedDays = this.heatmapData.length;
   }
 
-  heatmapCellOpacity(count: number): number {
-    if (count === 0) return 1;
-    if (count === 1) return 0.35;
-    if (count === 2) return 0.65;
-    return 1;
+  get heatmapMaxCount(): number {
+    return this.heatmapCells.reduce((m, c) => Math.max(m, c.count), 0);
+  }
+
+  heatmapCellColor(cell: HeatmapCell): string {
+    if (cell.count === 0) return 'var(--ice-track)';
+    if (this.heatmapMaxCount >= 2 && cell.count === this.heatmapMaxCount) return 'var(--volt)';
+    if (cell.count === 1) return 'var(--ice-1)';
+    if (cell.count === 2) return 'var(--ice-2)';
+    if (cell.count === 3) return 'var(--ice-3)';
+    return 'var(--ice-4)';
   }
 
   loadMore() {

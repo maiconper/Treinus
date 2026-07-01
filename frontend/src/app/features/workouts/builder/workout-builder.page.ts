@@ -195,14 +195,6 @@ export class WorkoutBuilderPage implements OnInit {
     return (this.workout?.exercises.length ?? 0) > 0;
   }
 
-  getCategoryColor(category: string): string {
-    const map: Record<string, string> = {
-      CHEST: '#5B8DEF', BACK: '#A78BFA', LEGS: '#34D399', SHOULDERS: '#F59E0B',
-      ARMS: '#F97316', CORE: '#EC4899', GLUTES: '#8B5CF6', CARDIO: '#06B6D4',
-    };
-    return map[category] ?? '#94A3B8';
-  }
-
   toggleExpand(id: string, event: Event) {
     event.stopPropagation();
     if (this.expandedIds.has(id)) {

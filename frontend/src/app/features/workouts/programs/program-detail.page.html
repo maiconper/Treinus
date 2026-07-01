@@ -15,7 +15,7 @@
     <!-- Nome + status -->
     <div class="name-row">
       <input
-        class="name-input"
+        class="name-input font-display"
         [(ngModel)]="programName"
         (blur)="saveName()"
         [readOnly]="!canEdit"
@@ -30,13 +30,13 @@
     <!-- Botão de ação -->
     <div class="action-row" *ngIf="program.status === 'DRAFT'">
       <button class="btn-start" (click)="startProgram()">
-        <ion-icon name="play-outline"></ion-icon>
+        <app-icon name="play" [size]="18"></app-icon>
         Iniciar programa
       </button>
     </div>
     <div class="action-row" *ngIf="program.status === 'ACTIVE'">
       <button class="btn-finish" (click)="finishProgram()">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <app-icon name="check" [size]="18"></app-icon>
         Concluir programa
       </button>
       <button class="btn-abandon" (click)="abandonProgram()">
@@ -57,7 +57,7 @@
     <div class="week-card" *ngFor="let week of program.weeks">
 
       <div class="week-header" (click)="toggleWeek(week.id)">
-        <span class="week-title">Semana {{ week.weekNumber }}</span>
+        <span class="week-title font-display">Semana {{ week.weekNumber }}</span>
         <div class="week-header-end">
           <button class="week-trash" *ngIf="canEdit" (click)="removeWeek(week, $event)">
             <ion-icon name="trash-outline"></ion-icon>
@@ -100,7 +100,7 @@
     </div>
 
     <button class="btn-add-week" *ngIf="canEdit" (click)="addWeek()">
-      <ion-icon name="add-circle-outline"></ion-icon>
+      <app-icon name="plus" [size]="20"></app-icon>
       Adicionar semana
     </button>
 

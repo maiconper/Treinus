@@ -1,74 +1,64 @@
 ion-content.home-content { --background: var(--bg); }
 
-.content-inner { padding: 16px 16px 24px; }
+.content-inner { padding: 14px 16px 16px; }
 
 .home-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 14px;
+  margin-bottom: 13px;
 
-  .greeting-sub { font-size: 12px; color: var(--text3); margin-bottom: 2px; }
-  .greeting-name { font-size: 22px; font-weight: 700; color: var(--text1); }
+  .greeting-sub { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; color: var(--text2); margin-bottom: 3px; }
+  .greeting-name { font-size: 22px; color: var(--text1); }
 
   .user-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--purple); color: #fff;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: #1C1C1C;
     display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
     flex-shrink: 0;
-  }
-}
-
-.stats-row {
-  display: flex; gap: 8px; margin-bottom: 16px;
-
-  .stat-pill {
-    display: flex; align-items: center; gap: 5px;
-    background: var(--surface2); border-radius: 99px;
-    padding: 5px 12px; font-size: 12px; color: var(--text2);
-    strong { color: var(--text1); font-weight: 600; }
-    ion-icon { font-size: 15px; }
   }
 }
 
 .session-banner {
   display: flex; align-items: center; gap: 10px;
-  background: var(--green-bg); border: 0.5px solid #9FE1CB;
-  border-radius: 10px; padding: 10px 12px; margin-bottom: 16px;
+  background: var(--surface2); border: 0.5px solid var(--border);
+  border-radius: 12px; padding: 10px 12px; margin-bottom: 13px;
   cursor: pointer;
-  p { flex: 1; font-size: 12px; color: var(--green-dark); line-height: 1.4; margin: 0; }
-  ion-icon { font-size: 16px; color: var(--green); flex-shrink: 0; }
+  p { flex: 1; font-size: 12px; color: var(--text1); line-height: 1.4; margin: 0; }
+  ion-icon { font-size: 16px; color: var(--text2); flex-shrink: 0; }
+
+  .session-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--volt); flex-shrink: 0;
+  }
 }
 
 .program-card {
-  background: linear-gradient(135deg, var(--purple-bg), var(--blue-bg));
-  border: 0.5px solid #C5C2F7;
+  background: var(--surface2);
   border-radius: var(--radius);
-  padding: 13px 15px; margin-bottom: 16px; cursor: pointer;
+  padding: 13px 15px; margin-bottom: 13px; cursor: pointer;
 
-  .prog-meta { font-size: 11px; color: var(--purple); margin-bottom: 3px; }
-  .prog-title { font-size: 15px; font-weight: 600; color: var(--purple-dark); margin-bottom: 8px; }
-  .prog-bar { height: 4px; background: rgba(83,74,183,0.2); border-radius: 99px; margin-bottom: 4px; overflow: hidden; }
-  .prog-fill { height: 4px; background: var(--purple); border-radius: 99px; }
-  .prog-pct { font-size: 11px; color: var(--purple); }
+  .prog-meta { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+  .prog-title { font-size: 18px; color: var(--text1); margin-bottom: 8px; }
+  .prog-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; margin-bottom: 4px; overflow: hidden; }
+  .prog-fill { height: 4px; background: var(--ice); border-radius: 99px; }
+  .prog-pct { font-size: 11px; color: var(--text2); }
 }
 
 .workout-card {
   background: var(--surface); border: 0.5px solid var(--border);
-  border-radius: var(--radius); padding: 13px 15px; margin-bottom: 16px;
+  border-radius: var(--radius); padding: 13px 15px; margin-bottom: 13px;
 
   .wc-title-row {
     display: flex; align-items: flex-start; justify-content: space-between;
     gap: 8px; margin-bottom: 10px;
   }
 
-  .wc-meta { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-  .wc-title { font-size: 17px; font-weight: 600; color: var(--text1); margin-bottom: 0; }
+  .wc-meta { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: var(--text2); text-transform: uppercase; margin-bottom: 4px; }
+  .wc-title { font-size: 19px; color: var(--text1); margin-bottom: 0; }
 
   .btn-edit {
-    flex-shrink: 0; background: var(--surface2); border: 0.5px solid var(--border);
-    border-radius: 8px; padding: 6px; cursor: pointer; color: var(--text3);
+    flex-shrink: 0; background: var(--surface2); border: none;
+    border-radius: 8px; padding: 6px; cursor: pointer; color: var(--text2);
     ion-icon { font-size: 15px; display: block; }
     &:active { opacity: 0.6; }
   }
@@ -77,81 +67,98 @@ ion-content.home-content { --background: var(--bg); }
     display: flex; gap: 6px; margin-top: 6px;
 
     .pos-chip {
-      font-size: 11px; font-weight: 600;
-      color: var(--purple); background: var(--purple-bg);
-      border-radius: 99px; padding: 2px 10px;
+      font-size: 10px; font-weight: 700;
+      color: var(--text2); background: var(--surface2);
+      border-radius: 99px; padding: 3px 10px;
     }
   }
 
   .wc-stats {
     display: flex; align-items: center; gap: 6px;
-    margin-bottom: 10px;
-
-    .stat-item {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 12px; color: var(--text3);
-      ion-icon { font-size: 13px; }
-    }
-
-    .stat-sep { font-size: 12px; color: var(--border2); }
-  }
-
-  .exercise-preview {
-    border-top: 0.5px solid var(--border);
-    padding-top: 8px;
-    margin-bottom: 12px;
-
-    .ex-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 4px 0;
-
-      .ex-name {
-        font-size: 13px; color: var(--text2);
-        flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        margin-right: 8px;
-      }
-
-      .ex-detail {
-        font-size: 12px; color: var(--text3); font-variant-numeric: tabular-nums;
-        white-space: nowrap;
-      }
-    }
-
-    .ex-more {
-      font-size: 12px; color: var(--text3); margin-top: 2px;
-    }
+    font-size: 11px; font-weight: 700; color: var(--text1);
+    .stat-sep { color: var(--text3); }
+    .stat-fade { color: var(--text2); }
   }
 }
 
 .done-card {
-  border-color: var(--green, #2ecc71);
-  background: color-mix(in srgb, var(--green, #2ecc71) 8%, var(--surface));
+  background: color-mix(in srgb, var(--volt) 6%, var(--surface));
 }
 
 .done-badge {
   display: flex; align-items: center; gap: 6px;
-  color: var(--green, #2ecc71); font-size: 13px; font-weight: 600;
-  ion-icon { font-size: 17px; }
+  color: var(--volt); font-size: 13px; font-weight: 700; margin-top: 10px;
 }
 
-.start-btn {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--blue); color: #042C53; border: none; border-radius: 99px;
-  padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
-  ion-icon { font-size: 16px; }
+// Card do dia — Volt hero card
+.day-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--volt);
+  color: var(--on-volt);
+  border-radius: 16px;
+  padding: 16px 17px 15px;
+  margin-bottom: 13px;
+  box-shadow: 0 20px 40px -20px rgba(242, 255, 73, 0.3);
+
+  .day-watermark {
+    position: absolute;
+    bottom: -14px;
+    right: -4px;
+    font-size: 76px;
+    line-height: 1;
+    color: rgba(10, 10, 10, 0.08);
+    pointer-events: none;
+  }
+
+  .wc-title-row { position: relative; }
+  .wc-meta { color: rgba(10, 10, 10, 0.65); font-size: 9px; }
+  .wc-title { color: var(--on-volt); font-size: 23px; }
+
+  .wc-program-pos .pos-chip {
+    background: rgba(10, 10, 10, 0.1);
+    color: rgba(10, 10, 10, 0.7);
+  }
+
+  .btn-edit {
+    background: rgba(10, 10, 10, 0.1);
+    color: rgba(10, 10, 10, 0.6);
+  }
+
+  .wc-stats {
+    position: relative;
+    color: var(--on-volt);
+    .stat-fade { color: rgba(10, 10, 10, 0.55); }
+    .stat-sep { color: rgba(10, 10, 10, 0.4); }
+  }
+
+  .day-start-btn {
+    position: relative;
+    width: 100%;
+    margin-top: 13px;
+    background: var(--on-volt);
+    color: var(--volt);
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    font-family: var(--font-body);
+    font-size: 12.5px; font-weight: 800;
+    cursor: pointer;
+    &:active { opacity: 0.85; }
+  }
 }
 
 .rest-day-card {
   position: relative;
   background: var(--surface2);
-  border: 0.5px solid var(--border);
   border-radius: var(--radius); padding: 24px 16px;
   display: flex; flex-direction: column; align-items: center; gap: 8px;
-  margin-bottom: 16px; text-align: center;
+  margin-bottom: 13px; text-align: center;
 
-  ion-icon { font-size: 30px; color: var(--purple); }
-  .rest-title { font-size: 15px; font-weight: 600; color: var(--text1); }
-  .rest-sub { font-size: 13px; color: var(--text3); line-height: 1.5; }
+  ion-icon { font-size: 28px; color: var(--text2); }
+  .rest-title { font-size: 17px; color: var(--text1); }
+  .rest-sub { font-size: 12.5px; color: var(--text2); line-height: 1.5; }
 
   .rest-day-menu {
     position: absolute; top: 10px; right: 10px;
@@ -164,25 +171,30 @@ ion-content.home-content { --background: var(--bg); }
   background: var(--surface); border: 0.5px solid var(--border);
   border-radius: var(--radius); padding: 24px 16px;
   display: flex; flex-direction: column; align-items: center; gap: 10px;
-  margin-bottom: 16px; text-align: center;
+  margin-bottom: 13px; text-align: center;
 
   .no-workout-menu {
     position: absolute; top: 10px; right: 10px;
     ion-icon { font-size: 15px; }
   }
 
-  ion-icon { font-size: 28px; color: var(--text3); }
   p { font-size: 13px; color: var(--text2); }
 
-  .btn-outline {
-    background: transparent; border: 0.5px solid var(--border2);
-    border-radius: 99px; padding: 8px 20px; font-size: 13px;
-    color: var(--text2); cursor: pointer;
+  .no-workout-btn { width: auto; padding: 8px 20px; font-size: 12px; }
+}
+
+.stats-row {
+  display: flex; gap: 9px;
+
+  .stat-card {
+    flex: 1;
+    display: flex; align-items: center; gap: 8px;
   }
 }
 
 .week-footer {
-  background: var(--surface);
+  background: transparent;
+  box-shadow: none;
   border-top: 0.5px solid var(--border);
 
   .footer-inner { padding: 10px 16px 12px; }
@@ -193,17 +205,17 @@ ion-content.home-content { --background: var(--bg); }
   display: flex; justify-content: space-between;
 
   .day-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .day-lbl { font-size: 11px; color: var(--text3); }
+  .day-lbl { font-size: 11px; color: var(--text2); }
   .day-dot {
     width: 30px; height: 30px; border-radius: 50%;
-    border: 0.5px solid var(--border);
+    background: var(--surface);
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: var(--text3);
+    font-size: 13px; color: var(--text2);
 
-    &.done     { background: var(--green-bg); border-color: #9FE1CB; color: var(--green); }
-    &.today    { border: 1.5px solid var(--purple); color: var(--purple); }
-    &.rest     { background: var(--surface2); border-color: transparent; color: var(--text3); }
-    &.upcoming { background: var(--blue-bg); border-color: transparent; color: var(--blue-mid); }
+    &.done     { background: var(--ice-bg); }
+    &.today    { border: 1.5px solid var(--volt); color: var(--volt); }
+    &.rest     { background: var(--surface2); color: var(--text3); }
+    &.upcoming { background: var(--surface); }
   }
 }
 

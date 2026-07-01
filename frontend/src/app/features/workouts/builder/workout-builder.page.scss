@@ -1,6 +1,6 @@
 .builder-header {
   ion-toolbar {
-    --background: var(--surface1);
+    --background: var(--bg);
     --border-color: var(--border);
   }
 
@@ -13,9 +13,9 @@
   .draft-badge {
     font-size: 11px;
     font-weight: 600;
-    background: var(--amber-bg, #FEF3C7);
-    color: var(--amber, #D97706);
-    border: 0.5px solid #FCD34D;
+    background: var(--ice-bg);
+    color: var(--ice);
+    border: 0.5px solid var(--border2);
     border-radius: 99px;
     padding: 3px 10px;
     margin-right: 4px;
@@ -27,7 +27,7 @@
   justify-content: center;
   gap: 6px;
   padding: 10px 0 8px;
-  background: var(--surface1);
+  background: var(--surface);
 
   .dot {
     width: 8px;
@@ -36,8 +36,8 @@
     background: var(--border);
     transition: background 0.2s, width 0.2s;
 
-    &.active { background: var(--blue); width: 20px; border-radius: 4px; }
-    &.done   { background: var(--green); }
+    &.active { background: var(--volt); width: 20px; border-radius: 4px; }
+    &.done   { background: var(--text2); }
   }
 }
 
@@ -64,7 +64,7 @@
 
 .field-input {
   width: 100%;
-  background: var(--surface1);
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 12px;
   padding: 14px 16px;
@@ -74,7 +74,7 @@
   box-sizing: border-box;
 
   &::placeholder { color: var(--text3); }
-  &:focus { border-color: var(--blue); }
+  &:focus { border-color: var(--volt); }
 }
 
 .group-grid {
@@ -85,7 +85,7 @@
 
 .group-chip {
   padding: 8px 16px;
-  background: var(--surface1);
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 99px;
   font-size: 13px;
@@ -95,9 +95,9 @@
   transition: all 0.15s;
 
   &.selected {
-    background: var(--blue-bg);
-    border-color: #85B7EB;
-    color: var(--blue);
+    background: var(--volt);
+    border-color: var(--volt);
+    color: var(--on-volt);
   }
 }
 
@@ -105,7 +105,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--surface1);
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 99px;
   padding: 8px 16px;
@@ -133,7 +133,7 @@
 
   .search-input {
     width: 100%;
-    background: var(--surface1);
+    background: var(--surface);
     border: 0.5px solid var(--border);
     border-radius: 12px;
     padding: 12px 16px 12px 42px;
@@ -143,7 +143,7 @@
     box-sizing: border-box;
 
     &::placeholder { color: var(--text3); }
-    &:focus { border-color: var(--blue); }
+    &:focus { border-color: var(--volt); }
   }
 }
 
@@ -169,8 +169,8 @@
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  background: var(--blue);
-  color: #fff;
+  background: var(--volt);
+  color: var(--on-volt);
   border-radius: 99px;
   font-size: 11px;
   font-weight: 700;
@@ -180,7 +180,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--surface1);
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 12px;
   padding: 12px 14px;
@@ -212,7 +212,7 @@
 }
 
 .ex-detail-panel {
-  background: var(--surface1);
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-top: none;
   border-bottom-left-radius: 12px;
@@ -253,8 +253,8 @@
   font-weight: 500;
 
   &.muscle {
-    background: rgba(167, 139, 250, 0.12);
-    color: #7C3AED;
+    background: var(--surface2);
+    color: var(--text2);
     ion-icon { font-size: 13px; }
   }
 
@@ -264,10 +264,15 @@
   }
 }
 
-.ex-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+.ex-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--surface2);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
@@ -304,8 +309,8 @@
     font-size: 12px;
     font-weight: 700;
 
-    &.sets  { background: var(--blue-bg);  color: var(--blue); }
-    &.reps  { background: var(--green-bg); color: var(--green); }
+    &.sets  { background: var(--volt-bg); color: var(--volt); }
+    &.reps  { background: var(--surface2); color: var(--text1); }
     &.weight { background: var(--surface2); color: var(--text2); }
   }
 
@@ -315,7 +320,7 @@
 
 .add-icon {
   font-size: 22px;
-  color: var(--blue);
+  color: var(--volt);
   flex-shrink: 0;
 }
 
@@ -326,12 +331,12 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #FFE4E6;
+  background: var(--danger-bg);
   border: none;
   cursor: pointer;
   flex-shrink: 0;
 
-  ion-icon { font-size: 16px; color: #EF4444; }
+  ion-icon { font-size: 16px; color: var(--danger); }
 }
 
 .btn-add-exercise {
@@ -346,7 +351,7 @@
   padding: 16px;
   font-size: 15px;
   font-weight: 600;
-  color: var(--blue);
+  color: var(--volt);
   cursor: pointer;
   margin-top: 8px;
   transition: opacity 0.15s, border-color 0.15s;
@@ -358,7 +363,7 @@
 
 // ── Footer ──────────────────────────────────────
 .builder-footer {
-  --background: var(--surface1);
+  --background: var(--surface);
   border-top: 0.5px solid var(--border);
 
   .footer-inner { padding: 12px 16px; }
@@ -370,8 +375,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--blue);
-  color: #fff;
+  background: var(--volt);
+  color: var(--on-volt);
   border: none;
   border-radius: 14px;
   padding: 16px;

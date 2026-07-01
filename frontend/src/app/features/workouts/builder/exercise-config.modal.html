@@ -2,7 +2,7 @@
 
   <div class="sheet-handle"></div>
 
-  <p class="sheet-title">{{ exerciseName }}</p>
+  <p class="sheet-title font-display">{{ exerciseName }}</p>
 
   <!-- Séries -->
   <div class="config-row">
@@ -55,7 +55,7 @@
   </div>
 
   <button class="btn-confirm" (click)="confirm()">
-    <ion-icon name="add-outline"></ion-icon>
+    <app-icon name="plus" [size]="18"></app-icon>
     Adicionar ao treino
   </button>
 

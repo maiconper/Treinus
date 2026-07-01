@@ -7,7 +7,7 @@
     </ion-buttons>
 
     <div class="toolbar-center">
-      <p class="tb-title">{{ isNew ? 'Novo treino' : (workout?.name || 'Treino') }}</p>
+      <p class="tb-title font-display">{{ isNew ? 'Novo treino' : (workout?.name || 'Treino') }}</p>
       <p class="tb-sub" *ngIf="!isNew">
         Passo {{ step }} de 2
       </p>
@@ -76,7 +76,9 @@
 
         @for (ex of workout.exercises; track ex.id) {
           <div class="ex-item added" [class.is-open]="isExpanded(ex.exerciseId)">
-            <div class="ex-color-dot" [style.background]="getCategoryColor(ex.category)"></div>
+            <div class="ex-icon">
+              <app-icon name="dumbbell" [size]="16"></app-icon>
+            </div>
             <div class="ex-info" (click)="editExercise(ex)">
               <p class="ex-name">{{ ex.exerciseName }}</p>
               <div class="ex-config">
@@ -130,7 +132,7 @@
 
       <!-- Botão adicionar -->
       <button class="btn-add-exercise" (click)="openExercisePicker()">
-        <ion-icon name="add-outline"></ion-icon>
+        <app-icon name="plus" [size]="20"></app-icon>
         Adicionar exercício
       </button>
 
@@ -153,7 +155,7 @@
     <!-- Step 2: tem exercícios → iniciar + salvar -->
     <ng-container *ngIf="step === 2 && hasExercises">
       <button class="btn-cta" (click)="startWorkout()">
-        <ion-icon name="play-outline"></ion-icon>
+        <app-icon name="play" [size]="18"></app-icon>
         Iniciar treino
       </button>
       <button class="btn-cta-ghost" (click)="finish()">Salvar e sair</button>
@@ -162,7 +164,7 @@
     <!-- Step 2: sem exercícios → apenas concluir -->
     <button class="btn-cta" *ngIf="step === 2 && !hasExercises" [disabled]="!workout" (click)="finish()">
       Concluir treino
-      <ion-icon name="checkmark-outline"></ion-icon>
+      <app-icon name="check" [size]="18"></app-icon>
     </button>
 
   </div>

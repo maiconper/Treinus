@@ -1,20 +1,28 @@
 <ion-tabs>
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="home" href="/tabs/home">
-      <ion-icon name="home-outline"></ion-icon>
-      <ion-label>Início</ion-label>
+      <div class="tab-pill">
+        <app-icon name="home" [size]="20" [strokeWidth]="2.2"></app-icon>
+        <span class="tab-label">Início</span>
+      </div>
     </ion-tab-button>
     <ion-tab-button tab="workouts" href="/tabs/workouts">
-      <ion-icon name="barbell-outline"></ion-icon>
-      <ion-label>Treinos</ion-label>
+      <div class="tab-pill">
+        <app-icon name="dumbbell" [size]="20" [strokeWidth]="2.2"></app-icon>
+        <span class="tab-label">Treinos</span>
+      </div>
     </ion-tab-button>
     <ion-tab-button tab="progress" href="/tabs/progress">
-      <ion-icon name="bar-chart-outline"></ion-icon>
-      <ion-label>Progresso</ion-label>
+      <div class="tab-pill">
+        <app-icon name="bar-chart" [size]="20" [strokeWidth]="2.2"></app-icon>
+        <span class="tab-label">Progresso</span>
+      </div>
     </ion-tab-button>
     <ion-tab-button tab="profile" href="/tabs/profile">
-      <ion-icon name="person-outline"></ion-icon>
-      <ion-label>Perfil</ion-label>
+      <div class="tab-pill">
+        <app-icon name="person" [size]="20" [strokeWidth]="2.2"></app-icon>
+        <span class="tab-label">Perfil</span>
+      </div>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

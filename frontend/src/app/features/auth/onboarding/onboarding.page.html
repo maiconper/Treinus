@@ -9,22 +9,22 @@
 
   <!-- Step 1: Level -->
   <div class="auth-form" *ngIf="step === 1">
-    <h2>Qual é seu nível?</h2>
+    <h2 class="font-display">Qual é seu nível?</h2>
     <p class="sub">Isso ajuda a recomendar os programas certos pra você.</p>
 
     <div class="options-list">
       <div class="option-card" *ngFor="let l of levels"
         [class.selected]="level === l.value"
         (click)="level = l.value">
-        <div class="opt-icon" [style.background]="l.bg">
-          <ion-icon [name]="l.icon" [style.color]="l.color"></ion-icon>
+        <div class="opt-icon">
+          <ion-icon [name]="l.icon"></ion-icon>
         </div>
         <div class="opt-info">
           <p class="opt-name">{{ l.label }}</p>
           <p class="opt-desc">{{ l.desc }}</p>
         </div>
         <div class="radio" [class.checked]="level === l.value">
-          <ion-icon name="checkmark" *ngIf="level === l.value"></ion-icon>
+          <app-icon name="check" *ngIf="level === l.value" [size]="13" color="var(--on-volt)" [strokeWidth]="2.6"></app-icon>
         </div>
       </div>
     </div>
@@ -36,15 +36,15 @@
 
   <!-- Step 2: Goal -->
   <div class="auth-form" *ngIf="step === 2">
-    <h2>Qual é seu objetivo?</h2>
+    <h2 class="font-display">Qual é seu objetivo?</h2>
     <p class="sub">Pode ter mais de um, escolha o principal.</p>
 
     <div class="options-grid">
       <div class="option-card" *ngFor="let g of goals"
         [class.selected]="goal === g.value"
         (click)="goal = g.value">
-        <div class="opt-icon" style="background: var(--surface2)">
-          <ion-icon [name]="g.icon" style="color: var(--text2)"></ion-icon>
+        <div class="opt-icon">
+          <ion-icon [name]="g.icon"></ion-icon>
         </div>
         <div class="opt-info">
           <p class="opt-name">{{ g.label }}</p>
@@ -61,7 +61,7 @@
 
   <!-- Step 3: Days -->
   <div class="auth-form" *ngIf="step === 3">
-    <h2>Quando você treina?</h2>
+    <h2 class="font-display">Quando você treina?</h2>
     <p class="sub">O app vai organizar seus treinos nesses dias.</p>
 
     <div class="days-picker">
@@ -87,22 +87,22 @@
   <!-- Step 4: Ready -->
   <div class="auth-form ready" *ngIf="step === 4">
     <div class="ready-icon">
-      <ion-icon name="checkmark-outline"></ion-icon>
+      <app-icon name="check" [size]="30" color="var(--on-volt)" [strokeWidth]="2.6"></app-icon>
     </div>
-    <h2>Tudo pronto!</h2>
+    <h2 class="font-display">Tudo pronto!</h2>
     <p class="sub">Seu perfil foi criado. Que tal começar a treinar?</p>
 
     <div class="tags">
       <span class="tag">
-        <ion-icon name="flame-outline" style="color: var(--amber)"></ion-icon>
+        <app-icon name="flame" [size]="13" color="var(--volt)"></app-icon>
         {{ level === 'BEGINNER' ? 'Iniciante' : level === 'INTERMEDIATE' ? 'Intermediário' : 'Avançado' }}
       </span>
       <span class="tag">
-        <ion-icon name="barbell-outline" style="color: var(--purple)"></ion-icon>
+        <app-icon name="dumbbell" [size]="13" color="var(--text2)"></app-icon>
         {{ goal === 'GAIN_MUSCLE' ? 'Hipertrofia' : goal === 'LOSE_WEIGHT' ? 'Emagrecimento' : goal === 'MAINTAIN' ? 'Força' : 'Saúde' }}
       </span>
       <span class="tag">
-        <ion-icon name="repeat-outline" style="color: var(--blue)"></ion-icon>
+        <ion-icon name="repeat-outline"></ion-icon>
         {{ selectedDaysCount }} dias/sem
       </span>
     </div>

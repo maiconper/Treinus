@@ -15,10 +15,10 @@
   @if (step === 'intro') {
     <div class="intro-inner">
       <div class="hero-icon">
-        <ion-icon name="barbell-outline"></ion-icon>
+        <app-icon name="dumbbell" [size]="28"></app-icon>
       </div>
       <input
-        class="workout-name-input"
+        class="workout-name-input font-display"
         type="text"
         [(ngModel)]="workoutName"
         (ngModelChange)="onWorkoutNameChange()"
@@ -30,7 +30,7 @@
         Registre agora para manter seu histórico atualizado.
       </p>
       <button class="btn-register" (click)="step = 'exercises'">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <app-icon name="check" [size]="20"></app-icon>
         Registrar treino feito
       </button>
     </div>
@@ -40,7 +40,7 @@
   @if (step === 'exercises') {
     <div class="inner">
       <input
-        class="workout-name-input inline"
+        class="workout-name-input inline font-display"
         type="text"
         [(ngModel)]="workoutName"
         (ngModelChange)="onWorkoutNameChange()"
@@ -93,14 +93,14 @@
           </div>
 
           <button class="btn-add-set" (click)="addSet(i)">
-            <ion-icon name="add-outline"></ion-icon>
+            <app-icon name="plus" [size]="16"></app-icon>
             Série
           </button>
         </div>
       }
 
       <button class="btn-add-exercise" (click)="openPicker()">
-        <ion-icon name="add-circle-outline"></ion-icon>
+        <app-icon name="plus" [size]="18"></app-icon>
         Adicionar exercício
       </button>
     </div>
@@ -118,7 +118,7 @@
         (click)="register()"
       >
         @if (!saving) {
-          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <app-icon name="check" [size]="20"></app-icon>
           Registrar treino
         } @else {
           <ion-spinner name="crescent"></ion-spinner>

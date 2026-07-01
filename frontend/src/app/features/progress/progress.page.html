@@ -140,7 +140,7 @@
           <path
             [attr.d]="chartLinePath"
             fill="none"
-            stroke="var(--blue)"
+            stroke="var(--ice)"
             stroke-width="2"
             stroke-linejoin="round"
             stroke-linecap="round"
@@ -152,8 +152,8 @@
             [attr.cx]="pt.cx"
             [attr.cy]="pt.cy"
             [attr.r]="pt.isPR ? 5.5 : 4"
-            [attr.fill]="pt.isPR ? 'var(--amber)' : 'var(--blue)'"
-            [attr.stroke]="pt.isPR ? 'white' : 'none'"
+            [attr.fill]="pt.isPR ? 'var(--volt)' : 'var(--ice)'"
+            [attr.stroke]="pt.isPR ? 'var(--on-volt)' : 'none'"
             stroke-width="2"
           />
           }
@@ -179,7 +179,7 @@
           <div class="ex-sess-info">
             <p
               class="esi-weight"
-              [style.color]="s.isPR ? 'var(--amber)' : null"
+              [style.color]="s.isPR ? 'var(--volt)' : null"
             >
               {{ s.maxWeight }}kg
             </p>
@@ -249,8 +249,7 @@
             width="11"
             height="11"
             rx="2"
-            [attr.fill]="cell.count > 0 ? 'var(--blue)' : 'var(--surface2)'"
-            [attr.opacity]="heatmapCellOpacity(cell.count)"
+            [attr.fill]="heatmapCellColor(cell)"
           />
           @if (cell.isToday) {
           <rect
@@ -260,7 +259,7 @@
             height="11"
             rx="2"
             fill="none"
-            stroke="var(--blue)"
+            stroke="var(--volt)"
             stroke-width="1.5"
           />
           } }
@@ -273,17 +272,24 @@
           <span class="hm-legend-lbl">Menos</span>
           <span
             class="hm-legend-cell"
-            style="background: var(--surface2)"
+            style="background: var(--ice-track)"
           ></span>
           <span
             class="hm-legend-cell"
-            style="background: var(--blue); opacity: 0.35"
+            style="background: var(--ice-1)"
           ></span>
           <span
             class="hm-legend-cell"
-            style="background: var(--blue); opacity: 0.65"
+            style="background: var(--ice-2)"
           ></span>
-          <span class="hm-legend-cell" style="background: var(--blue)"></span>
+          <span
+            class="hm-legend-cell"
+            style="background: var(--ice-3)"
+          ></span>
+          <span
+            class="hm-legend-cell"
+            style="background: var(--ice-4)"
+          ></span>
           <span class="hm-legend-lbl">Mais</span>
         </div>
       </div>
@@ -306,6 +312,12 @@
 
       @if (weeklyVolumeMaxKg > 0) {
         <svg viewBox="0 0 300 128" class="wv-svg">
+          <defs>
+            <linearGradient id="wv-ice-gradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--ice-grad-start)" />
+              <stop offset="100%" stop-color="var(--ice-grad-end)" />
+            </linearGradient>
+          </defs>
           <!-- Baseline -->
           <line x1="38" y1="105" x2="295" y2="105" stroke="var(--border)" stroke-width="0.5" />
           <!-- Y grid lines + labels -->
@@ -322,8 +334,7 @@
                 [attr.width]="bar.barW"
                 [attr.height]="bar.barH"
                 rx="2"
-                fill="var(--blue)"
-                [attr.opacity]="bar.isCurrentWeek ? 1 : 0.55"
+                [attr.fill]="bar.isCurrentWeek ? 'var(--volt)' : 'url(#wv-ice-gradient)'"
               />
             }
             @if (bar.monthLabel) {
@@ -416,7 +427,7 @@
         <p class="ms-lbl">Tempo total</p>
       </div>
       <div class="mini-stat">
-        <p class="ms-val" style="color: var(--amber)">
+        <p class="ms-val" style="color: var(--volt)">
           {{ summary.totalPersonalRecords }}
         </p>
         <p class="ms-lbl">PRs</p>
@@ -480,7 +491,7 @@
         </div>
         <ion-icon
           name="star-outline"
-          style="font-size: 24px; color: var(--amber)"
+          style="font-size: 24px; color: var(--ice)"
         ></ion-icon>
       </div>
       <div class="xp-bar">

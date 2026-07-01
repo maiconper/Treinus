@@ -2,7 +2,7 @@
   <div class="content-inner">
 
     <div class="trophy-icon">🏆</div>
-    <h2>Treino concluído!</h2>
+    <h2 class="font-display">Treino concluído!</h2>
     <p class="hero-sub">{{ summary.workoutName }}</p>
 
     <div class="stats-grid">
@@ -26,7 +26,7 @@
 
     <!-- XP earned -->
     <div class="xp-banner">
-      <ion-icon name="star-outline" style="color: var(--amber); font-size: 20px"></ion-icon>
+      <ion-icon name="star-outline" style="color: var(--volt); font-size: 20px"></ion-icon>
       <div>
         <p class="xp-title">+{{ summary.xpEarned }} XP ganhos!</p>
         <p class="xp-sub" *ngIf="summary.newPersonalRecords > 0">
@@ -37,14 +37,14 @@
 
     <!-- Level-up -->
     <div class="levelup-banner" *ngIf="summary.leveledUp">
-      <ion-icon name="trophy-outline" style="color: var(--amber); font-size: 22px"></ion-icon>
+      <ion-icon name="trophy-outline" style="color: var(--on-volt); font-size: 22px"></ion-icon>
       <p>Você chegou ao <strong>Nível {{ summary.newLevel }}</strong>!</p>
     </div>
 
     <!-- Exercises summary -->
     <p class="section-lbl" style="margin-top: 8px">Exercícios</p>
     <div class="ex-row" *ngFor="let ex of summary.exercises">
-      <div class="ex-dot" [style.background]="ex.status === 'SKIPPED' ? 'var(--text3)' : 'var(--green)'"></div>
+      <div class="ex-dot" [style.background]="ex.status === 'SKIPPED' ? 'var(--text3)' : 'var(--ice)'"></div>
       <p class="ex-name">{{ ex.exerciseName }}</p>
       <p class="ex-detail" *ngIf="ex.status !== 'SKIPPED'">{{ ex.sets.length }} séries</p>
       <span class="skipped-tag" *ngIf="ex.status === 'SKIPPED'">Pulado</span>

@@ -26,10 +26,10 @@ ion-content.achievements-content { --background: var(--bg); }
   display: flex; align-items: center; justify-content: center;
   font-size: 22px; border: 0.5px solid var(--border);
 
-  &.tier-bronze { background: var(--danger-bg); color: var(--danger); }
-  &.tier-silver { background: var(--surface2); color: var(--text2); }
-  &.tier-gold { background: var(--amber-bg); color: var(--amber-dark); }
-  &.tier-platinum { background: var(--purple-bg); color: var(--purple-dark); }
+  &.tier-bronze { background: var(--surface2); color: var(--text1); }
+  &.tier-silver { background: var(--surface2); color: var(--text1); }
+  &.tier-gold { background: var(--volt-bg); color: var(--volt); }
+  &.tier-platinum { background: var(--volt); color: var(--on-volt); }
 
   &.locked { background: var(--surface2); color: var(--border2); }
 }
@@ -37,7 +37,7 @@ ion-content.achievements-content { --background: var(--bg); }
 .achv-new-dot {
   position: absolute; top: -2px; right: -2px;
   width: 10px; height: 10px; border-radius: 50%;
-  background: var(--orange); border: 2px solid var(--surface);
+  background: var(--volt); border: 2px solid var(--surface);
 }
 
 .achv-name {

@@ -1,6 +1,6 @@
 .config-sheet {
   padding: 0 20px 32px;
-  background: var(--surface1);
+  background: var(--surface);
   border-radius: 20px 20px 0 0;
 }
 
@@ -60,14 +60,14 @@
   border: none;
   font-size: 22px;
   font-weight: 300;
-  color: var(--blue);
+  color: var(--volt);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:disabled { color: var(--border); }
-  &:active   { background: var(--surface1); }
+  &:active   { background: var(--surface); }
 }
 
 .step-val {
@@ -91,7 +91,7 @@
   outline: none;
 
   &::placeholder { color: var(--text3); font-weight: 400; }
-  &:focus { border-color: var(--blue); }
+  &:focus { border-color: var(--volt); }
 
   /* hide number arrows */
   &::-webkit-inner-spin-button,
@@ -112,8 +112,8 @@
   font-size: 13px;
   font-weight: 700;
 
-  &.sets   { background: var(--blue-bg);  color: var(--blue); }
-  &.reps   { background: var(--green-bg); color: var(--green); }
+  &.sets   { background: var(--volt-bg);  color: var(--volt); }
+  &.reps   { background: var(--surface2); color: var(--text1); }
   &.weight { background: var(--surface2); color: var(--text2); border: 0.5px solid var(--border); }
 }
 
@@ -129,8 +129,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--blue);
-  color: #fff;
+  background: var(--volt);
+  color: var(--on-volt);
   border: none;
   border-radius: 14px;
   padding: 15px;

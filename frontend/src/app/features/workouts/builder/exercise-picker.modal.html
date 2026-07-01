@@ -4,7 +4,7 @@
     <button class="close-btn" (click)="dismiss()">
       <ion-icon name="close-outline"></ion-icon>
     </button>
-    <p class="picker-title">Exercícios</p>
+    <p class="picker-title font-display">Exercícios</p>
     <div class="header-spacer"></div>
   </div>
 
@@ -43,7 +43,9 @@
     }
     @for (ex of filteredExercises; track ex.id) {
       <div class="picker-item" [class.is-open]="isExpanded(ex.id)" (click)="select(ex)">
-        <div class="ex-dot" [style.background]="getCategoryColor(ex.category)"></div>
+        <div class="ex-icon">
+          <app-icon name="dumbbell" [size]="16"></app-icon>
+        </div>
         <div class="ex-info">
           <p class="ex-name">{{ ex.name }}</p>
           <p class="ex-meta">{{ getCategoryLabel(ex.category) }}</p>
@@ -51,7 +53,7 @@
         <button class="chevron-btn" (click)="toggleExpand(ex.id, $event)">
           <ion-icon [name]="isExpanded(ex.id) ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
         </button>
-        <ion-icon name="add-circle-outline" class="add-icon"></ion-icon>
+        <app-icon name="plus" [size]="24" class="add-icon"></app-icon>
       </div>
       @if (isExpanded(ex.id)) {
         <div class="ex-detail-panel">

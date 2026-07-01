@@ -14,7 +14,7 @@ ion-content.progress-content { --background: var(--bg); }
   padding: 3px 8px; border-radius: 99px; border: 1px solid var(--border);
   background: none; font-size: 11px; font-weight: 500; color: var(--text3);
   cursor: pointer;
-  &.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  &.active { background: var(--volt); border-color: var(--volt); color: var(--on-volt); }
   &:active { opacity: 0.75; }
 }
 
@@ -49,9 +49,9 @@ ion-content.progress-content { --background: var(--bg); }
 
 .xp-card {
   .xp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-  .xp-val { font-size: 22px; font-weight: 700; color: var(--amber-dark); margin-top: 2px; }
+  .xp-val { font-size: 22px; font-weight: 700; color: var(--ice); margin-top: 2px; }
   .xp-bar { height: 7px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
-  .xp-fill { height: 7px; background: var(--amber); border-radius: 99px; }
+  .xp-fill { height: 7px; background: var(--ice); border-radius: 99px; }
   .xp-sub { font-size: 11px; color: var(--text3); }
 }
 
@@ -99,8 +99,8 @@ ion-content.progress-content { --background: var(--bg); }
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
   }
   .pr-count-badge {
-    font-size: 11px; font-weight: 600; color: var(--amber);
-    background: rgba(245, 158, 11, 0.12); border-radius: 99px; padding: 2px 8px;
+    font-size: 11px; font-weight: 600; color: var(--on-volt);
+    background: var(--volt); border-radius: 99px; padding: 2px 8px;
   }
   .pr-filter-scroll {
     display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -121,7 +121,7 @@ ion-content.progress-content { --background: var(--bg); }
   .pr-meta { font-size: 11px; color: var(--text3); }
   .pr-weight {
     display: flex; align-items: center; gap: 4px;
-    font-size: 14px; font-weight: 700; color: var(--amber);
+    font-size: 14px; font-weight: 700; color: var(--volt);
     white-space: nowrap; flex-shrink: 0;
     ion-icon { font-size: 13px; }
   }
@@ -184,7 +184,7 @@ ion-content.progress-content { --background: var(--bg); }
   .ex-metric {
     flex: 1; background: var(--surface2); border-radius: 10px;
     padding: 10px; text-align: center;
-    .em-val { font-size: 16px; font-weight: 700; color: var(--text1); &.pos { color: var(--green); } &.neg { color: #ef4444; } }
+    .em-val { font-size: 16px; font-weight: 700; color: var(--text1); &.pos { color: var(--ice); } &.neg { color: var(--danger); } }
     .em-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
   }
 
@@ -201,11 +201,11 @@ ion-content.progress-content { --background: var(--bg); }
     padding: 7px 6px; border-bottom: 0.5px solid var(--border);
     border-radius: 8px;
     &:last-child { border-bottom: none; }
-    &.is-pr { background: rgba(245, 158, 11, 0.08); }
+    &.is-pr { background: var(--volt-bg); }
   }
   .pr-badge {
     display: flex; align-items: center; gap: 3px;
-    font-size: 11px; font-weight: 700; color: var(--amber);
+    font-size: 11px; font-weight: 700; color: var(--volt);
     white-space: nowrap;
     ion-icon { font-size: 13px; }
   }
@@ -292,14 +292,14 @@ ion-content.progress-content { --background: var(--bg); }
   .hi-meta { font-size: 11px; color: var(--text3); }
   .pr-badge {
     display: flex; align-items: center; gap: 3px;
-    font-size: 11px; font-weight: 600; color: var(--amber);
+    font-size: 11px; font-weight: 600; color: var(--volt);
     white-space: nowrap;
     ion-icon { font-size: 13px; }
   }
-  .xp-badge { font-size: 11px; color: var(--amber-dark); font-weight: 600; white-space: nowrap; }
+  .xp-badge { font-size: 11px; color: var(--ice); font-weight: 600; white-space: nowrap; }
   .hist-arrow { font-size: 15px; color: var(--text3); flex-shrink: 0; }
   cursor: pointer;
-  &.is-pr { background: rgba(245, 158, 11, 0.08); border-radius: 8px; }
+  &.is-pr { background: var(--volt-bg); border-radius: 8px; }
   &:active { background: var(--surface2); border-radius: 8px; }
 }
 
@@ -307,7 +307,7 @@ ion-content.progress-content { --background: var(--bg); }
   display: block; width: 100%; margin-top: 12px;
   padding: 11px; background: none;
   border: 1px solid var(--border); border-radius: 10px;
-  font-size: 13px; font-weight: 500; color: var(--blue);
+  font-size: 13px; font-weight: 500; color: var(--volt);
   cursor: pointer;
   &:active { opacity: 0.7; }
 }

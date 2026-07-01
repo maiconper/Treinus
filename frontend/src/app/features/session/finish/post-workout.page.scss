@@ -18,11 +18,20 @@ h2 { font-size: 22px; font-weight: 700; color: var(--text1); margin-bottom: 4px;
 
 .xp-banner {
   display: flex; align-items: center; gap: 12px;
-  background: var(--amber-bg); border: 0.5px solid #FAC775;
+  background: var(--volt-bg); border: 0.5px solid var(--border2);
   border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; text-align: left;
 
-  .xp-title { font-size: 14px; font-weight: 600; color: var(--amber-dark); }
-  .xp-sub { font-size: 12px; color: var(--amber-dark); margin-top: 2px; }
+  .xp-title { font-size: 14px; font-weight: 600; color: var(--volt); }
+  .xp-sub { font-size: 12px; color: var(--volt); margin-top: 2px; }
+}
+
+.levelup-banner {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--volt); border-radius: 12px;
+  padding: 12px 14px; margin-bottom: 16px; text-align: left;
+
+  p { font-size: 14px; font-weight: 600; color: var(--on-volt); }
+  strong { font-weight: 700; }
 }
 
 .ex-row {
@@ -35,9 +44,4 @@ h2 { font-size: 22px; font-weight: 700; color: var(--text1); margin-bottom: 4px;
   .skipped-tag { font-size: 10px; color: var(--text3); background: var(--surface2); border-radius: 99px; padding: 2px 8px; }
 }
 
-.btn-primary {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--blue); color: #042C53; border: none; border-radius: 99px;
-  padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px;
-  ion-icon { font-size: 16px; }
-}
+.btn-primary { margin-top: 20px; }

@@ -4,27 +4,44 @@
     <div class="home-header">
       <div>
         <p class="greeting-sub">{{ formattedDate }}</p>
-        <p class="greeting-name">{{ greeting }}, {{ firstName }}</p>
+        <p class="greeting-name font-display">
+          {{ greeting }}, {{ firstName }}
+        </p>
       </div>
-      <div class="user-avatar">{{ userInitials }}</div>
+      <div class="user-avatar">
+        <app-icon
+          name="person"
+          [size]="18"
+          color="#888"
+          [strokeWidth]="2"
+        ></app-icon>
+      </div>
     </div>
-
     <!-- Stats -->
     <div class="stats-row">
-      <div class="stat-pill">
-        <ion-icon name="flame-outline" style="color: var(--orange)"></ion-icon>
-        <strong>{{ user?.streak ?? 0 }}</strong> dias
+      <div class="stat-card">
+        <app-icon name="flame" [size]="16" color="var(--ice)"></app-icon>
+        <div>
+          <div class="stat-card-value ice font-display">
+            {{ summary?.streak ?? 0 }}
+          </div>
+          <div class="stat-card-label">dias seguidos</div>
+        </div>
       </div>
-      <div class="stat-pill">
-        <ion-icon name="star-outline" style="color: var(--amber)"></ion-icon>
-        <strong>Nível {{ user?.level ?? 0 }}</strong>
-        <span style="opacity:.6">· {{ user?.xp ?? 0 }} XP</span>
+      <div class="stat-card">
+        <app-icon name="bar-chart" [size]="16" color="#fff"></app-icon>
+        <div>
+          <div class="stat-card-value font-display">
+            {{ formatVolume(summary?.volumeThisWeek) }}
+          </div>
+          <div class="stat-card-label">volume/semana</div>
+        </div>
       </div>
     </div>
 
     <!-- Active session banner -->
     <div class="session-banner" *ngIf="activeSession" (click)="startWorkout()">
-      <ion-icon name="radio-button-on" style="color: var(--green)"></ion-icon>
+      <span class="session-dot"></span>
       <p>
         <strong>Treino em andamento</strong> — {{ activeSession.workoutName }}
       </p>
@@ -36,7 +53,9 @@
       <p class="section-lbl">Programa ativo</p>
       <div class="program-card" (click)="goToPrograms()">
         <p class="prog-meta">{{ activeProgram.name }}</p>
-        <p class="prog-title">{{ activeProgram.weeksCount }} semanas</p>
+        <p class="prog-title font-display">
+          {{ activeProgram.weeksCount }} semanas
+        </p>
         <div class="prog-bar">
           <div class="prog-fill" [style.width.%]="programPercent"></div>
         </div>
@@ -56,9 +75,14 @@
       <p class="wc-meta">
         {{ formatTime(s.startedAt) }} · {{ formatDuration(s.durationSeconds) }}
       </p>
-      <p class="wc-title">{{ s.workoutName }}</p>
+      <p class="wc-title font-display">{{ s.workoutName }}</p>
       <div class="done-badge">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <app-icon
+          name="check"
+          [size]="14"
+          color="var(--volt)"
+          [strokeWidth]="2.6"
+        ></app-icon>
         Treino concluído!
       </div>
     </div>
@@ -67,13 +91,15 @@
     <!-- Today's workout -->
     @if (todayWorkout && !isTodayWorkoutDone) {
     <p class="section-lbl">Treino de hoje</p>
-    <div class="workout-card">
+    <div class="day-card">
+      <div class="day-watermark font-display">{{ todayWorkoutLetter }}</div>
       <div class="wc-title-row">
         <div>
           <p class="wc-meta">
-            {{ activeProgram ? activeProgram.name : 'Treino avulso' }}
+            TREINO DE HOJE @if (todayWorkoutLetter) { · {{ todayWorkoutLetter }}
+            }
           </p>
-          <p class="wc-title">{{ todayWorkout.workoutName }}</p>
+          <p class="wc-title font-display">{{ todayWorkout.workoutName }}</p>
           @if (todayProgramWeek) {
           <div class="wc-program-pos">
             <span class="pos-chip"
@@ -89,31 +115,21 @@
       </div>
       @if (todayWorkoutDetails; as w) {
       <div class="wc-stats">
-        <span class="stat-item">
-          <ion-icon name="barbell-outline"></ion-icon>
-          {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' :
-          '' }}
-        </span>
+        <span
+          >{{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' :
+          '' }}</span
+        >
         <span class="stat-sep">·</span>
-        <span class="stat-item">
-          <ion-icon name="time-outline"></ion-icon>
-          ~{{ estimatedMinutes(w) }} min
-        </span>
+        <span class="stat-fade">~{{ estimatedMinutes(w) }} min</span>
       </div>
-      @if (w.exercises.length > 0) {
-      <div class="exercise-preview">
-        @for (ex of w.exercises.slice(0, 3); track ex.id) {
-        <div class="ex-row">
-          <span class="ex-name">{{ ex.exerciseName }}</span>
-          <span class="ex-detail">{{ formatReps(ex) }}</span>
-        </div>
-        } @if (w.exercises.length > 3) {
-        <p class="ex-more">+ {{ w.exercises.length - 3 }} mais</p>
-        }
-      </div>
-      } }
-      <button class="btn-primary start-btn" (click)="startWorkout()">
-        <ion-icon name="play-outline"></ion-icon>
+      }
+      <button class="day-start-btn" (click)="startWorkout()">
+        <app-icon
+          name="play"
+          [size]="15"
+          color="var(--volt)"
+          [strokeWidth]="2.4"
+        ></app-icon>
         {{ activeSession ? 'Continuar treino' : 'Iniciar treino' }}
       </button>
     </div>
@@ -129,34 +145,19 @@
           <p class="wc-meta">
             {{ activeProgram ? activeProgram.name : 'Treino avulso' }}
           </p>
-          <p class="wc-title">{{ tomorrowWorkout.workoutName }}</p>
+          <p class="wc-title font-display">{{ tomorrowWorkout.workoutName }}</p>
         </div>
       </div>
       @if (tomorrowWorkoutDetails; as w) {
       <div class="wc-stats">
-        <span class="stat-item">
-          <ion-icon name="barbell-outline"></ion-icon>
-          {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' :
-          '' }}
-        </span>
+        <span
+          >{{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' :
+          '' }}</span
+        >
         <span class="stat-sep">·</span>
-        <span class="stat-item">
-          <ion-icon name="time-outline"></ion-icon>
-          ~{{ estimatedMinutes(w) }} min
-        </span>
+        <span class="stat-fade">~{{ estimatedMinutes(w) }} min</span>
       </div>
-      @if (w.exercises.length > 0) {
-      <div class="exercise-preview">
-        @for (ex of w.exercises.slice(0, 3); track ex.id) {
-        <div class="ex-row">
-          <span class="ex-name">{{ ex.exerciseName }}</span>
-          <span class="ex-detail">{{ formatReps(ex) }}</span>
-        </div>
-        } @if (w.exercises.length > 3) {
-        <p class="ex-more">+ {{ w.exercises.length - 3 }} mais</p>
-        }
-      </div>
-      } }
+      }
     </div>
     } @else if (!todayWorkout && isTodayRestDay) {
     <p class="section-lbl">Treino de hoje</p>
@@ -165,7 +166,7 @@
         <ion-icon name="ellipsis-vertical"></ion-icon>
       </button>
       <ion-icon name="moon-outline"></ion-icon>
-      <p class="rest-title">Dia de descanso</p>
+      <p class="rest-title font-display">Dia de descanso</p>
       <p class="rest-sub">
         @if (todayProgramWeek) { Semana {{ todayProgramWeek.weekNumber }} · }
         Aproveite para recuperar. O descanso é parte do treino.
@@ -173,48 +174,39 @@
     </div>
     @if (tomorrowWorkout) {
     <p class="section-lbl">Treino de amanhã</p>
-    <div class="workout-card" (click)="openTomorrowWorkout()" style="cursor: pointer">
+    <div
+      class="workout-card"
+      (click)="openTomorrowWorkout()"
+      style="cursor: pointer"
+    >
       <div class="wc-title-row">
         <div>
-          <p class="wc-meta">{{ activeProgram ? activeProgram.name : 'Treino avulso' }}</p>
-          <p class="wc-title">{{ tomorrowWorkout.workoutName }}</p>
+          <p class="wc-meta">
+            {{ activeProgram ? activeProgram.name : 'Treino avulso' }}
+          </p>
+          <p class="wc-title font-display">{{ tomorrowWorkout.workoutName }}</p>
         </div>
       </div>
       @if (tomorrowWorkoutDetails; as w) {
       <div class="wc-stats">
-        <span class="stat-item">
-          <ion-icon name="barbell-outline"></ion-icon>
-          {{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' : '' }}
-        </span>
+        <span
+          >{{ w.exercises.length }} exercício{{ w.exercises.length !== 1 ? 's' :
+          '' }}</span
+        >
         <span class="stat-sep">·</span>
-        <span class="stat-item">
-          <ion-icon name="time-outline"></ion-icon>
-          ~{{ estimatedMinutes(w) }} min
-        </span>
+        <span class="stat-fade">~{{ estimatedMinutes(w) }} min</span>
       </div>
-      @if (w.exercises.length > 0) {
-      <div class="exercise-preview">
-        @for (ex of w.exercises.slice(0, 3); track ex.id) {
-        <div class="ex-row">
-          <span class="ex-name">{{ ex.exerciseName }}</span>
-          <span class="ex-detail">{{ formatReps(ex) }}</span>
-        </div>
-        } @if (w.exercises.length > 3) {
-        <p class="ex-more">+ {{ w.exercises.length - 3 }} mais</p>
-        }
-      </div>
-      } }
+      }
     </div>
-    }
-    } @else if (!todayWorkout) {
+    } } @else if (!todayWorkout) {
     <p class="section-lbl">Treino de hoje</p>
     <div class="no-workout-card">
       <button class="btn-edit no-workout-menu" (click)="openNoWorkoutOptions()">
         <ion-icon name="ellipsis-vertical"></ion-icon>
       </button>
-      <ion-icon name="calendar-outline"></ion-icon>
+      <app-icon name="calendar" [size]="26" color="var(--text3)"></app-icon>
       <p>Nenhum treino para hoje.</p>
-      <button class="btn-outline" (click)="goToPrograms()">
+      <button class="btn-secondary no-workout-btn" (click)="goToPrograms()">
         Ver programas
       </button>
     </div>
@@ -243,11 +235,16 @@
           [class.upcoming]="getDayStatus(d.key) === 'upcoming'"
         >
           @if (getDayStatus(d.key) === 'done') {
-          <ion-icon name="checkmark" style="font-size: 13px"></ion-icon>
+          <app-icon
+            name="check"
+            [size]="13"
+            color="var(--ice)"
+            [strokeWidth]="2.6"
+          ></app-icon>
           } @else if (getDayStatus(d.key) === 'rest') {
           <ion-icon name="moon-outline" style="font-size: 13px"></ion-icon>
           } @else if (getDayStatus(d.key) === 'upcoming') {
-          <ion-icon name="barbell-outline" style="font-size: 13px"></ion-icon>
+          <app-icon name="dumbbell" [size]="13" color="var(--text2)"></app-icon>
           }
         </div>
       </div>

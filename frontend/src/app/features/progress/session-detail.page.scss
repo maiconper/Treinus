@@ -17,9 +17,9 @@ ion-content.detail-content { --background: var(--bg); }
     .stat-val {
       font-size: 15px; font-weight: 700; color: var(--text1);
       span { font-size: 11px; color: var(--text3); font-weight: 400; }
-      &.xp { color: var(--amber-dark); }
+      &.xp { color: var(--ice); }
       &.pr {
-        color: var(--amber);
+        color: var(--volt);
         display: flex; align-items: center; justify-content: center; gap: 3px;
         ion-icon { font-size: 13px; }
       }
@@ -48,8 +48,8 @@ ion-content.detail-content { --background: var(--bg); }
   }
 
   .ex-badge {
-    font-size: 11px; font-weight: 600; color: var(--blue);
-    background: var(--blue-bg); border-radius: 99px; padding: 2px 8px;
+    font-size: 11px; font-weight: 600; color: var(--text1);
+    background: var(--surface2); border-radius: 99px; padding: 2px 8px;
     white-space: nowrap; flex-shrink: 0;
 
     &.skipped { color: var(--text3); background: var(--surface2); }
@@ -75,7 +75,7 @@ ion-content.detail-content { --background: var(--bg); }
       border-top: none; padding-bottom: 4px;
     }
 
-    &.pr { color: var(--amber-dark); font-weight: 600; }
+    &.pr { color: var(--volt); font-weight: 600; }
   }
 
   .reps-cell {
@@ -98,7 +98,7 @@ ion-content.detail-content { --background: var(--bg); }
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--blue);
+  color: var(--volt);
   cursor: pointer;
 
   ion-icon { font-size: 18px; }
@@ -119,6 +119,6 @@ ion-content.detail-content { --background: var(--bg); }
 
   .btn-back {
     background: none; border: 1px solid var(--border); border-radius: 8px;
-    padding: 8px 20px; font-size: 14px; color: var(--blue); cursor: pointer;
+    padding: 8px 20px; font-size: 14px; color: var(--volt); cursor: pointer;
   }
 }

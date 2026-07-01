@@ -62,19 +62,19 @@ ion-content.workouts-content { --background: var(--bg); }
       padding: 3px 4px; text-align: center; width: 100%;
     }
 
-    .tag-workout { background: var(--blue-bg, #E8F4FF); color: var(--blue); }
+    .tag-workout { background: var(--ice-bg); color: var(--ice); }
     .tag-rest    { background: var(--surface2); color: var(--text3); }
     .tag-empty   { background: transparent; color: var(--text3); }
 
     .day-done-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green); flex-shrink: 0;
+      background: var(--ice); flex-shrink: 0;
     }
 
     &.is-today {
-      .day-date  { color: var(--blue); font-weight: 700; }
-      .day-label { color: var(--blue); font-weight: 700; }
-      .day-tag   { outline: 1.5px solid var(--blue); }
+      .day-date  { color: var(--volt); font-weight: 700; }
+      .day-label { color: var(--volt); font-weight: 700; }
+      .day-tag   { outline: 1.5px solid var(--volt); }
     }
 
     &.is-past {
@@ -149,19 +149,19 @@ ion-content.workouts-content { --background: var(--bg); }
   .btn-start-workout {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 13px; border: none; border-radius: 10px;
-    background: var(--blue); color: #042C53;
+    background: var(--volt); color: var(--on-volt);
     font-size: 14px; font-weight: 700; cursor: pointer;
     ion-icon { font-size: 16px; }
   }
 
   &.done {
-    border-color: var(--green, #2ecc71);
-    background: color-mix(in srgb, var(--green, #2ecc71) 8%, var(--surface));
+    border-color: var(--border2);
+    background: var(--surface2);
   }
 
   .done-badge {
     display: flex; align-items: center; gap: 6px;
-    color: var(--green, #2ecc71); font-size: 13px; font-weight: 600; margin-top: 8px;
+    color: var(--volt); font-size: 13px; font-weight: 600; margin-top: 8px;
     ion-icon { font-size: 17px; }
   }
 }
@@ -213,7 +213,7 @@ ion-content.workouts-content { --background: var(--bg); }
   p { font-size: 13px; color: var(--text2); }
 
   .btn-link {
-    background: none; border: none; color: var(--blue);
+    background: none; border: none; color: var(--volt);
     font-size: 13px; font-weight: 600; cursor: pointer; padding: 0;
   }
 }
@@ -229,7 +229,7 @@ ion-content.workouts-content { --background: var(--bg); }
 
   .btn-primary {
     display: flex; align-items: center; gap: 6px;
-    background: var(--blue); color: #042C53; border: none;
+    background: var(--volt); color: var(--on-volt); border: none;
     border-radius: 99px; padding: 11px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
   }
 }
@@ -250,7 +250,7 @@ ion-content.workouts-content { --background: var(--bg); }
   .wi-info { flex: 1; min-width: 0; }
   .wi-name { font-size: 14px; font-weight: 600; color: var(--text1); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .wi-meta { font-size: 12px; color: var(--text3); }
-  .preset-badge { color: var(--blue); font-weight: 600; }
+  .preset-badge { color: var(--ice); font-weight: 600; }
   .wi-arrow { font-size: 16px; color: var(--text3); }
 }
 
@@ -264,7 +264,9 @@ ion-content.workouts-content { --background: var(--bg); }
 
   .pi-icon {
     width: 40px; height: 40px; border-radius: 10px;
+    background: var(--surface2);
     display: flex; align-items: center; justify-content: center;
+    color: var(--text2);
     ion-icon { font-size: 20px; }
   }
 

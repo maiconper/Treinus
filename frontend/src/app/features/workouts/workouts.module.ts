@@ -9,6 +9,7 @@ import { ExerciseConfigModal } from './builder/exercise-config.modal';
 import { ExercisePickerModal } from './builder/exercise-picker.modal';
 import { ProgramDetailPage } from './programs/program-detail.page';
 import { ManualRegisterPage } from './manual-register/manual-register.page';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 const routes: Routes = [
   { path: '', component: WorkoutsPage },
@@ -19,7 +20,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, RouterModule.forChild(routes), IconComponent],
   declarations: [WorkoutsPage, WorkoutBuilderPage, ExerciseConfigModal, ExercisePickerModal, ProgramDetailPage, ManualRegisterPage],
 })
 export class WorkoutsPageModule {}

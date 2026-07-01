@@ -9,7 +9,7 @@
 * { box-sizing: border-box; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text1);
 }
@@ -21,13 +21,23 @@ body {
 .fw-600 { font-weight: 600; }
 .fw-500 { font-weight: 500; }
 
+// Display type — Oswald italic uppercase, used for titles / big numbers
+.font-display {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+}
+
 // Section label
 .section-lbl {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text3);
+  letter-spacing: 0.2em;
+  color: var(--text2);
   margin: 0 0 8px;
 }
 
@@ -39,22 +49,86 @@ body {
   padding: 13px 15px;
 }
 
-// Primary button
+// Buttons — see design_handoff_treinus_brand/README.md (seção 05 · Componentes)
 .btn-primary {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 8px;
   width: 100%;
-  background: var(--blue);
-  color: #042C53;
+  background: var(--volt);
+  color: var(--on-volt);
   border: none;
-  border-radius: 99px;
-  padding: 13px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 11px;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  ion-icon { font-size: 16px; }
+  ion-icon, app-icon { font-size: 16px; }
+  &:active { opacity: 0.85; }
+  &[disabled] { opacity: 0.4; pointer-events: none; }
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  color: var(--text1);
+  border: 1.5px solid var(--border2);
+  border-radius: 11px;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  ion-icon, app-icon { font-size: 16px; }
+  &:active { opacity: 0.7; }
+}
+
+.btn-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: var(--surface);
+  color: var(--volt);
+  border: none;
+  border-radius: 11px;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  ion-icon, app-icon { font-size: 16px; }
+  &:active { opacity: 0.8; }
+}
+
+// Chip — grupo muscular / seleção
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 9px 16px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 11px;
+  background: var(--surface);
+  color: var(--text2);
+  border: none;
+  cursor: pointer;
+
+  &.selected {
+    background: var(--volt);
+    color: var(--on-volt);
+  }
 }
 
 // Stat pill
@@ -70,34 +144,63 @@ body {
   strong { color: var(--text1); font-weight: 600; }
 }
 
+// Stat card — número em Oswald itálico, label Manrope
+.stat-card {
+  background: var(--surface2);
+  border-radius: 14px;
+  padding: 12px 14px;
+
+  .stat-card-value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--text1);
+    &.volt { color: var(--volt); }
+    &.ice { color: var(--ice); }
+  }
+
+  .stat-card-label {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 10px;
+    color: var(--text2);
+    margin-top: 5px;
+  }
+}
+
 // Ionic component resets
 ion-content {
   --background: var(--bg);
   --padding-start: 0;
   --padding-end: 0;
+  --color: var(--text1);
 }
 
 ion-toolbar {
-  --background: var(--surface);
+  --background: var(--bg);
   --border-color: var(--border);
+  --color: var(--text1);
 }
 
 ion-tab-bar {
-  --background: var(--surface);
-  --border-color: var(--border);
+  --background: var(--surface2);
+  --border-color: transparent;
   height: 56px;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 ion-tab-button {
-  --color: var(--text3);
-  --color-selected: var(--blue);
+  --color: var(--text2);
+  --color-selected: var(--on-volt);
   font-size: 10px;
 }
 
 ion-item {
   --background: var(--surface);
   --border-color: var(--border);
+  --color: var(--text1);
   --padding-start: 0;
   --inner-padding-end: 0;
 }
@@ -107,12 +210,24 @@ ion-input, ion-textarea {
   --border-radius: 9px;
   --padding-start: 12px;
   --padding-end: 12px;
+  --color: var(--text1);
+  --placeholder-color: var(--text3);
   border: 0.5px solid var(--border);
   border-radius: 9px;
   font-size: 13px;
 }
 
+ion-spinner { color: var(--volt); }
+
 // Remove default Ionic header border
 ion-header {
   &::after { display: none; }
+}
+
+ion-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }

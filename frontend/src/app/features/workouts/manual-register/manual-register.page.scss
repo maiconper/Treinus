@@ -17,7 +17,7 @@ ion-content.manual-content { --background: var(--bg); }
 
   &.inline { margin-top: 14px; }
   &::placeholder { color: var(--text3); font-weight: 400; }
-  &:focus { outline: none; border-color: var(--blue); }
+  &:focus { outline: none; border-color: var(--volt); }
 }
 
 .workout-date {
@@ -106,7 +106,7 @@ ion-content.manual-content { --background: var(--bg); }
   width: 100%;
   text-align: center;
 
-  &:focus { outline: none; border-color: var(--blue); }
+  &:focus { outline: none; border-color: var(--volt); }
   &::placeholder { color: var(--text3); }
 }
 
@@ -116,7 +116,7 @@ ion-content.manual-content { --background: var(--bg); }
   gap: 4px;
   background: none;
   border: none;
-  color: var(--blue);
+  color: var(--volt);
   font-size: 13px;
   font-weight: 500;
   padding: 2px 0;
@@ -138,7 +138,7 @@ ion-content.manual-content { --background: var(--bg); }
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--blue);
+  color: var(--volt);
   cursor: pointer;
   margin-top: 4px;
 
@@ -162,8 +162,8 @@ ion-footer.footer-safe {
   gap: 8px;
   width: 100%;
   padding: 15px;
-  background: var(--blue);
-  color: #fff;
+  background: var(--volt);
+  color: var(--on-volt);
   border: none;
   border-radius: 14px;
   font-size: 16px;
@@ -171,7 +171,7 @@ ion-footer.footer-safe {
   cursor: pointer;
 
   ion-icon { font-size: 20px; }
-  ion-spinner { --color: #fff; width: 20px; height: 20px; }
+  ion-spinner { --color: var(--on-volt); width: 20px; height: 20px; }
 
   &.saving, &:disabled { opacity: 0.6; cursor: default; }
 }

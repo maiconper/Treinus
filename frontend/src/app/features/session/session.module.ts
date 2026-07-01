@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ActiveSessionPage } from './active/active-session.page';
 import { PostWorkoutPage } from './finish/post-workout.page';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 const routes: Routes = [
   { path: ':id', component: ActiveSessionPage },
@@ -12,7 +13,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule.forChild(routes), IconComponent],
   declarations: [ActiveSessionPage, PostWorkoutPage],
 })
 export class SessionModule {}

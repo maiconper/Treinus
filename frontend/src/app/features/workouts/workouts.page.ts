@@ -587,10 +587,10 @@ export class WorkoutsPage implements OnInit {
   }
 
   getProgramStatusColor(status: string): string {
-    if (status === 'ACTIVE') return 'var(--green)';
+    if (status === 'ACTIVE') return 'var(--volt)';
     if (status === 'COMPLETED') return 'var(--text3)';
     if (status === 'CANCELLED') return 'var(--text3)';
-    return 'var(--amber)';
+    return 'var(--text2)';
   }
 
   getProgramStatusLabel(status: string): string {

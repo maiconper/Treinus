@@ -1,50 +1,51 @@
-// Design tokens — Treinus
+// Design tokens — Treinus (identidade "Performance atlética" / Volt)
 :root {
-  --bg:           #F7F6F3;
-  --surface:      #FFFFFF;
-  --surface2:     #F0EEE9;
-  --border:       #E2DFD8;
-  --border2:      #CBC7BE;
-  --text1:        #1A1916;
-  --text2:        #5C5A55;
-  --text3:        #9A9790;
+  --bg:           #0A0A0A; // track
+  --surface:      #1A1A1A;
+  --surface2:     #141414;
+  --border:       rgba(255, 255, 255, 0.08);
+  --border2:      rgba(255, 255, 255, 0.16);
+  --text1:        #FFFFFF;
+  --text2:        #888888;
+  --text3:        #5B5B5B;
 
-  --blue:         #378ADD;
-  --blue-bg:      #E6F1FB;
-  --blue-dark:    #0C447C;
-  --blue-mid:     #185FA5;
+  --volt:         #F2FF49;
+  --on-volt:      #0A0A0A;
+  --volt-bg:      rgba(242, 255, 73, 0.12);
 
-  --purple:       #534AB7;
-  --purple-bg:    #EEEDFE;
-  --purple-dark:  #1E1A7A;
+  --danger:       #FF453A;
+  --danger-bg:    rgba(255, 69, 58, 0.12);
 
-  --green:        #1D9E75;
-  --green-bg:     #E1F5EE;
-  --green-dark:   #085041;
-
-  --orange:       #D85A30;
-  --amber:        #BA7517;
-  --amber-bg:     #FAEEDA;
-  --amber-dark:   #633806;
-
-  --danger:       #993C1D;
-  --danger-bg:    #FAECE7;
+  // Gelo — cor de dado (data-viz). Volt fica reservado para pico/agora/recorde.
+  --ice:          #35CDEA;
+  --ice-bg:       rgba(53, 205, 234, 0.12);
+  --ice-track:    #161719;
+  --ice-track-border: rgba(255, 255, 255, 0.04);
+  --ice-1:        #0F3A4A;
+  --ice-2:        #176079;
+  --ice-3:        #2494B4;
+  --ice-4:        #35CDEA;
+  --ice-grad-start: #37CDEA;
+  --ice-grad-end:   #1E7C98;
 
   --radius:       14px;
   --radius-sm:    10px;
   --radius-xs:    8px;
 
+  --font-display: 'Oswald', sans-serif;
+  --font-body:    'Manrope', sans-serif;
+
   // Ionic overrides
   --ion-background-color:             var(--bg);
   --ion-text-color:                   var(--text1);
-  --ion-toolbar-background:           var(--surface);
+  --ion-toolbar-background:           var(--bg);
   --ion-toolbar-border-color:         var(--border);
   --ion-item-background:              var(--surface);
-  --ion-tab-bar-background:           var(--surface);
-  --ion-tab-bar-border-color:         var(--border);
-  --ion-color-primary:                #378ADD;
-  --ion-color-primary-contrast:       #042C53;
-  --ion-color-primary-shade:          #2e75bd;
-  --ion-color-primary-tint:           #4d96e3;
-  --ion-font-family:                  -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ion-tab-bar-background:           var(--surface2);
+  --ion-tab-bar-border-color:         transparent;
+  --ion-color-primary:                #F2FF49;
+  --ion-color-primary-contrast:       #0A0A0A;
+  --ion-color-primary-shade:          #d6e040;
+  --ion-color-primary-tint:           #f4ff61;
+  --ion-font-family:                  'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

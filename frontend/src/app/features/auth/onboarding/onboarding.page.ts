@@ -26,9 +26,9 @@ export class OnboardingPage {
   ];
 
   levels = [
-    { value: 'BEGINNER' as FitnessLevel, label: 'Iniciante', desc: 'Menos de 1 ano ou voltando depois de pausa', icon: 'leaf-outline', bg: '#EAF3DE', color: '#27500A' },
-    { value: 'INTERMEDIATE' as FitnessLevel, label: 'Intermediário', desc: '1–3 anos, treinando com regularidade', icon: 'flame-outline', bg: '#FAEEDA', color: '#633806' },
-    { value: 'ADVANCED' as FitnessLevel, label: 'Avançado', desc: 'Mais de 3 anos, domina os movimentos básicos', icon: 'trophy-outline', bg: '#FAECE7', color: '#993C1D' },
+    { value: 'BEGINNER' as FitnessLevel, label: 'Iniciante', desc: 'Menos de 1 ano ou voltando depois de pausa', icon: 'leaf-outline' },
+    { value: 'INTERMEDIATE' as FitnessLevel, label: 'Intermediário', desc: '1–3 anos, treinando com regularidade', icon: 'flame-outline' },
+    { value: 'ADVANCED' as FitnessLevel, label: 'Avançado', desc: 'Mais de 3 anos, domina os movimentos básicos', icon: 'trophy-outline' },
   ];
 
   goals = [

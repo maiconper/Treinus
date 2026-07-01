@@ -1,17 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="abandon()" fill="clear" color="medium">
+      <ion-button (click)="abandon()" fill="clear">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     <div class="toolbar-center" *ngIf="session">
       <p class="toolbar-title">{{ session.workoutName }}</p>
-      <p class="toolbar-sub">Exercício {{ currentExerciseIndex + 1 }} de {{ session.exercises.length }} · {{ formattedTime }}</p>
     </div>
     <ion-buttons slot="end">
-      <ion-button (click)="finish()" fill="clear" color="primary">
-        <ion-icon slot="icon-only" name="checkmark-done-outline"></ion-icon>
+      <ion-button (click)="finish()" fill="clear">
+        <app-icon name="check" [size]="20" color="var(--volt)" [strokeWidth]="2.4"></app-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -23,10 +22,18 @@
 <ion-content class="session-content" *ngIf="session && currentExercise">
   <div class="content-inner">
 
+    <!-- Context row -->
+    <div class="ctx-row">
+      <span class="ctx-label">EXERCÍCIO · {{ currentExerciseIndex + 1 }}/{{ session.exercises.length }}</span>
+      <div class="ctx-timer">
+        <app-icon name="timer" [size]="12" color="var(--on-volt)" [strokeWidth]="2.4"></app-icon>
+        <span class="font-display">{{ formattedTime }}</span>
+      </div>
+    </div>
+
     <!-- Exercise name -->
-    <span class="ex-badge">{{ currentExercise.exerciseName }}</span>
     <div class="ex-name-row">
-      <p class="ex-name">{{ currentExercise.exerciseName }}</p>
+      <p class="ex-name font-display">{{ currentExercise.exerciseName }}</p>
       @if (currentExerciseInfo) {
         <button class="info-btn" (click)="toggleInfo($event)">
           <ion-icon [name]="infoExpanded ? 'information-circle' : 'information-circle-outline'"></ion-icon>
@@ -45,59 +52,69 @@
         }
         <div class="ex-detail-tags">
           @if (currentExerciseInfo.primaryMuscleGroup) {
-            <span class="ex-tag muscle">
+            <span class="ex-tag">
               <ion-icon name="body-outline"></ion-icon>
               {{ currentExerciseInfo.primaryMuscleGroup }}
             </span>
           }
           @if (currentExerciseInfo.equipment) {
-            <span class="ex-tag equip">{{ currentExerciseInfo.equipment }}</span>
+            <span class="ex-tag">{{ currentExerciseInfo.equipment }}</span>
           }
         </div>
       </div>
     }
 
     <!-- Sets progress -->
-    <p class="sets-label">Séries</p>
-    <div class="sets-row">
-      <div class="set-chip"
+    <p class="section-lbl">Séries</p>
+    <div class="sets-list">
+      <div class="set-row"
         *ngFor="let i of [1,2,3,4,5].slice(0, plannedSets)"
         [class.done]="i <= completedSets"
         [class.active]="i === completedSets + 1">
-        <span class="sc-lbl">Série {{ i }}</span>
-        <span class="sc-val">
-          <ion-icon name="checkmark" *ngIf="i <= completedSets" style="font-size:13px"></ion-icon>
-          <ng-container *ngIf="i > completedSets">{{ reps }} reps</ng-container>
+        <span class="sr-lbl">
+          @if (i <= completedSets) {
+            <app-icon name="check" [size]="13" color="var(--ice)" [strokeWidth]="2.6"></app-icon>
+          }
+          Série {{ i }}
+        </span>
+        <span class="sr-val">
+          @if (i <= completedSets) {
+            {{ currentExercise.sets[i - 1].reps }} × {{ currentExercise.sets[i - 1].weightKg }}kg
+          } @else if (i === completedSets + 1) {
+            {{ reps }} × {{ weight }}kg
+          } @else {
+            {{ reps }} reps
+          }
         </span>
       </div>
     </div>
 
     @if (!isExerciseDone) {
-      <!-- Inputs -->
-      <div class="inputs-row">
-        <div class="input-block">
-          <p class="ib-lbl">Carga</p>
-          <div class="ib-ctrl">
-            <button class="ctrl-btn" (click)="decWeight()">−</button>
-            <div class="ib-val">{{ weight }} <span>kg</span></div>
-            <button class="ctrl-btn" (click)="weight = weight + 2.5">+</button>
-          </div>
+      <!-- Weight stepper -->
+      <div class="stepper-row">
+        <button class="stepper-btn dark" (click)="decWeight()">−</button>
+        <div class="stepper-val">
+          <div class="font-display">{{ weight }}</div>
+          <span>KG</span>
         </div>
-        <div class="input-block">
-          <p class="ib-lbl">Reps</p>
-          <div class="ib-ctrl">
-            <button class="ctrl-btn" (click)="decReps()">−</button>
-            <div class="ib-val">{{ reps }} <span>reps</span></div>
-            <button class="ctrl-btn" (click)="reps = reps + 1">+</button>
-          </div>
+        <button class="stepper-btn volt" (click)="weight = weight + 2.5">+</button>
+      </div>
+
+      <!-- Reps stepper -->
+      <div class="stepper-row">
+        <button class="stepper-btn dark" (click)="decReps()">−</button>
+        <div class="stepper-val">
+          <div class="font-display">{{ reps }}</div>
+          <span>REPS</span>
         </div>
+        <button class="stepper-btn volt" (click)="reps = reps + 1">+</button>
       </div>
 
       <!-- Rest timer -->
       <div class="rest-block">
         <div class="rest-info">
           <p class="rest-lbl">Descanso</p>
-          <p class="rest-val">{{ restDisplay }}</p>
+          <p class="rest-val font-display">{{ restDisplay }}</p>
         </div>
         <div class="rest-btns">
           <button class="rest-btn" (click)="adjustRest(-15)">−15s</button>
@@ -109,19 +126,19 @@
       </div>
 
       <!-- Actions -->
-      <button class="btn-confirm" (click)="logSet()">
-        <ion-icon name="checkmark-outline"></ion-icon>
+      <button class="btn-primary" (click)="logSet()">
+        <app-icon name="check" [size]="16" color="var(--on-volt)" [strokeWidth]="2.6"></app-icon>
         Confirmar série
       </button>
       <div class="secondary-actions">
-        <button class="btn-complete" (click)="completeExercise()">
+        <button class="btn-secondary" (click)="completeExercise()">
           <ion-icon name="checkmark-circle-outline"></ion-icon>
           Concluir exercício
         </button>
-        <button class="btn-skip" (click)="skipExercise()">Pular exercício</button>
+        <button class="btn-quiet" (click)="skipExercise()">Pular exercício</button>
       </div>
 
-      <button class="btn-end-early" (click)="finish()">Finalizar treino</button>
+      <button class="btn-quiet" (click)="finish()">Finalizar treino</button>
     }
 
     <!-- Estado de conclusão -->
@@ -129,15 +146,15 @@
       @if (currentExercise.status === 'SKIPPED') {
         <div class="done-card skipped">
           <ion-icon name="remove-circle" class="done-icon"></ion-icon>
-          <p class="done-title">Exercício pulado</p>
+          <p class="done-title font-display">Exercício pulado</p>
           @if (currentExercise.skipReason) {
             <p class="done-sub">{{ currentExercise.skipReason }}</p>
           }
         </div>
       } @else {
         <div class="done-card">
-          <ion-icon name="checkmark-circle" class="done-icon"></ion-icon>
-          <p class="done-title">Exercício concluído!</p>
+          <app-icon name="check" [size]="40" color="var(--volt)" [strokeWidth]="2"></app-icon>
+          <p class="done-title font-display">Exercício concluído!</p>
           <p class="done-sub">
             {{ completedSets }} série{{ completedSets !== 1 ? 's' : '' }}
             @if (currentExerciseVolume > 0) { · {{ currentExerciseVolume | number:'1.0-1' }} kg }
@@ -151,12 +168,12 @@
       }
 
       @if (!isLastExercise) {
-        <button class="btn-next" (click)="nextExercise()">
+        <button class="btn-primary" (click)="nextExercise()">
           <ion-icon name="arrow-forward-outline"></ion-icon>
           Próximo exercício
         </button>
       } @else {
-        <button class="btn-finish" (click)="finish()">
+        <button class="btn-primary" (click)="finish()">
           <ion-icon name="trophy-outline"></ion-icon>
           Finalizar treino
         </button>

@@ -1,5 +1,5 @@
 ion-content.welcome {
-  --background: var(--surface);
+  --background: var(--bg);
 }
 
 .hero {
@@ -13,25 +13,26 @@ ion-content.welcome {
     width: 72px;
     height: 72px;
     border-radius: 18px;
-    background: linear-gradient(135deg, var(--blue), var(--purple));
+    background: var(--volt);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(55, 138, 221, 0.3);
+    box-shadow: 0 12px 30px rgba(242, 255, 73, 0.28);
 
-    ion-icon {
-      font-size: 32px;
-      color: white;
+    .logo-t {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-style: italic;
+      font-size: 40px;
+      color: var(--on-volt);
     }
   }
 
   h1 {
-    font-size: 26px;
-    font-weight: 700;
+    font-size: 30px;
     color: var(--text1);
     margin: 0 0 10px;
-    line-height: 1.2;
   }
 
   p {
@@ -52,31 +53,31 @@ ion-content.welcome {
     justify-content: center;
     gap: 10px;
     padding: 13px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
+    border-radius: 11px;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
     margin-bottom: 10px;
     border: none;
+    font-family: var(--font-body);
 
     ion-icon { font-size: 18px; }
   }
 
   .btn-apple {
-    background: var(--text1);
-    color: var(--surface);
+    background: var(--volt);
+    color: var(--on-volt);
   }
 
   .btn-google {
-    background: var(--surface2);
+    background: var(--surface);
     color: var(--text1);
-    border: 0.5px solid var(--border2) !important;
   }
 
   .btn-email {
     background: transparent;
-    color: var(--text2);
-    border: 0.5px solid var(--border) !important;
+    color: var(--text1);
+    border: 1.5px solid var(--border2) !important;
   }
 
   .divider {
@@ -105,7 +106,7 @@ ion-content.welcome {
     margin: 14px 0 0;
     line-height: 1.5;
 
-    a { color: var(--blue); text-decoration: none; }
+    a { color: var(--volt); text-decoration: none; }
   }
 
   .login-link {

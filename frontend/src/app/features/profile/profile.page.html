@@ -10,7 +10,7 @@
     <!-- Avatar -->
     <div class="profile-hero">
       <div class="avatar-lg">{{ userInitials }}</div>
-      <p class="profile-name">{{ user.name }}</p>
+      <p class="profile-name font-display">{{ user.name }}</p>
       <p class="profile-email">{{ user.email }}</p>
     </div>
 
@@ -35,12 +35,12 @@
       <p class="section-lbl">Perfil de treino</p>
       <div class="info-card">
         <div class="info-row">
-          <ion-icon name="flame-outline"></ion-icon>
+          <app-icon name="flame" [size]="18" color="var(--ice)"></app-icon>
           <span class="ir-label">Nível</span>
           <span class="ir-val">{{ levelLabel }}</span>
         </div>
         <div class="info-row">
-          <ion-icon name="barbell-outline"></ion-icon>
+          <app-icon name="dumbbell" [size]="18" color="var(--text1)"></app-icon>
           <span class="ir-label">Objetivo</span>
           <span class="ir-val">{{ goalLabel }}</span>
         </div>

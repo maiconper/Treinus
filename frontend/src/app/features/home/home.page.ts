@@ -17,6 +17,7 @@ import {
   WorkoutExercise,
   WorkoutHistoryItem,
   WorkoutHistory,
+  ProgressSummary,
 } from '../../core/models';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -29,6 +30,7 @@ import { catchError, tap } from 'rxjs/operators';
 })
 export class HomePage implements OnInit, OnDestroy {
   user: User | null = null;
+  summary: ProgressSummary | null = null;
   activeProgram: Program | null = null;
   activeSession: Session | null = null;
   workouts: Workout[] = [];
@@ -101,6 +103,7 @@ export class HomePage implements OnInit, OnDestroy {
       .subscribe();
     forkJoin({
       user: this.userService.getMe(),
+      summary: this.progressService.getSummary().pipe(catchError(() => of(null))),
       program: this.programService.getActive().pipe(catchError(() => of(null))),
       workouts: this.workoutService.list().pipe(catchError(() => of([]))),
       presets: this.workoutService.listPresets().pipe(catchError(() => of([]))),
@@ -123,6 +126,7 @@ export class HomePage implements OnInit, OnDestroy {
     }).subscribe({
       next: ({
         user,
+        summary,
         program,
         workouts,
         presets,
@@ -130,6 +134,7 @@ export class HomePage implements OnInit, OnDestroy {
         weekHistory,
       }) => {
         this.user = user;
+        this.summary = summary;
         this.activeProgram = program;
         this.workouts = workouts;
         this.presets = presets;
@@ -186,6 +191,24 @@ export class HomePage implements OnInit, OnDestroy {
 
   private toBackendDay(jsDay: number): number {
     return jsDay === 0 ? 7 : jsDay;
+  }
+
+  get todayWorkoutLetter(): string {
+    if (!this.todayProgramWeek || !this.todayWorkout) return '';
+    const trainingDays = [...this.todayProgramWeek.days]
+      .filter((d) => !d.restDay)
+      .sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+    const idx = trainingDays.findIndex((d) => d.id === this.todayWorkout!.id);
+    return idx >= 0 ? String.fromCharCode(65 + idx) : '';
+  }
+
+  formatVolume(kg: number | undefined): string {
+    if (!kg) return '0kg';
+    if (kg >= 1000) {
+      const tons = kg / 1000;
+      return `${tons % 1 === 0 ? tons.toFixed(0) : tons.toFixed(1)}t`;
+    }
+    return `${Math.round(kg)}kg`;
   }
 
   get todayWorkout() {
@@ -296,11 +319,14 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   get formattedDate(): string {
-    return this.today.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'short',
-    });
+    const weekday = this.today
+      .toLocaleDateString('pt-BR', { weekday: 'short' })
+      .replace('.', '');
+    const day = this.today.getDate();
+    const month = this.today
+      .toLocaleDateString('pt-BR', { month: 'short' })
+      .replace('.', '');
+    return `${weekday} · ${day} ${month}`.toUpperCase();
   }
 
   getDayStatus(key: number): 'done' | 'today' | 'rest' | 'upcoming' | '' {
