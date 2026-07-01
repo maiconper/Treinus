@@ -15,6 +15,8 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
 
     Optional<Workout> findByIdAndUserId(UUID id, UUID userId);
 
+    long countByUserId(UUID userId);
+
     @Query("SELECT w FROM Workout w WHERE w.user.role = :role ORDER BY w.createdAt ASC")
     List<Workout> findAllByUserRole(@Param("role") UserRole role);
 

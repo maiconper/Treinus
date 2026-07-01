@@ -45,6 +45,18 @@ ion-content.profile-content { --background: var(--bg); }
     ion-icon { font-size: 18px; color: var(--text3); flex-shrink: 0; }
     .ir-label { flex: 1; font-size: 13px; color: var(--text2); }
     .ir-val { font-size: 13px; font-weight: 500; color: var(--text1); }
+
+    &.is-clickable {
+      cursor: pointer;
+      &:active { background: var(--surface2); }
+    }
+
+    .ir-new-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--orange); flex-shrink: 0;
+    }
+
+    .ir-chevron { color: var(--border2); }
   }
 }
 

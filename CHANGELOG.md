@@ -1,5 +1,123 @@
 # Changelog — Treinus
 
+## [2026-07-01] — Sistema de Conquistas (Achievements): catálogo, motor de desbloqueio e UI
+
+### Contexto
+
+Pedido: adicionar uma seção "Conquistas" na tela de Perfil, a partir de um mockup HTML com 33 badges (ícones [Tabler](https://tabler.io/icons)) agrupados em 7 categorias, e um contrato de API (`GET /api/v1/achievements`, `POST /api/v1/achievements/ack`) descrito **como se já existisse**. Uma busca em todo o repositório (backend e frontend) confirmou que não havia nenhum código de achievements — nem entidade, nem endpoint, nem migration. O usuário optou por implementar o backend completo (catálogo real + lógica de desbloqueio baseada em dados reais de treino), não uma versão mockada.
+
+---
+
+### Backend — novo pacote `com.treinus.achievements`
+
+**Migration:** `V18__create_user_achievements.sql` — única tabela nova, `user_achievements (id, user_id, code, unlocked_at, acknowledged)` com `UNIQUE(user_id, code)`. O catálogo das 33 conquistas em si **não é seed de banco** — vive como dado estático em código Java (`AchievementCatalog.ALL`), já que não há UI de admin para editá-las.
+
+**Catálogo:**
+- `AchievementCategory` (enum): `FREQUENCY, CONSISTENCY, RECORDS, VOLUME, PROGRAMS, EXPLORATION, RESILIENCE` — a 7ª categoria (`RESILIENCE`) foi incluída apesar do contrato JSON do usuário só listar 6, porque o mockup HTML claramente tinha essa categoria com 3 badges (provável esquecimento do usuário ao descrever o contrato).
+- `AchievementTier` (enum): `BRONZE(25), SILVER(50), GOLD(100), PLATINUM(250)` — XP por tier, não por conquista individual.
+- `Achievement` (record): `code, name, description, category, tier, icon`.
+- `AchievementCatalog`: lista imutável com as 33 entradas transcritas do mockup (códigos, nomes, ícones e tiers exatamente como no HTML) + descrições em PT-BR escritas para cada uma.
+
+**Persistência:** `UserAchievement` (entidade) + `UserAchievementRepository` (`findByUserId`, `existsByUserIdAndCode`, `acknowledgeAllForUser` via `@Modifying @Query`).
+
+**`AchievementService`** — núcleo da feature:
+- `evaluate(userId)`: carrega os códigos já desbloqueados (1 query), monta um "bundle" de estatísticas do usuário com poucas queries agregadas, e roda os predicados só para os códigos ainda bloqueados, em memória. Persiste `UserAchievement` para cada novo desbloqueio.
+- `getAll(userId)`: chama `evaluate()` primeiro (retroativo) e depois combina `AchievementCatalog.ALL` com o que está salvo — importante porque usuários já existentes (ex. `teste@gmail.com`, 52 sessões) recebem conquistas retroativamente assim que a feature entra no ar.
+- `ack(userId)`: marca tudo como `acknowledged = true`.
+
+**Regras de desbloqueio implementadas** (heurísticas documentadas em código, em métodos privados isolados para fácil ajuste de limiares):
+
+| Código | Regra |
+|---|---|
+| `FIRST_WORKOUT` / `WORKOUTS_10/50/100/500` | contagem de sessões `COMPLETED` |
+| `YEAR_OF_WORK` | gap entre primeira e última sessão completa ≥ 365 dias |
+| `STREAK_7/30/100` | maior streak já alcançado (simulado a partir do histórico de datas, não do `UserProfile.streak` atual) |
+| `PERFECT_MONTH` | existe um mês em que todos os dias do calendário tiveram sessão completa |
+| `FIRST_PR` / `PR_10` / `PR_50` | contagem de `SessionSet.personalRecord = true` |
+| `PR_STREAK_WEEK` | ≥3 PRs na mesma semana ISO |
+| `BIG_JUMP` | PR com peso ≥ 1.2× o recorde anterior do exercício |
+| `VOLUME_10K/100K/1M` | soma de `totalVolumeKg` de sessões completas |
+| `HEAVY_SESSION` | uma sessão com `totalVolumeKg` ≥ 5000kg |
+| `PROGRAM_1` / `PROGRAM_3` | contagem de `Program.status = COMPLETED` |
+| `CREATED_WORKOUT` / `CREATED_PROGRAM` | hook direto em `create()` (não conta presets adotados) |
+| `NO_SKIPS_10` | ≥10 dias não-descanso completados no programa ativo, sem nenhuma sessão `ABANDONED` vinculada a um dia dele |
+| `EARLY_BIRD` | sessão iniciada antes das 06:00 (hora local) |
+| `WEEKEND_WARRIOR` | sessões completas no sábado e domingo da mesma semana ISO |
+| `NEW_MUSCLE_GROUP` | sessão contém categoria de exercício nunca vista em sessão anterior |
+| `PROGRESSIVE_OVERLOAD` | carga máxima de um exercício aumenta em 3 sessões consecutivas |
+| `NO_SKIPS_PROGRAM` | programa `COMPLETED` onde todo dia não-descanso teve sessão completa |
+| `HOLIDAY_WORKOUT` | sessão completa em feriado nacional fixo (sem Carnaval/Páscoa, que são móveis) |
+| `COMEBACK` | streak resetou após gap ≥7 dias sem treinar |
+| `SECOND_STREAK` | o streak simulado cruza o limiar de 7 dias pela 2ª vez (após um reset) |
+| `RESUMED_PROGRAM` | gap ≥14 dias entre dois dias completados de um mesmo programa, seguido de outro dia completado |
+
+**Nota de arquitetura importante:** `ProgramDay` não tem data de calendário (só `day_of_week` 1–7 relativo à semana), então nenhuma regra depende de "qual dia é hoje no programa" — tudo é derivado de timestamps reais de `TrainingSession` (`startedAt`/`finishedAt`).
+
+**Hooks (chamada síncrona, sem eventos/`@Scheduled` — projeto não usa esse padrão):**
+- `SessionService.finish()` e `registerManual()` — logo após `updateUserProgress()`
+- `ProgramService.create()` e `finish()`
+- `WorkoutService.create()`
+
+**Endpoints (`AchievementController`):**
+- `GET /api/v1/achievements` → `List<AchievementResponse>`
+- `POST /api/v1/achievements/ack` → 204
+
+**Métodos de repositório adicionados** (sem novas classes): `TrainingSessionRepository.findByUserIdAndStatusOrderByFinishedAtAsc`; `SessionSetRepository.findAllCompletedByUserId` (fetch join até exercise/session); `ProgramRepository.findAllByUserIdAndStatus`, `countByUserId`, `countByUserIdAndStatus`; `WorkoutRepository.countByUserId`.
+
+---
+
+### Frontend — modelo, service e UI
+
+- `index.html`: adicionado `<link>` do Tabler Icons webfont (`@tabler/icons-webfont@latest/dist/tabler-icons.min.css` — **com** `/dist/`, sem o qual a fonte não carrega).
+- `core/models/achievement.model.ts` + `core/services/achievement.service.ts` (`getAll()`, `ack()`) seguindo o padrão de `progress.service.ts`.
+- Seção "Conquistas" adicionada inicialmente na própria tela de Perfil (grid por categoria, cores de tier reaproveitando os tokens já existentes em `variables.scss`).
+
+---
+
+### Bug fix — `NullPointerException` em `AchievementService.computeResults`
+
+**Sintoma:** `GET /api/v1/achievements` retornava 500 para `teste@gmail.com` assim que a feature foi ligada: `NullPointerException: instant` em `LocalDate.ofInstant(s.getFinishedAt(), ZONE)`.
+
+**Causa raiz:** o código assumia que toda sessão `COMPLETED` tem `finishedAt` preenchido, mas parte do histórico seedado/manual do usuário de teste tinha sessões `COMPLETED` com `finishedAt = null`.
+
+**Fix:** helper `effectiveInstant(session)` que usa `finishedAt` e cai para `startedAt` (`NOT NULL` no schema) quando ausente — aplicado em todos os pontos que derivavam data a partir de `finishedAt` (lista de dias distintos para as regras de streak, e timestamps de conclusão de dias de programa).
+
+---
+
+### Bug fix — tags HTML aparecendo literalmente no alert de detalhe da conquista
+
+**Sintoma:** ao tocar numa conquista desbloqueada, a mensagem exibia `<br><br>` e `+25 XP` literalmente na tela em vez de quebras de linha.
+
+**Causa raiz:** `AlertController.message` no Ionic renderiza como texto puro, não HTML — padrão já registrado em memória de uma sessão anterior, mas não consultado antes de escrever esse código.
+
+**Fix:** mensagem reescrita como uma única linha usando `·` como separador: `"{descrição} · Desbloqueado em {data} · +{xp} XP"`.
+
+---
+
+### Refactor — Conquistas movidas para tela dedicada
+
+**Pedido do usuário:** a seção de Conquistas no Perfil devia virar uma única linha em `info-card` (como as demais: Nível, Objetivo, Peso), que ao ser tocada abre uma tela separada com o grid completo.
+
+**`profile.page.ts`/`.html`/`.scss`:**
+- Removida a lógica de agrupamento/categoria/modal de detalhe (movida para a nova página).
+- `load()` ainda busca `GET /achievements` (necessário para mostrar a contagem `X/33` e o indicador de "novo"), mas **não chama mais `ack()`** — isso passou a ser responsabilidade da tela dedicada.
+- Novo `info-row.is-clickable` com ícone `trophy-outline`, valor `{{ unlockedAchievementsCount }}/{{ achievements.length }}`, dot laranja se houver conquista nova (`hasNewAchievements`), e chevron (`chevron-forward-outline`, mesmo ícone usado em todas as outras linhas navegáveis do app).
+- `goToAchievements()` → `router.navigate(['/tabs/profile/achievements'])`.
+
+**Nova página `AchievementsPage`** (`features/profile/achievements.page.ts/.html/.scss`):
+- Registrada como rota irmã dentro do mesmo `ProfilePageModule` (`{ path: 'achievements', component: AchievementsPage }`) — mesmo padrão já usado para `SessionDetailPage` dentro de `ProgressPageModule`.
+- Header com botão voltar (`Location.back()`, padrão de `session-detail.page.ts`).
+- Concentra toda a lógica que antes estava no Perfil: grid por categoria, cores de tier, estado bloqueado/dessaturado, dot de "novo", e o alert de detalhe ao tocar.
+- Chama `ack()` no `ngOnInit()`, após carregar a lista — ou seja, o indicador de "novo" só some depois que o usuário efetivamente abre essa tela, e não só a tela de Perfil.
+
+---
+
+### Nota — bug pré-existente encontrado (não corrigido, a pedido do usuário)
+
+`frontend/src/environments/environment.prod.ts` não tem o campo `apiUrl` desde o primeiro commit do repositório — `ng build --configuration production` quebra para **todos** os services, não só o de achievements. `ng build --configuration development` funciona normalmente. Deixado para uma correção futura.
+
+---
+
 ## [2026-07-01] — Progresso do programa no program-card da homepage
 
 ### Bug fix — `programPercent` sempre retornava 0

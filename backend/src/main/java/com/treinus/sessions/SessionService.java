@@ -1,5 +1,6 @@
 package com.treinus.sessions;
 
+import com.treinus.achievements.AchievementService;
 import com.treinus.exercises.Exercise;
 import com.treinus.exercises.ExerciseRepository;
 import com.treinus.programs.ProgramDay;
@@ -38,6 +39,7 @@ public class SessionService {
     private final WorkoutRepository workoutRepository;
     private final ProgramDayRepository programDayRepository;
     private final ExerciseRepository exerciseRepository;
+    private final AchievementService achievementService;
 
     public SessionService(TrainingSessionRepository sessionRepository,
             SessionExerciseRepository sessionExerciseRepository,
@@ -45,7 +47,8 @@ public class SessionService {
             UserProfileRepository userProfileRepository,
             WorkoutRepository workoutRepository,
             ProgramDayRepository programDayRepository,
-            ExerciseRepository exerciseRepository) {
+            ExerciseRepository exerciseRepository,
+            AchievementService achievementService) {
         this.sessionRepository = sessionRepository;
         this.sessionExerciseRepository = sessionExerciseRepository;
         this.userRepository = userRepository;
@@ -53,6 +56,7 @@ public class SessionService {
         this.workoutRepository = workoutRepository;
         this.programDayRepository = programDayRepository;
         this.exerciseRepository = exerciseRepository;
+        this.achievementService = achievementService;
     }
 
     public SessionResponse getCurrent(UUID userId) {
@@ -204,9 +208,12 @@ public class SessionService {
         session.setTotalVolumeKg(totalVolume);
         session.setXpEarned(manualXp);
 
-        updateUserProgress(userId, manualXp);
+        TrainingSession saved = sessionRepository.save(session);
 
-        return SessionResponse.from(sessionRepository.save(session));
+        updateUserProgress(userId, manualXp);
+        achievementService.evaluate(userId);
+
+        return SessionResponse.from(saved);
     }
 
     @Transactional
@@ -327,6 +334,7 @@ public class SessionService {
         sessionRepository.save(session);
 
         updateUserProgress(userId, xp);
+        achievementService.evaluate(userId);
 
         int levelAfter = XpCalculator.levelFromXp(xpBefore + xp);
         boolean leveledUp = levelAfter > levelBefore;

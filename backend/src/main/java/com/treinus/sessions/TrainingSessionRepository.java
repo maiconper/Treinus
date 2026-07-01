@@ -26,6 +26,8 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
     List<TrainingSession> findByUserIdAndStatusAndFinishedAtBetween(
             UUID userId, SessionStatus status, java.time.Instant from, java.time.Instant to);
 
+    List<TrainingSession> findByUserIdAndStatusOrderByFinishedAtAsc(UUID userId, SessionStatus status);
+
     @Query("""
             SELECT COUNT(ss) FROM SessionSet ss
             JOIN ss.sessionExercise se

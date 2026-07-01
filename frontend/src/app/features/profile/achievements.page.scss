@@ -1,0 +1,47 @@
+ion-content.achievements-content { --background: var(--bg); }
+.content-inner { padding: 16px 16px 40px; }
+
+.achv-category { margin-bottom: 20px; }
+
+.achv-category-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text3); margin-bottom: 10px;
+}
+
+.achv-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 14px;
+}
+
+.achv-badge {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  text-align: center; cursor: pointer;
+
+  &:active { opacity: 0.7; }
+}
+
+.achv-icon {
+  position: relative;
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; border: 0.5px solid var(--border);
+
+  &.tier-bronze { background: var(--danger-bg); color: var(--danger); }
+  &.tier-silver { background: var(--surface2); color: var(--text2); }
+  &.tier-gold { background: var(--amber-bg); color: var(--amber-dark); }
+  &.tier-platinum { background: var(--purple-bg); color: var(--purple-dark); }
+
+  &.locked { background: var(--surface2); color: var(--border2); }
+}
+
+.achv-new-dot {
+  position: absolute; top: -2px; right: -2px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--orange); border: 2px solid var(--surface);
+}
+
+.achv-name {
+  font-size: 10.5px; color: var(--text2); line-height: 1.3;
+
+  &.locked-text { color: var(--text3); }
+}

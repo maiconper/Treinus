@@ -1,5 +1,6 @@
 package com.treinus.workouts;
 
+import com.treinus.achievements.AchievementService;
 import com.treinus.exercises.Exercise;
 import com.treinus.exercises.ExerciseRepository;
 import com.treinus.shared.exception.BusinessException;
@@ -22,15 +23,18 @@ public class WorkoutService {
     private final WorkoutExerciseRepository workoutExerciseRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
+    private final AchievementService achievementService;
 
     public WorkoutService(WorkoutRepository workoutRepository,
                           WorkoutExerciseRepository workoutExerciseRepository,
                           ExerciseRepository exerciseRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          AchievementService achievementService) {
         this.workoutRepository = workoutRepository;
         this.workoutExerciseRepository = workoutExerciseRepository;
         this.exerciseRepository = exerciseRepository;
         this.userRepository = userRepository;
+        this.achievementService = achievementService;
     }
 
     public List<WorkoutResponse> findAllByUser(UUID userId) {
@@ -90,7 +94,9 @@ public class WorkoutService {
         workout.setDescription(request.description());
         workout.setUser(user);
 
-        return WorkoutResponse.from(workoutRepository.save(workout));
+        WorkoutResponse response = WorkoutResponse.from(workoutRepository.save(workout));
+        achievementService.evaluate(userId);
+        return response;
     }
 
     @Transactional

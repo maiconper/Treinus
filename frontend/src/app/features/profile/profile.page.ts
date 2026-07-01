@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
-import { User } from '../../core/models';
+import { AchievementService } from '../../core/services/achievement.service';
+import { Achievement, User } from '../../core/models';
 
 @Component({
   selector: 'app-profile',
@@ -13,12 +14,14 @@ import { User } from '../../core/models';
 })
 export class ProfilePage implements OnInit {
   user: User | null = null;
+  achievements: Achievement[] = [];
 
   constructor(
     private userService: UserService,
     private auth: AuthService,
     private router: Router,
     private alert: AlertController,
+    private achievementService: AchievementService,
   ) {}
 
   ngOnInit() { this.load(); }
@@ -26,6 +29,19 @@ export class ProfilePage implements OnInit {
 
   load() {
     this.userService.getMe().subscribe({ next: u => (this.user = u) });
+    this.achievementService.getAll().subscribe({ next: achievements => (this.achievements = achievements) });
+  }
+
+  get unlockedAchievementsCount(): number {
+    return this.achievements.filter(a => a.unlocked).length;
+  }
+
+  get hasNewAchievements(): boolean {
+    return this.achievements.some(a => a.isNew);
+  }
+
+  goToAchievements() {
+    this.router.navigate(['/tabs/profile/achievements']);
   }
 
   get userInitials(): string {

@@ -1,5 +1,6 @@
 package com.treinus.programs;
 
+import com.treinus.achievements.AchievementService;
 import com.treinus.programs.dto.*;
 import com.treinus.sessions.SessionStatus;
 import com.treinus.sessions.TrainingSessionRepository;
@@ -30,19 +31,22 @@ public class ProgramService {
     private final UserRepository userRepository;
     private final WorkoutRepository workoutRepository;
     private final TrainingSessionRepository trainingSessionRepository;
+    private final AchievementService achievementService;
 
     public ProgramService(ProgramRepository programRepository,
                           ProgramWeekRepository programWeekRepository,
                           ProgramDayRepository programDayRepository,
                           UserRepository userRepository,
                           WorkoutRepository workoutRepository,
-                          TrainingSessionRepository trainingSessionRepository) {
+                          TrainingSessionRepository trainingSessionRepository,
+                          AchievementService achievementService) {
         this.programRepository = programRepository;
         this.programWeekRepository = programWeekRepository;
         this.programDayRepository = programDayRepository;
         this.userRepository = userRepository;
         this.workoutRepository = workoutRepository;
         this.trainingSessionRepository = trainingSessionRepository;
+        this.achievementService = achievementService;
     }
 
     public List<ProgramResponse> findAllByUser(UUID userId) {
@@ -82,7 +86,9 @@ public class ProgramService {
             program.getWeeks().add(week);
         }
 
-        return ProgramResponse.from(programRepository.save(program));
+        ProgramResponse response = ProgramResponse.from(programRepository.save(program));
+        achievementService.evaluate(userId);
+        return response;
     }
 
     @Transactional
@@ -118,7 +124,9 @@ public class ProgramService {
 
         program.setStatus(ProgramStatus.COMPLETED);
         program.setEndedAt(Instant.now());
-        return ProgramResponse.from(programRepository.save(program));
+        ProgramResponse response = ProgramResponse.from(programRepository.save(program));
+        achievementService.evaluate(userId);
+        return response;
     }
 
     @Transactional

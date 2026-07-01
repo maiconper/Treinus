@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Expanded:wght@600;700;800;900&family=Cinzel:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#e9e7e1;font-family:'Manrope',system-ui,sans-serif}
+  .dv-turn{padding:48px 52px 40px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+  .dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+  .dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+  .dv-tname{font:700 13px/1.2 'Manrope',sans-serif;color:#1a1a1a}
+  .dv-tsub{margin:0 0 26px;font:400 12.5px/1.5 'Manrope',sans-serif;color:rgba(0,0,0,.5);max-width:640px}
+  .dv-opts{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start}
+  .dv-opt{flex:none;display:flex;flex-direction:column;gap:11px;scroll-margin-top:16px}
+  .dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.09);color:#1a1a1a;border-radius:5px;text-decoration:none}
+  .dv-olabel{display:flex;align-items:baseline;gap:8px;font:500 11.5px/1.3 'Manrope',sans-serif;color:rgba(0,0,0,.55)}
+  .dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+  .dv-card{max-width:100%;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px -30px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.08)}
+  .dv-next{margin:26px 0 0;font:12px/1.6 'Manrope',sans-serif;color:rgba(0,0,0,.5)}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t5">
+  <div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">Treinus — guia de marca completo</span></div>
+  <p class="dv-tsub">Direção fechada: <b>Performance atlética</b>, acento <b>Volt</b>, ícones em traço. Aqui está o sistema consolidado — logo e variações, paleta com papéis, escala tipográfica, ícones, componentes e as telas finais com tudo aplicado. É o ponto de partida para o app.</p>
+  <div class="dv-opts">
+    <div class="dv-opt" id="5a">
+      <div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>Sistema Treinus · v1</div>
+      <div class="dv-card" style="width:1120px;background:#0A0A0A;padding:0;font-family:'Manrope',sans-serif;color:#fff">
+
+        <!-- ===== HERO ===== -->
+        <div style="padding:46px 48px 40px;background:linear-gradient(160deg,#141414,#0A0A0A);border-bottom:1px solid rgba(255,255,255,.1)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div style="display:flex;align-items:center;gap:16px">
+                <div style="width:52px;height:52px;border-radius:12px;background:#F2FF49;display:flex;align-items:center;justify-content:center;font:700 30px/1 'Oswald',sans-serif;font-style:italic;color:#0A0A0A">T</div>
+                <div style="font:700 58px/.82 'Oswald',sans-serif;letter-spacing:.01em;text-transform:uppercase;font-style:italic">Treinus</div>
+              </div>
+              <div style="margin-top:16px;font:700 13px/1 'Manrope';letter-spacing:.3em;color:#F2FF49">SUPERE O CRONÔMETRO</div>
+            </div>
+            <div style="text-align:right;font:500 12px/1.6 'Manrope';color:#888">Identidade visual · v1<br>Performance atlética<br>1 jul 2026</div>
+          </div>
+        </div>
+
+        <div style="padding:38px 48px 46px;display:flex;flex-direction:column;gap:40px">
+
+          <!-- ===== LOGO SYSTEM ===== -->
+          <div>
+            <div style="font:700 11px/1 'Manrope';letter-spacing:.24em;color:#888;margin-bottom:18px">01 · LOGOTIPO</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+              <div style="background:#141414;border-radius:14px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:120px;justify-content:center">
+                <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:8px;background:#F2FF49;display:flex;align-items:center;justify-content:center;font:700 18px/1 'Oswald',sans-serif;font-style:italic;color:#0A0A0A">T</div><span style="font:700 26px/.85 'Oswald',sans-serif;font-style:italic;text-transform:uppercase">Treinus</span></div>
+                <span style="font:600 9.5px 'Manrope';color:#777">Lockup principal</span>
+              </div>
+              <div style="background:#141414;border-radius:14px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:120px;justify-content:center">
+                <div style="width:48px;height:48px;border-radius:12px;background:#F2FF49;display:flex;align-items:center;justify-content:center;font:700 30px/1 'Oswald',sans-serif;font-style:italic;color:#0A0A0A">T</div>
+                <span style="font:600 9.5px 'Manrope';color:#777">Símbolo (app icon)</span>
+              </div>
+              <div style="background:#141414;border-radius:14px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:120px;justify-content:center">
+                <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:8px;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font:700 17px/1 'Oswald',sans-serif;font-style:italic;color:#fff">T</div><span style="font:700 26px/.85 'Oswald',sans-serif;font-style:italic;text-transform:uppercase;color:#fff">Treinus</span></div>
+                <span style="font:600 9.5px 'Manrope';color:#777">Monocromático</span>
+              </div>
+              <div style="background:#F2FF49;border-radius:14px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:120px;justify-content:center">
+                <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:8px;background:#0A0A0A;display:flex;align-items:center;justify-content:center;font:700 17px/1 'Oswald',sans-serif;font-style:italic;color:#F2FF49">T</div><span style="font:700 26px/.85 'Oswald',sans-serif;font-style:italic;text-transform:uppercase;color:#0A0A0A">Treinus</span></div>
+                <span style="font:600 9.5px 'Manrope';color:rgba(10,10,10,.6)">Sobre acento</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== COLOR ===== -->
+          <div>
+            <div style="font:700 11px/1 'Manrope';letter-spacing:.24em;color:#888;margin-bottom:18px">02 · PALETA &amp; PAPÉIS</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
+              <div><div style="height:88px;border-radius:12px;background:#F2FF49"></div><div style="margin-top:10px;font:700 12px 'Manrope';color:#fff">Volt</div><div style="font:600 10px ui-monospace,monospace;color:#888;margin-top:2px">#F2FF49</div><div style="font:500 10px/1.4 'Manrope';color:#9a9a9a;margin-top:5px">Ação, dado ativo, marca</div></div>
+              <div><div style="height:88px;border-radius:12px;background:#0A0A0A;border:1px solid rgba(255,255,255,.14)"></div><div style="margin-top:10px;font:700 12px 'Manrope';color:#fff">Track</div><div style="font:600 10px ui-monospace,monospace;color:#888;margin-top:2px">#0A0A0A</div><div style="font:500 10px/1.4 'Manrope';color:#9a9a9a;margin-top:5px">Fundo principal</div></div>
+              <div><div style="height:88px;border-radius:12px;background:#1A1A1A;border:1px solid rgba(255,255,255,.08)"></div><div style="margin-top:10px;font:700 12px 'Manrope';color:#fff">Surface</div><div style="font:600 10px ui-monospace,monospace;color:#888;margin-top:2px">#1A1A1A</div><div style="font:500 10px/1.4 'Manrope';color:#9a9a9a;margin-top:5px">Cards, inativos</div></div>
+              <div><div style="height:88px;border-radius:12px;background:#5B5B5B"></div><div style="margin-top:10px;font:700 12px 'Manrope';color:#fff">Cinza</div><div style="font:600 10px ui-monospace,monospace;color:#888;margin-top:2px">#5B5B5B</div><div style="font:500 10px/1.4 'Manrope';color:#9a9a9a;margin-top:5px">Texto secundário</div></div>
+              <div><div style="height:88px;border-radius:12px;background:#FFFFFF"></div><div style="margin-top:10px;font:700 12px 'Manrope';color:#fff">Branco</div><div style="font:600 10px ui-monospace,monospace;color:#888;margin-top:2px">#FFFFFF</div><div style="font:500 10px/1.4 'Manrope';color:#9a9a9a;margin-top:5px">Texto principal</div></div>
+            </div>
+          </div>
+
+          <!-- ===== TYPE ===== -->
+          <div>
+            <div style="font:700 11px/1 'Manrope';letter-spacing:.24em;color:#888;margin-bottom:18px">03 · TIPOGRAFIA</div>
+            <div style="display:flex;gap:20px">
+              <div style="flex:1;background:#141414;border-radius:14px;padding:24px 26px">
+                <div style="font:600 10px 'Manrope';letter-spacing:.16em;color:#F2FF49">DISPLAY · OSWALD ITÁLICO</div>
+                <div style="font:700 46px/.85 'Oswald',sans-serif;font-style:italic;text-transform:uppercase;margin-top:14px">Supino reto</div>
+                <div style="font:700 26px/.9 'Oswald',sans-serif;font-style:italic;text-transform:uppercase;color:#bbb;margin-top:10px">Peito &amp; Tríceps</div>
+                <div style="font:500 11px/1.5 'Manrope';color:#888;margin-top:14px">Títulos, nomes de exercício, números grandes. Sempre caixa-alta, itálico.</div>
+              </div>
+              <div style="flex:1;background:#141414;border-radius:14px;padding:24px 26px">
+                <div style="font:600 10px 'Manrope';letter-spacing:.16em;color:#F2FF49">INTERFACE · MANROPE</div>
+                <div style="font:800 22px/1.2 'Manrope';margin-top:14px">Aa Bb Cc 0123</div>
+                <div style="font:600 14px/1.5 'Manrope';color:#ddd;margin-top:10px">Semibold — rótulos e botões</div>
+                <div style="font:400 13px/1.6 'Manrope';color:#999;margin-top:6px">Regular — corpo de texto, descrições e listas dentro do app.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== ICONS ===== -->
+          <div>
+            <div style="font:700 11px/1 'Manrope';letter-spacing:.24em;color:#888;margin-bottom:18px">04 · ÍCONES · TRAÇO 2PX</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-5h5v5"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8v8M7 6v12M17 6v12M20 8v8M7 12h10"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13M12 20V8M19 20v-9"/><path d="M3 20h18"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><circle cx="12" cy="14" r="8"/><path d="M12 14V9.5M18 8l1.5-1.5"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 3 4.5 5.5 4.5 8.5A4.5 4.5 0 0 1 12 16a2.5 2.5 0 0 1-2.5-2.5c0-1 .5-2 1.5-2.8C10 12 8.5 12.5 8 14.5A6 6 0 0 0 12 21a6 6 0 0 0 6-6c0-4-2.5-8-6-12Z"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5 19 12 7 19.5Z"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18.5 20 6.5"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5h4l2-4 3 8 2.5-5 1.5 1h5"/></svg></div>
+              <div style="width:56px;height:56px;background:#141414;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></div>
+            </div>
+          </div>
+
+          <!-- ===== COMPONENTS ===== -->
+          <div>
+            <div style="font:700 11px/1 'Manrope';letter-spacing:.24em;color:#888;margin-bottom:18px">05 · COMPONENTES</div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+              <div style="background:#F2FF49;color:#0A0A0A;border-radius:11px;padding:14px 26px;font:800 13px 'Manrope';letter-spacing:.03em">Botão primário</div>
+              <div style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:11px;padding:14px 26px;font:800 13px 'Manrope';letter-spacing:.03em">Secundário</div>
+              <div style="background:#1A1A1A;color:#F2FF49;border-radius:11px;padding:14px 26px;font:800 13px 'Manrope';letter-spacing:.03em">Escuro</div>
+              <div style="display:flex;gap:8px">
+                <div style="background:#F2FF49;color:#0A0A0A;border-radius:20px;padding:9px 16px;font:700 11px 'Manrope'">Peito</div>
+                <div style="background:#1A1A1A;color:#999;border-radius:20px;padding:9px 16px;font:700 11px 'Manrope'">Costas</div>
+                <div style="background:#1A1A1A;color:#999;border-radius:20px;padding:9px 16px;font:700 11px 'Manrope'">Pernas</div>
+              </div>
+              <div style="width:44px;height:44px;border-radius:50%;background:#F2FF49;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:16px">
+              <div style="background:#141414;border-radius:14px;padding:16px 18px;min-width:150px"><div style="font:700 34px/1 'Oswald',sans-serif;font-style:italic;color:#F2FF49">12</div><div style="font:600 11px 'Manrope';color:#888;margin-top:6px">dias seguidos</div></div>
+              <div style="background:#141414;border-radius:14px;padding:16px 18px;min-width:150px"><div style="font:700 34px/1 'Oswald',sans-serif;font-style:italic;color:#fff">18t</div><div style="font:600 11px 'Manrope';color:#888;margin-top:6px">volume/semana</div></div>
+              <div style="flex:1;background:#141414;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;background:#F2FF49;border-radius:8px;padding:9px 13px;font:800 12px 'Manrope';color:#0A0A0A"><span>Série 3 · ativa</span><span>8 × 50kg</span></div>
+                <div style="display:flex;justify-content:space-between;background:#1F1F1F;border-radius:8px;padding:9px 13px;font:700 12px 'Manrope';color:#888"><span>Série 4</span><span>8 × 50kg</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== SCREENS ===== -->
+          <div>
+            <div style="font:700 11px/1 'Manrope';letter-spacing:.24em;color:#888;margin-bottom:18px">06 · TELAS FINAIS</div>
+            <div style="display:flex;gap:22px">
+
+              <!-- HOME -->
+              <div style="width:236px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(242,255,73,.22)">
+                <div style="background:#0F0F0F;border-radius:26px;overflow:hidden;height:478px;display:flex;flex-direction:column">
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#fff"><span>9:41</span><span style="letter-spacing:.15em;color:#888">5G ▪▪▪</span></div>
+                  <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                      <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#888">TER · 1 JUL</div><div style="font:700 22px/1 'Oswald',sans-serif;text-transform:uppercase;font-style:italic;margin-top:3px">Olá, Léo</div></div>
+                      <div style="width:38px;height:38px;border-radius:50%;background:#1C1C1C;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+                    </div>
+                    <div style="background:#F2FF49;border-radius:16px;padding:15px 16px 14px;color:#0A0A0A;position:relative;overflow:hidden">
+                      <div style="position:absolute;bottom:-12px;right:-4px;font:700 62px/1 'Oswald',sans-serif;font-style:italic;color:rgba(10,10,10,.08)">A</div>
+                      <div style="font:700 9px 'Manrope';letter-spacing:.2em;opacity:.65">TREINO DE HOJE · A</div>
+                      <div style="font:700 23px/.9 'Oswald',sans-serif;text-transform:uppercase;font-style:italic;margin-top:8px">Peito &amp; Tríceps</div>
+                      <div style="display:flex;gap:14px;margin-top:11px;font:700 11px 'Manrope'"><span>8 exercícios</span><span style="opacity:.55">52 min</span></div>
+                      <div style="margin-top:13px;background:#0A0A0A;color:#F2FF49;border-radius:10px;padding:10px;text-align:center;display:flex;align-items:center;justify-content:center;gap:7px;font:800 12.5px 'Manrope'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5 19 12 7 19.5Z"/></svg>Iniciar treino</div>
+                    </div>
+                    <div style="display:flex;gap:9px">
+                      <div style="flex:1;background:#1A1A1A;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 3 4.5 5.5 4.5 8.5A4.5 4.5 0 0 1 12 16a2.5 2.5 0 0 1-2.5-2.5c0-1 .5-2 1.5-2.8C10 12 8.5 12.5 8 14.5A6 6 0 0 0 12 21a6 6 0 0 0 6-6c0-4-2.5-8-6-12Z"/></svg><div><div style="font:700 18px/1 'Oswald',sans-serif;font-style:italic;color:#F2FF49">12</div><div style="font:600 8.5px 'Manrope';color:#888">seguidos</div></div></div>
+                      <div style="flex:1;background:#1A1A1A;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13M12 20V8M19 20v-9M3 20h18"/></svg><div><div style="font:700 18px/1 'Oswald',sans-serif;font-style:italic;color:#fff">18t</div><div style="font:600 8.5px 'Manrope';color:#888">/semana</div></div></div>
+                    </div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px 15px;border-top:1px solid rgba(255,255,255,.08)">
+                    <div style="display:flex;align-items:center;gap:6px;background:#F2FF49;border-radius:18px;padding:6px 12px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg><span style="font:700 10px 'Manrope';color:#0A0A0A">Início</span></div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8v8M7 6v12M17 6v12M20 8v8M7 12h10"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13M12 20V8M19 20v-9M3 20h18"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACTIVE -->
+              <div style="width:236px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(0,0,0,.6)">
+                <div style="background:#0F0F0F;border-radius:26px;overflow:hidden;height:478px;display:flex;flex-direction:column">
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#fff"><span>9:41</span><span style="letter-spacing:.15em;color:#888">5G ▪▪▪</span></div>
+                  <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                      <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#888">TREINO A · 3/8</div>
+                      <div style="display:flex;align-items:center;gap:5px;background:#F2FF49;color:#0A0A0A;border-radius:6px;padding:2px 8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><circle cx="12" cy="14" r="8"/><path d="M12 14V9.5"/></svg><span style="font:700 15px/1.2 'Oswald',sans-serif;font-style:italic">24:18</span></div>
+                    </div>
+                    <div style="font:700 29px/.85 'Oswald',sans-serif;text-transform:uppercase;font-style:italic">Supino reto</div>
+                    <div style="display:flex;flex-direction:column;gap:7px">
+                      <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:9px;padding:9px 13px;font:700 12px 'Manrope';color:#666"><span style="display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18.5 20 6.5"/></svg>Série 1</span><span>12 × 40kg</span></div>
+                      <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:9px;padding:9px 13px;font:700 12px 'Manrope';color:#666"><span style="display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18.5 20 6.5"/></svg>Série 2</span><span>10 × 45kg</span></div>
+                      <div style="display:flex;justify-content:space-between;background:#F2FF49;border-radius:9px;padding:11px 13px;font:800 12px 'Manrope';color:#0A0A0A"><span>Série 3</span><span>8 × 50kg</span></div>
+                    </div>
+                    <div style="margin-top:2px;background:#1A1A1A;border-radius:13px;padding:11px;display:flex;justify-content:space-between;align-items:center">
+                      <div style="width:34px;height:34px;border-radius:50%;background:#0A0A0A;color:#F2FF49;display:flex;align-items:center;justify-content:center;font:800 19px 'Manrope'">–</div>
+                      <div style="text-align:center"><div style="font:700 26px/1 'Oswald',sans-serif;font-style:italic;color:#fff">50</div><div style="font:600 8.5px 'Manrope';color:#888">KG</div></div>
+                      <div style="width:34px;height:34px;border-radius:50%;background:#F2FF49;color:#0A0A0A;display:flex;align-items:center;justify-content:center;font:800 19px 'Manrope'">+</div>
+                    </div>
+                  </div>
+                  <div style="padding:10px 18px 16px"><div style="background:#F2FF49;color:#0A0A0A;border-radius:11px;padding:13px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;font:800 13px 'Manrope';letter-spacing:.03em"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18.5 20 6.5"/></svg>Concluir série</div></div>
+                </div>
+              </div>
+
+              <!-- guidance panel -->
+              <div style="flex:1;background:#141414;border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:16px;min-width:200px">
+                <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#F2FF49">PRINCÍPIOS</div>
+                <div><div style="font:800 13px 'Manrope';color:#fff">Volt só onde importa</div><div style="font:400 11.5px/1.5 'Manrope';color:#999;margin-top:3px">Um único elemento Volt por tela: a ação ou o dado ativo. Nunca dois competindo.</div></div>
+                <div><div style="font:800 13px 'Manrope';color:#fff">Números falam alto</div><div style="font:400 11.5px/1.5 'Manrope';color:#999;margin-top:3px">Peso, tempo e séries em Oswald itálico grande. É o coração de um app de treino.</div></div>
+                <div><div style="font:800 13px 'Manrope';color:#fff">Preto respira</div><div style="font:400 11.5px/1.5 'Manrope';color:#999;margin-top:3px">Fundo escuro, cards discretos, muito contraste. Legível na academia, sob suor e luz baixa.</div></div>
+                <div><div style="font:800 13px 'Manrope';color:#fff">Ícones em traço</div><div style="font:400 11.5px/1.5 'Manrope';color:#999;margin-top:3px">2px, cantos vivos, branco no repouso e Volt no ativo/conquista.</div></div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="dv-next">Tente em seguida: "gerar o ícone do app em alta" · "adicionar telas de Progresso e Perfil" · "exportar como PDF" · "criar a tela de onboarding"</p>
+</section>
+
+<section class="dv-turn" id="t4">
+  <div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Performance atlética — cores &amp; ícones (sobre <a class="dv-oid" href="#3b">3b</a>)</span></div>
+  <p class="dv-tsub">Explorando a direção 3b. Base preto/branco + Oswald itálico fixas; troco só o acento. <b>4a</b> testa cinco cores de velocidade lado a lado. <b>4b</b> traz um set de ícones em traço no mesmo espírito e três tratamentos de barra de navegação. Me diga o acento vencedor e eu fecho o guia.</p>
+  <div class="dv-opts">
+
+    <!-- ================= 4a COLOR EXPLORATION ================= -->
+    <div class="dv-opt" id="4a">
+      <div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Cores de acento — mesma base, 5 energias</div>
+      <div class="dv-card" style="width:944px;background:#0A0A0A;padding:34px 36px 38px;font-family:'Manrope',sans-serif">
+        <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#888;margin-bottom:20px">TROQUE O ACENTO · PRETO/BRANCO PERMANECE</div>
+        <div style="display:flex;gap:16px">
+
+          <!-- Volt -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:7px;background:#F2FF49;display:flex;align-items:center;justify-content:center;font:700 16px/1 'Oswald',sans-serif;font-style:italic;color:#0A0A0A">T</div>
+              <div><div style="font:600 11px/1 'Manrope';color:#fff">Volt</div><div style="font:600 9px/1.3 ui-monospace,monospace;color:#888;margin-top:2px">#F2FF49</div></div>
+            </div>
+            <div style="height:44px;border-radius:10px;background:#F2FF49;display:flex;align-items:center;justify-content:center;font:800 12px 'Manrope';color:#0A0A0A;letter-spacing:.03em">Iniciar</div>
+            <div style="display:flex;justify-content:space-between;background:#F2FF49;border-radius:8px;padding:9px 11px;font:800 11px 'Manrope';color:#0A0A0A"><span>Série 3</span><span>8×50</span></div>
+            <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:8px;padding:9px 11px;font:700 11px 'Manrope';color:#888"><span>Série 4</span><span>8×50</span></div>
+            <div style="align-self:flex-start;font:700 26px/1 'Oswald',sans-serif;font-style:italic;color:#F2FF49">24:18</div>
+            <div style="font:600 10px/1.4 'Manrope';color:#9a9a9a">Elétrico, jovem, madrugada.</div>
+          </div>
+
+          <!-- Vermelho -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;border-left:1px solid rgba(255,255,255,.08);padding-left:16px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:7px;background:#FF3B30;display:flex;align-items:center;justify-content:center;font:700 16px/1 'Oswald',sans-serif;font-style:italic;color:#fff">T</div>
+              <div><div style="font:600 11px/1 'Manrope';color:#fff">Vermelho</div><div style="font:600 9px/1.3 ui-monospace,monospace;color:#888;margin-top:2px">#FF3B30</div></div>
+            </div>
+            <div style="height:44px;border-radius:10px;background:#FF3B30;display:flex;align-items:center;justify-content:center;font:800 12px 'Manrope';color:#fff;letter-spacing:.03em">Iniciar</div>
+            <div style="display:flex;justify-content:space-between;background:#FF3B30;border-radius:8px;padding:9px 11px;font:800 11px 'Manrope';color:#fff"><span>Série 3</span><span>8×50</span></div>
+            <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:8px;padding:9px 11px;font:700 11px 'Manrope';color:#888"><span>Série 4</span><span>8×50</span></div>
+            <div style="align-self:flex-start;font:700 26px/1 'Oswald',sans-serif;font-style:italic;color:#FF3B30">24:18</div>
+            <div style="font:600 10px/1.4 'Manrope';color:#9a9a9a">Intenso, urgência, esforço.</div>
+          </div>
+
+          <!-- Ciano -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;border-left:1px solid rgba(255,255,255,.08);padding-left:16px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:7px;background:#12E0E0;display:flex;align-items:center;justify-content:center;font:700 16px/1 'Oswald',sans-serif;font-style:italic;color:#0A0A0A">T</div>
+              <div><div style="font:600 11px/1 'Manrope';color:#fff">Ciano</div><div style="font:600 9px/1.3 ui-monospace,monospace;color:#888;margin-top:2px">#12E0E0</div></div>
+            </div>
+            <div style="height:44px;border-radius:10px;background:#12E0E0;display:flex;align-items:center;justify-content:center;font:800 12px 'Manrope';color:#0A0A0A;letter-spacing:.03em">Iniciar</div>
+            <div style="display:flex;justify-content:space-between;background:#12E0E0;border-radius:8px;padding:9px 11px;font:800 11px 'Manrope';color:#0A0A0A"><span>Série 3</span><span>8×50</span></div>
+            <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:8px;padding:9px 11px;font:700 11px 'Manrope';color:#888"><span>Série 4</span><span>8×50</span></div>
+            <div style="align-self:flex-start;font:700 26px/1 'Oswald',sans-serif;font-style:italic;color:#12E0E0">24:18</div>
+            <div style="font:600 10px/1.4 'Manrope';color:#9a9a9a">Tech, fresco, hidratação.</div>
+          </div>
+
+          <!-- Laranja -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;border-left:1px solid rgba(255,255,255,.08);padding-left:16px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:7px;background:#FF6B00;display:flex;align-items:center;justify-content:center;font:700 16px/1 'Oswald',sans-serif;font-style:italic;color:#0A0A0A">T</div>
+              <div><div style="font:600 11px/1 'Manrope';color:#fff">Laranja</div><div style="font:600 9px/1.3 ui-monospace,monospace;color:#888;margin-top:2px">#FF6B00</div></div>
+            </div>
+            <div style="height:44px;border-radius:10px;background:#FF6B00;display:flex;align-items:center;justify-content:center;font:800 12px 'Manrope';color:#0A0A0A;letter-spacing:.03em">Iniciar</div>
+            <div style="display:flex;justify-content:space-between;background:#FF6B00;border-radius:8px;padding:9px 11px;font:800 11px 'Manrope';color:#0A0A0A"><span>Série 3</span><span>8×50</span></div>
+            <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:8px;padding:9px 11px;font:700 11px 'Manrope';color:#888"><span>Série 4</span><span>8×50</span></div>
+            <div style="align-self:flex-start;font:700 26px/1 'Oswald',sans-serif;font-style:italic;color:#FF6B00">24:18</div>
+            <div style="font:600 10px/1.4 'Manrope';color:#9a9a9a">Caloroso, potência, chama.</div>
+          </div>
+
+          <!-- Magenta -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;border-left:1px solid rgba(255,255,255,.08);padding-left:16px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:7px;background:#FF2D78;display:flex;align-items:center;justify-content:center;font:700 16px/1 'Oswald',sans-serif;font-style:italic;color:#fff">T</div>
+              <div><div style="font:600 11px/1 'Manrope';color:#fff">Magenta</div><div style="font:600 9px/1.3 ui-monospace,monospace;color:#888;margin-top:2px">#FF2D78</div></div>
+            </div>
+            <div style="height:44px;border-radius:10px;background:#FF2D78;display:flex;align-items:center;justify-content:center;font:800 12px 'Manrope';color:#fff;letter-spacing:.03em">Iniciar</div>
+            <div style="display:flex;justify-content:space-between;background:#FF2D78;border-radius:8px;padding:9px 11px;font:800 11px 'Manrope';color:#fff"><span>Série 3</span><span>8×50</span></div>
+            <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:8px;padding:9px 11px;font:700 11px 'Manrope';color:#888"><span>Série 4</span><span>8×50</span></div>
+            <div style="align-self:flex-start;font:700 26px/1 'Oswald',sans-serif;font-style:italic;color:#FF2D78">24:18</div>
+            <div style="font:600 10px/1.4 'Manrope';color:#9a9a9a">Ousado, moderno, boutique.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 4b ICON SET ================= -->
+    <div class="dv-opt" id="4b">
+      <div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>Ícones em traço + barra de navegação</div>
+      <div class="dv-card" style="width:944px;background:#0F0F0F;padding:34px 36px 38px;font-family:'Manrope',sans-serif">
+        <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#888;margin-bottom:20px">SET DE ÍCONES · TRAÇO 2PX, CANTOS VIVOS</div>
+
+        <!-- icon grid -->
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:30px">
+          <!-- Início -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-5h5v5"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Início</span>
+          </div>
+          <!-- Treinos (dumbbell) -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8v8M7 6v12M17 6v12M20 8v8M7 12h10"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Treinos</span>
+          </div>
+          <!-- Progresso (bars) -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13M12 20V8M19 20v-9"/><path d="M3 20h18"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Progresso</span>
+          </div>
+          <!-- Timer -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><circle cx="12" cy="14" r="8"/><path d="M12 14V9.5M18 8l1.5-1.5"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Timer</span>
+          </div>
+          <!-- Perfil -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Perfil</span>
+          </div>
+          <!-- Streak (fire) -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 3 4.5 5.5 4.5 8.5A4.5 4.5 0 0 1 12 16a2.5 2.5 0 0 1-2.5-2.5c0-1 .5-2 1.5-2.8C10 12 8.5 12.5 8 14.5A6 6 0 0 0 12 21a6 6 0 0 0 6-6c0-4-2.5-8-6-12Z"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Sequência</span>
+          </div>
+          <!-- Play -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5 19 12 7 19.5Z"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Iniciar</span>
+          </div>
+          <!-- Plus -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Adicionar</span>
+          </div>
+          <!-- Check -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18.5 20 6.5"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Concluído</span>
+          </div>
+          <!-- Calendar -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Agenda</span>
+          </div>
+          <!-- Heart rate -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5h4l2-4 3 8 2.5-5 1.5 1h5"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Cardio</span>
+          </div>
+          <!-- Settings -->
+          <div style="background:#181818;border-radius:12px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+            <span style="font:600 9.5px 'Manrope';color:#aaa">Ajustes</span>
+          </div>
+        </div>
+
+        <!-- nav bar treatments -->
+        <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#888;margin-bottom:14px">BARRA DE NAVEGAÇÃO · 3 TRATAMENTOS</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+
+          <!-- A: pill indicator -->
+          <div style="background:#141414;border-radius:16px;padding:11px 20px;display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:7px;background:#F2FF49;border-radius:20px;padding:7px 14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg><span style="font:700 12px 'Manrope';color:#0A0A0A">Início</span></div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8v8M7 6v12M17 6v12M20 8v8M7 12h10"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13M12 20V8M19 20v-9M3 20h18"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+            <span style="font:600 9px 'Manrope';color:#555;margin-left:4px">Pílula ativa</span>
+          </div>
+
+          <!-- B: top bar indicator + FAB -->
+          <div style="background:#141414;border-radius:16px;padding:11px 20px;display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:22px;height:3px;background:#F2FF49;border-radius:2px;margin-bottom:1px"></div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg></div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8v8M7 6v12M17 6v12M20 8v8M7 12h10"/></svg>
+            <div style="width:44px;height:44px;border-radius:50%;background:#F2FF49;display:flex;align-items:center;justify-content:center;margin-top:-2px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13M12 20V8M19 20v-9M3 20h18"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+            <span style="font:600 9px 'Manrope';color:#555;margin-left:4px">Traço + FAB</span>
+          </div>
+
+          <!-- C: labeled -->
+          <div style="background:#141414;border-radius:16px;padding:11px 20px;display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F2FF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg><span style="font:700 8.5px 'Manrope';color:#F2FF49">Início</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8v8M7 6v12M17 6v12M20 8v8M7 12h10"/></svg><span style="font:600 8.5px 'Manrope';color:#666">Treinos</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13M12 20V8M19 20v-9M3 20h18"/></svg><span style="font:600 8.5px 'Manrope';color:#666">Progresso</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg><span style="font:600 8.5px 'Manrope';color:#666">Perfil</span></div>
+            <span style="font:600 9px 'Manrope';color:#555;margin-left:4px">Com rótulo</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Tente em seguida: "fechar com o <a class="dv-oid" href="#4a">4a</a> vermelho e a nav B" · "ver o ciano nas telas cheias" · "ícones com preenchimento no ativo" · "montar o guia completo da 3b"</p>
+</section>
+
+<section class="dv-turn" id="t3">
+  <div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Industrial &amp; Performance atlética</span></div>
+  <p class="dv-tsub">Dois territórios novos. <b>3a Industrial</b>: concreto, aço escovado e âmbar de segurança — vibe "ferro pesado", oficina. <b>3b Performance atlética</b>: preto e branco com uma cor de velocidade, cara de cronômetro e pista. Ambos herdam a energia da 1a/1b. Mesmo formato: brand board + telas Início e Treino ativo.</p>
+  <div class="dv-opts">
+
+    <!-- ================= 3a INDUSTRIAL ================= -->
+    <div class="dv-opt" id="3a">
+      <div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Industrial — concreto/aço + âmbar</div>
+      <div class="dv-card" style="width:944px;background:#1A1A1B;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <div style="height:9px;background:repeating-linear-gradient(45deg,#F5A623 0 11px,#1A1A1B 11px 22px);margin:-6px 0 22px;border-radius:2px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.1)">
+          <div>
+            <div style="display:flex;align-items:center;gap:13px">
+              <div style="width:38px;height:38px;border-radius:6px;background:#F5A623;display:flex;align-items:center;justify-content:center;font:700 22px/1 'Barlow Condensed',sans-serif;color:#1A1A1B">T</div>
+              <div style="font:800 38px/.85 'Barlow Condensed',sans-serif;letter-spacing:.02em;color:#F2F2EF;text-transform:uppercase">Treinus</div>
+            </div>
+            <div style="margin-top:11px;font:700 12px/1 'Manrope',sans-serif;letter-spacing:.24em;color:#F5A623">FERRO PESADO</div>
+          </div>
+          <div style="text-align:right;font:500 11px/1.5 'Manrope',sans-serif;color:#8A8A85">Concreto &amp; aço escovado<br>âmbar de segurança · raw</div>
+        </div>
+        <div style="display:flex;gap:34px;padding:26px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#8A8A85;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#F5A623"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2F2EF">Âmbar<br><span style="color:#8A8A85">#F5A623</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#1A1A1B;border:1px solid rgba(255,255,255,.14)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2F2EF">Grafite<br><span style="color:#8A8A85">#1A1A1B</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#3A3A3C"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2F2EF">Aço<br><span style="color:#8A8A85">#3A3A3C</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#C7C4BC"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2F2EF">Concreto<br><span style="color:#8A8A85">#C7C4BC</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(255,255,255,.1);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#8A8A85;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:800 30px/.9 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.02em;color:#F2F2EF">Barlow <span style="color:#F5A623">Condensed</span></div>
+            <div style="margin-top:8px;font:500 12px/1.5 'Manrope';color:#8A8A85">Manrope na interface. Condensada industrial em caixa-alta, tipo estêncil de galpão; âmbar só na ação e nos alertas.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px">
+          <!-- home -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(245,166,35,.22)">
+            <div style="background:#161617;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F2F2EF"><span>9:41</span><span style="letter-spacing:.15em;color:#8A8A85">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#8A8A85">TER · 1 JUL</div><div style="font:800 22px/1 'Barlow Condensed',sans-serif;text-transform:uppercase;color:#F2F2EF;margin-top:3px">Olá, Léo</div></div>
+                  <div style="width:38px;height:38px;border-radius:6px;background:#2A2A2C;border:1px solid rgba(245,166,35,.4)"></div>
+                </div>
+                <div style="background:#F5A623;border-radius:14px;padding:16px 16px 14px;color:#1A1A1B;position:relative;overflow:hidden">
+                  <div style="position:absolute;top:0;right:0;bottom:0;width:44px;background:repeating-linear-gradient(45deg,rgba(26,26,27,.22) 0 5px,transparent 5px 10px)"></div>
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;opacity:.7">TREINO DE HOJE · A</div>
+                  <div style="font:800 24px/.9 'Barlow Condensed',sans-serif;text-transform:uppercase;margin-top:8px">Peito &amp; Tríceps</div>
+                  <div style="display:flex;gap:14px;margin-top:11px;font:700 11px 'Manrope'"><span>8 exercícios</span><span style="opacity:.6">52 min</span></div>
+                  <div style="margin-top:14px;background:#1A1A1B;color:#F5A623;border-radius:9px;padding:11px;text-align:center;font:800 12.5px 'Manrope';letter-spacing:.03em">Iniciar treino</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#232325;border-radius:11px;padding:11px 12px;border-left:3px solid #F5A623"><div style="font:800 24px/1 'Barlow Condensed',sans-serif;color:#F5A623">12</div><div style="font:600 9.5px 'Manrope';color:#8A8A85;margin-top:2px">dias seguidos</div></div>
+                  <div style="flex:1;background:#232325;border-radius:11px;padding:11px 12px;border-left:3px solid #3A3A3C"><div style="font:800 24px/1 'Barlow Condensed',sans-serif;color:#F2F2EF">18t</div><div style="font:600 9.5px 'Manrope';color:#8A8A85;margin-top:2px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.07)">
+                <div style="width:22px;height:5px;border-radius:2px;background:#F5A623"></div>
+                <div style="width:9px;height:9px;border-radius:2px;background:#3A3A3C"></div>
+                <div style="width:9px;height:9px;border-radius:2px;background:#3A3A3C"></div>
+                <div style="width:9px;height:9px;border-radius:2px;background:#3A3A3C"></div>
+              </div>
+            </div>
+          </div>
+          <!-- active -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(0,0,0,.6)">
+            <div style="background:#161617;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F2F2EF"><span>9:41</span><span style="letter-spacing:.15em;color:#8A8A85">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#8A8A85">TREINO A · 3/8</div>
+                  <div style="font:800 18px/1 'Barlow Condensed',sans-serif;color:#F5A623">24:18</div>
+                </div>
+                <div style="font:800 30px/.85 'Barlow Condensed',sans-serif;text-transform:uppercase;color:#F2F2EF">Supino reto</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#232325;border-radius:8px;padding:9px 13px;font:700 12px 'Manrope';color:#8A8A85"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#232325;border-radius:8px;padding:9px 13px;font:700 12px 'Manrope';color:#8A8A85"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#F5A623;border-radius:8px;padding:11px 13px;font:800 12px 'Manrope';color:#1A1A1B"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#232325;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:8px;background:#1A1A1B;color:#F5A623;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">–</div>
+                  <div style="text-align:center"><div style="font:800 28px/1 'Barlow Condensed',sans-serif;color:#F2F2EF">50</div><div style="font:600 9px 'Manrope';color:#8A8A85">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:8px;background:#F5A623;color:#1A1A1B;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#F5A623;color:#1A1A1B;border-radius:10px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.03em">Concluir série</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 3b PERFORMANCE ================= -->
+    <div class="dv-opt" id="3b">
+      <div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Performance atlética — preto/branco + volt</div>
+      <div class="dv-card" style="width:944px;background:#0A0A0A;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.12)">
+          <div>
+            <div style="display:flex;align-items:center;gap:13px">
+              <div style="width:38px;height:38px;border-radius:9px;background:#F2FF49;display:flex;align-items:center;justify-content:center;font:700 22px/1 'Oswald',sans-serif;color:#0A0A0A;font-style:italic">T</div>
+              <div style="font:700 36px/.85 'Oswald',sans-serif;letter-spacing:.01em;color:#fff;text-transform:uppercase;font-style:italic">Treinus</div>
+            </div>
+            <div style="margin-top:11px;font:700 12px/1 'Manrope',sans-serif;letter-spacing:.24em;color:#F2FF49">SUPERE O CRONÔMETRO</div>
+          </div>
+          <div style="text-align:right;font:500 11px/1.5 'Manrope',sans-serif;color:#888">Preto &amp; branco + volt<br>cronômetro · pista</div>
+        </div>
+        <div style="display:flex;gap:34px;padding:26px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#888;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#F2FF49"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#fff">Volt<br><span style="color:#888">#F2FF49</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#0A0A0A;border:1px solid rgba(255,255,255,.16)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#fff">Track<br><span style="color:#888">#0A0A0A</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#FFFFFF"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#fff">Branco<br><span style="color:#888">#FFFFFF</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:8px;background:#5B5B5B"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#fff">Cinza<br><span style="color:#888">#5B5B5B</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(255,255,255,.12);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#888;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:700 30px/.9 'Oswald',sans-serif;text-transform:uppercase;font-style:italic;color:#fff">Oswald <span style="color:#F2FF49">itálico</span></div>
+            <div style="margin-top:8px;font:500 12px/1.5 'Manrope';color:#888">Manrope na interface. Oswald inclinado dá sensação de velocidade e dorsal de corrida; volt marca o dado ativo.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px">
+          <!-- home -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(242,255,73,.2)">
+            <div style="background:#0F0F0F;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#fff"><span>9:41</span><span style="letter-spacing:.15em;color:#888">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#888">TER · 1 JUL</div><div style="font:700 22px/1 'Oswald',sans-serif;text-transform:uppercase;font-style:italic;color:#fff;margin-top:3px">Olá, Léo</div></div>
+                  <div style="width:38px;height:38px;border-radius:50%;background:#1C1C1C;border:1px solid rgba(242,255,73,.45)"></div>
+                </div>
+                <div style="background:#F2FF49;border-radius:16px;padding:16px 16px 14px;color:#0A0A0A;position:relative;overflow:hidden">
+                  <div style="position:absolute;bottom:-10px;right:-6px;font:700 60px/1 'Oswald',sans-serif;font-style:italic;color:rgba(10,10,10,.08)">A</div>
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;opacity:.65">TREINO DE HOJE · A</div>
+                  <div style="font:700 24px/.9 'Oswald',sans-serif;text-transform:uppercase;font-style:italic;margin-top:8px">Peito &amp; Tríceps</div>
+                  <div style="display:flex;gap:14px;margin-top:11px;font:700 11px 'Manrope'"><span>8 exercícios</span><span style="opacity:.55">52 min</span></div>
+                  <div style="margin-top:14px;background:#0A0A0A;color:#F2FF49;border-radius:10px;padding:11px;text-align:center;font:800 12.5px 'Manrope';letter-spacing:.03em">Iniciar treino</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#1A1A1A;border-radius:12px;padding:11px 12px"><div style="font:700 24px/1 'Oswald',sans-serif;font-style:italic;color:#F2FF49">12</div><div style="font:600 9.5px 'Manrope';color:#888;margin-top:2px">dias seguidos</div></div>
+                  <div style="flex:1;background:#1A1A1A;border-radius:12px;padding:11px 12px"><div style="font:700 24px/1 'Oswald',sans-serif;font-style:italic;color:#fff">18t</div><div style="font:600 9.5px 'Manrope';color:#888;margin-top:2px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.08)">
+                <div style="width:22px;height:5px;border-radius:3px;background:#F2FF49"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#333"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#333"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#333"></div>
+              </div>
+            </div>
+          </div>
+          <!-- active -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(0,0,0,.6)">
+            <div style="background:#0F0F0F;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#fff"><span>9:41</span><span style="letter-spacing:.15em;color:#888">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#888">TREINO A · 3/8</div>
+                  <div style="background:#F2FF49;color:#0A0A0A;border-radius:6px;padding:2px 8px;font:700 16px/1.2 'Oswald',sans-serif;font-style:italic">24:18</div>
+                </div>
+                <div style="font:700 30px/.85 'Oswald',sans-serif;text-transform:uppercase;font-style:italic;color:#fff">Supino reto</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:9px;padding:9px 13px;font:700 12px 'Manrope';color:#888"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#1A1A1A;border-radius:9px;padding:9px 13px;font:700 12px 'Manrope';color:#888"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#F2FF49;border-radius:9px;padding:11px 13px;font:800 12px 'Manrope';color:#0A0A0A"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#1A1A1A;border-radius:13px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:50%;background:#0A0A0A;color:#F2FF49;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">–</div>
+                  <div style="text-align:center"><div style="font:700 28px/1 'Oswald',sans-serif;font-style:italic;color:#fff">50</div><div style="font:600 9px 'Manrope';color:#888">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:50%;background:#F2FF49;color:#0A0A0A;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#F2FF49;color:#0A0A0A;border-radius:10px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.03em">Concluir série</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Tente em seguida: "seguir a <a class="dv-oid" href="#3a">3a</a> e montar o guia completo" · "trocar o volt da <a class="dv-oid" href="#3b">3b</a> por vermelho" · "misturar o âmbar da <a class="dv-oid" href="#3a">3a</a> com o layout da <a class="dv-oid" href="#3b">3b</a>" · "mais telas"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+  <div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Grécia antiga — riff sobre <a class="dv-oid" href="#1a">1a</a> + <a class="dv-oid" href="#1b">1b</a></span></div>
+  <p class="dv-tsub">Estética clássica aplicada a musculação: o corpo como escultura, os Jogos de Olímpia, força forjada. Tipografia inscricional (Cinzel) + Manrope na interface, emblema tipo medalha/moeda, e fotografia de estátuas de mármore (placeholders listrados marcam onde entram). Três temperamentos — do mármore sereno ao bronze incandescente.</p>
+  <div class="dv-opts">
+
+    <!-- ================= 2a OLYMPIA ================= -->
+    <div class="dv-opt" id="2a">
+      <div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Olympia — mármore + ouro antigo</div>
+      <div class="dv-card" style="width:944px;background:#EFE9DD;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <div style="height:8px;background:repeating-linear-gradient(90deg,#B4823C 0 2px,transparent 2px 8px);opacity:.65;margin:-6px 0 22px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;border-bottom:1px solid rgba(31,27,22,.16)">
+          <div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="width:38px;height:38px;border-radius:50%;border:2px solid #B4823C;display:flex;align-items:center;justify-content:center;font:700 18px/1 'Cinzel',serif;color:#1F1B16">T</div>
+              <div style="font:700 34px/.9 'Cinzel',serif;letter-spacing:.14em;color:#1F1B16">TREINUS</div>
+            </div>
+            <div style="margin-top:12px;font:600 12px/1 'Manrope',sans-serif;letter-spacing:.28em;color:#B4823C">ESCULPA SUA FORÇA</div>
+          </div>
+          <div style="text-align:right;font:500 italic 12px/1.5 'Cormorant Garamond',serif;color:#8C8271">Mármore &amp; ouro antigo<br>sereno · premium</div>
+        </div>
+        <div style="display:flex;gap:34px;padding:26px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#8C8271;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#B4823C"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#1F1B16">Ouro<br><span style="color:#8C8271">#B4823C</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#1F1B16"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#1F1B16">Ônix<br><span style="color:#8C8271">#1F1B16</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#EFE9DD;border:1px solid rgba(31,27,22,.15)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#1F1B16">Mármore<br><span style="color:#8C8271">#EFE9DD</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#FBF8F1;border:1px solid rgba(31,27,22,.1)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#1F1B16">Gesso<br><span style="color:#8C8271">#FBF8F1</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(31,27,22,.16);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#8C8271;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:700 26px/.95 'Cinzel',serif;letter-spacing:.06em;color:#1F1B16">CINZEL <span style="color:#B4823C">INSCRICIONAL</span></div>
+            <div style="margin-top:8px;font:500 12px/1.5 'Manrope';color:#8C8271">Manrope na interface. Caixa-alta com traço lapidar remete a inscrição em pedra; o corpo humanista mantém a leitura leve.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px">
+          <!-- home -->
+          <div style="width:230px;flex:none;background:#2A241D;border-radius:34px;padding:9px;box-shadow:0 30px 60px -26px rgba(180,130,60,.28)">
+            <div style="background:#FBF8F1;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#1F1B16"><span>9:41</span><span style="letter-spacing:.15em;color:#B0A692">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#8C8271">TER · 1 JUL</div><div style="font:700 18px/1.1 'Cinzel',serif;letter-spacing:.05em;color:#1F1B16;margin-top:3px">OLÁ, LÉO</div></div>
+                  <div style="width:40px;height:40px;border-radius:50%;background:repeating-linear-gradient(45deg,#E4DCCB 0 5px,#D8CFBB 5px 10px);border:1.5px solid #B4823C;display:flex;align-items:center;justify-content:center;font:600 5.5px/1.1 ui-monospace,monospace;color:#8C8271;text-align:center">busto</div>
+                </div>
+                <div style="background:#1F1B16;border-radius:18px;padding:16px 16px 14px;color:#FBF8F1;position:relative;overflow:hidden">
+                  <div style="position:absolute;top:0;right:0;height:100%;width:56px;background:repeating-linear-gradient(90deg,rgba(180,130,60,.5) 0 1.5px,transparent 1.5px 7px)"></div>
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;color:#D8A85A">TREINO DE HOJE · A</div>
+                  <div style="font:700 19px/1 'Cinzel',serif;letter-spacing:.03em;margin-top:9px">PEITO &amp; TRÍCEPS</div>
+                  <div style="display:flex;gap:14px;margin-top:11px;font:700 11px 'Manrope';color:#B0A692"><span>8 exercícios</span><span>52 min</span></div>
+                  <div style="margin-top:14px;background:#B4823C;color:#1F1B16;border-radius:11px;padding:11px;text-align:center;font:800 12.5px 'Manrope';letter-spacing:.03em">Iniciar treino</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#EFE9DD;border-radius:13px;padding:11px 12px"><div style="font:700 21px/1 'Cinzel',serif;color:#B4823C">XII</div><div style="font:600 9.5px 'Manrope';color:#8C8271;margin-top:4px">dias seguidos</div></div>
+                  <div style="flex:1;background:#EFE9DD;border-radius:13px;padding:11px 12px"><div style="font:700 21px/1 'Cinzel',serif;color:#1F1B16">18t</div><div style="font:600 9.5px 'Manrope';color:#8C8271;margin-top:4px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(31,27,22,.08)">
+                <div style="width:22px;height:5px;border-radius:3px;background:#B4823C"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#D6CDB9"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#D6CDB9"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#D6CDB9"></div>
+              </div>
+            </div>
+          </div>
+          <!-- active -->
+          <div style="width:230px;flex:none;background:#2A241D;border-radius:34px;padding:9px;box-shadow:0 30px 60px -26px rgba(0,0,0,.4)">
+            <div style="background:#FBF8F1;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#1F1B16"><span>9:41</span><span style="letter-spacing:.15em;color:#B0A692">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#8C8271">TREINO A · 3/8</div>
+                  <div style="font:700 15px/1 'Cinzel',serif;color:#B4823C">24:18</div>
+                </div>
+                <div style="font:700 24px/.95 'Cinzel',serif;letter-spacing:.03em;color:#1F1B16">SUPINO RETO</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#EFE9DD;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#8C8271"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#EFE9DD;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#8C8271"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#B4823C;border-radius:10px;padding:11px 13px;font:800 12px 'Manrope';color:#1F1B16"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#EFE9DD;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:10px;background:#FBF8F1;color:#1F1B16;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope';border:1px solid rgba(31,27,22,.1)">–</div>
+                  <div style="text-align:center"><div style="font:700 24px/1 'Cinzel',serif;color:#1F1B16">50</div><div style="font:600 9px 'Manrope';color:#8C8271">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:#B4823C;color:#1F1B16;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#1F1B16;color:#D8A85A;border-radius:12px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.03em">Concluir série</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2b BRONZE ================= -->
+    <div class="dv-opt" id="2b">
+      <div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Bronze — obsidiana + ouro incandescente</div>
+      <div class="dv-card" style="width:944px;background:#12100C;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <div style="height:8px;background:repeating-linear-gradient(90deg,#E9A93C 0 2px,transparent 2px 8px);opacity:.7;margin:-6px 0 22px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;border-bottom:1px solid rgba(233,169,60,.18)">
+          <div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="width:38px;height:38px;border-radius:50%;border:2px solid #E9A93C;display:flex;align-items:center;justify-content:center;font:700 18px/1 'Cinzel',serif;color:#E9A93C">T</div>
+              <div style="font:800 34px/.9 'Cinzel',serif;letter-spacing:.13em;color:#F2E9D8">TREINUS</div>
+            </div>
+            <div style="margin-top:12px;font:600 12px/1 'Manrope',sans-serif;letter-spacing:.26em;color:#E9A93C">FORJADO EM BRONZE</div>
+          </div>
+          <div style="text-align:right;font:500 italic 12px/1.5 'Cormorant Garamond',serif;color:#9A8B72">Obsidiana &amp; ouro fundido<br>intenso · lendário</div>
+        </div>
+        <div style="display:flex;gap:34px;padding:26px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#9A8B72;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#E9A93C"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2E9D8">Ouro<br><span style="color:#9A8B72">#E9A93C</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#8A6224"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2E9D8">Bronze<br><span style="color:#9A8B72">#8A6224</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#12100C;border:1px solid rgba(255,255,255,.12)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2E9D8">Obsidiana<br><span style="color:#9A8B72">#12100C</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#F2E9D8"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F2E9D8">Mármore<br><span style="color:#9A8B72">#F2E9D8</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(233,169,60,.18);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#9A8B72;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:800 26px/.95 'Cinzel',serif;letter-spacing:.05em;color:#F2E9D8">CINZEL <span style="color:#E9A93C">FORJADO</span></div>
+            <div style="margin-top:8px;font:500 12px/1.5 'Manrope';color:#9A8B72">Manrope na interface. O ouro incandescente sobre obsidiana carrega a mesma energia da 1a/1b, agora com peso de bronze antigo.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px">
+          <!-- home -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(233,169,60,.22)">
+            <div style="background:#171310;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F2E9D8"><span>9:41</span><span style="letter-spacing:.15em;color:#9A8B72">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#9A8B72">TER · 1 JUL</div><div style="font:800 18px/1.1 'Cinzel',serif;letter-spacing:.04em;color:#F2E9D8;margin-top:3px">OLÁ, LÉO</div></div>
+                  <div style="width:40px;height:40px;border-radius:50%;background:repeating-linear-gradient(45deg,#2A241C 0 5px,#221D16 5px 10px);border:1.5px solid #E9A93C;display:flex;align-items:center;justify-content:center;font:600 5.5px/1.1 ui-monospace,monospace;color:#9A8B72;text-align:center">busto</div>
+                </div>
+                <div style="background:linear-gradient(150deg,#E9A93C,#C4841F);border-radius:20px;padding:16px 16px 14px;color:#12100C;position:relative;overflow:hidden">
+                  <div style="position:absolute;top:0;right:0;height:100%;width:56px;background:repeating-linear-gradient(90deg,rgba(18,16,12,.28) 0 1.5px,transparent 1.5px 7px)"></div>
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;opacity:.7">TREINO DE HOJE · A</div>
+                  <div style="font:800 19px/1 'Cinzel',serif;letter-spacing:.03em;margin-top:9px">PEITO &amp; TRÍCEPS</div>
+                  <div style="display:flex;gap:14px;margin-top:11px;font:700 11px 'Manrope'"><span>8 exercícios</span><span style="opacity:.6">52 min</span></div>
+                  <div style="margin-top:14px;background:#12100C;color:#E9A93C;border-radius:12px;padding:11px;text-align:center;font:800 12.5px 'Manrope';letter-spacing:.03em">Iniciar treino</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#211B15;border-radius:15px;padding:11px 12px"><div style="font:800 21px/1 'Cinzel',serif;color:#E9A93C">XII</div><div style="font:600 9.5px 'Manrope';color:#9A8B72;margin-top:4px">dias seguidos</div></div>
+                  <div style="flex:1;background:#211B15;border-radius:15px;padding:11px 12px"><div style="font:800 21px/1 'Cinzel',serif;color:#F2E9D8">18t</div><div style="font:600 9.5px 'Manrope';color:#9A8B72;margin-top:4px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.06)">
+                <div style="width:22px;height:5px;border-radius:3px;background:#E9A93C"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#3A3226"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#3A3226"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#3A3226"></div>
+              </div>
+            </div>
+          </div>
+          <!-- active -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(0,0,0,.6)">
+            <div style="background:#171310;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F2E9D8"><span>9:41</span><span style="letter-spacing:.15em;color:#9A8B72">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#9A8B72">TREINO A · 3/8</div>
+                  <div style="font:800 15px/1 'Cinzel',serif;color:#E9A93C">24:18</div>
+                </div>
+                <div style="font:800 24px/.95 'Cinzel',serif;letter-spacing:.03em;color:#F2E9D8">SUPINO RETO</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#211B15;border-radius:12px;padding:9px 13px;font:700 12px 'Manrope';color:#9A8B72"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#211B15;border-radius:12px;padding:9px 13px;font:700 12px 'Manrope';color:#9A8B72"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#E9A93C;border-radius:12px;padding:11px 13px;font:800 12px 'Manrope';color:#12100C"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#211B15;border-radius:16px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:50%;background:#12100C;color:#E9A93C;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">–</div>
+                  <div style="text-align:center"><div style="font:800 24px/1 'Cinzel',serif;color:#F2E9D8">50</div><div style="font:600 9px 'Manrope';color:#9A8B72">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:50%;background:#E9A93C;color:#12100C;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#E9A93C;color:#12100C;border-radius:14px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.03em">Concluir série</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2c AEGEAN ================= -->
+    <div class="dv-opt" id="2c">
+      <div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Aegean — azul do Egeu + ouro</div>
+      <div class="dv-card" style="width:944px;background:#0E2C40;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <div style="height:8px;background:repeating-linear-gradient(90deg,#E6B54E 0 2px,transparent 2px 8px);opacity:.7;margin:-6px 0 22px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;border-bottom:1px solid rgba(230,181,78,.2)">
+          <div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="width:38px;height:38px;border-radius:50%;border:2px solid #E6B54E;display:flex;align-items:center;justify-content:center;font:700 18px/1 'Cinzel',serif;color:#EAF2F3">T</div>
+              <div style="font:700 34px/.9 'Cinzel',serif;letter-spacing:.14em;color:#EAF2F3">TREINUS</div>
+            </div>
+            <div style="margin-top:12px;font:600 12px/1 'Manrope',sans-serif;letter-spacing:.26em;color:#E6B54E">ESPÍRITO OLÍMPICO</div>
+          </div>
+          <div style="text-align:right;font:500 italic 12px/1.5 'Cormorant Garamond',serif;color:#7FA0B0">Azul do Egeu &amp; ouro<br>nobre · vigoroso</div>
+        </div>
+        <div style="display:flex;gap:34px;padding:26px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#7FA0B0;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#E6B54E"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#EAF2F3">Ouro<br><span style="color:#7FA0B0">#E6B54E</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#0E2C40;border:1px solid rgba(255,255,255,.14)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#EAF2F3">Egeu<br><span style="color:#7FA0B0">#0E2C40</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#17435E"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#EAF2F3">Maré<br><span style="color:#7FA0B0">#17435E</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#EAF2F3"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#EAF2F3">Espuma<br><span style="color:#7FA0B0">#EAF2F3</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(230,181,78,.2);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#7FA0B0;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:700 26px/.95 'Cinzel',serif;letter-spacing:.06em;color:#EAF2F3">CINZEL <span style="color:#E6B54E">CLÁSSICO</span></div>
+            <div style="margin-top:8px;font:500 12px/1.5 'Manrope';color:#7FA0B0">Manrope na interface. Azul profundo do Mediterrâneo com ouro: nobre e vigoroso sem cair no óbvio do preto.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px">
+          <!-- home -->
+          <div style="width:230px;flex:none;background:#02121C;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(230,181,78,.2)">
+            <div style="background:#0C2637;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#EAF2F3"><span>9:41</span><span style="letter-spacing:.15em;color:#7FA0B0">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#7FA0B0">TER · 1 JUL</div><div style="font:700 18px/1.1 'Cinzel',serif;letter-spacing:.04em;color:#EAF2F3;margin-top:3px">OLÁ, LÉO</div></div>
+                  <div style="width:40px;height:40px;border-radius:50%;background:repeating-linear-gradient(45deg,#16405A 0 5px,#123650 5px 10px);border:1.5px solid #E6B54E;display:flex;align-items:center;justify-content:center;font:600 5.5px/1.1 ui-monospace,monospace;color:#7FA0B0;text-align:center">busto</div>
+                </div>
+                <div style="background:#E6B54E;border-radius:18px;padding:16px 16px 14px;color:#0E2C40;position:relative;overflow:hidden">
+                  <div style="position:absolute;top:0;right:0;height:100%;width:56px;background:repeating-linear-gradient(90deg,rgba(14,44,64,.28) 0 1.5px,transparent 1.5px 7px)"></div>
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;opacity:.7">TREINO DE HOJE · A</div>
+                  <div style="font:700 19px/1 'Cinzel',serif;letter-spacing:.03em;margin-top:9px">PEITO &amp; TRÍCEPS</div>
+                  <div style="display:flex;gap:14px;margin-top:11px;font:700 11px 'Manrope'"><span>8 exercícios</span><span style="opacity:.6">52 min</span></div>
+                  <div style="margin-top:14px;background:#0E2C40;color:#E6B54E;border-radius:11px;padding:11px;text-align:center;font:800 12.5px 'Manrope';letter-spacing:.03em">Iniciar treino</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#123650;border-radius:13px;padding:11px 12px"><div style="font:700 21px/1 'Cinzel',serif;color:#E6B54E">XII</div><div style="font:600 9.5px 'Manrope';color:#7FA0B0;margin-top:4px">dias seguidos</div></div>
+                  <div style="flex:1;background:#123650;border-radius:13px;padding:11px 12px"><div style="font:700 21px/1 'Cinzel',serif;color:#EAF2F3">18t</div><div style="font:600 9.5px 'Manrope';color:#7FA0B0;margin-top:4px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.07)">
+                <div style="width:22px;height:5px;border-radius:3px;background:#E6B54E"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#2A5064"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#2A5064"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#2A5064"></div>
+              </div>
+            </div>
+          </div>
+          <!-- active -->
+          <div style="width:230px;flex:none;background:#02121C;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(0,0,0,.5)">
+            <div style="background:#0C2637;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#EAF2F3"><span>9:41</span><span style="letter-spacing:.15em;color:#7FA0B0">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#7FA0B0">TREINO A · 3/8</div>
+                  <div style="font:700 15px/1 'Cinzel',serif;color:#E6B54E">24:18</div>
+                </div>
+                <div style="font:700 24px/.95 'Cinzel',serif;letter-spacing:.03em;color:#EAF2F3">SUPINO RETO</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#123650;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#7FA0B0"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#123650;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#7FA0B0"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#E6B54E;border-radius:10px;padding:11px 13px;font:800 12px 'Manrope';color:#0E2C40"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#123650;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:10px;background:#0C2637;color:#E6B54E;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">–</div>
+                  <div style="text-align:center"><div style="font:700 24px/1 'Cinzel',serif;color:#EAF2F3">50</div><div style="font:600 9px 'Manrope';color:#7FA0B0">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:#E6B54E;color:#0E2C40;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#E6B54E;color:#0E2C40;border-radius:12px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.03em">Concluir série</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Tente em seguida: "seguir a <a class="dv-oid" href="#2b">2b</a> e montar o guia completo" · "usar o ouro da <a class="dv-oid" href="#2b">2b</a> no dark da <a class="dv-oid" href="#1a">1a</a>" · "adicionar um padrão de meandro grego" · "trocar os números romanos por arábicos"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Treinus — 3 direções de identidade</span></div>
+  <p class="dv-tsub">Cada direção é uma marca completa: logotipo, paleta e tipografia, mais duas telas do app (Início + Treino ativo) com a identidade aplicada. Todas partem do briefing energético + premium, musculação. Compare, pegue emprestado entre elas e me diga qual seguir.</p>
+  <div class="dv-opts">
+
+    <!-- ================= 1a VOLTAGE ================= -->
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Voltage — dark elétrico + lima</div>
+      <div class="dv-card" style="width:944px;background:#0B0D0C;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <!-- brand header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:26px;border-bottom:1px solid rgba(255,255,255,.08)">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:34px;height:34px;border-radius:9px;background:#C6FF3D;display:flex;align-items:center;justify-content:center;font:800 20px/1 'Anton',sans-serif;color:#0B0D0C">T</div>
+              <div style="font:400 40px/.9 'Anton',sans-serif;letter-spacing:.02em;color:#F1F4EF">TREINUS</div>
+            </div>
+            <div style="margin-top:12px;font:800 12px/1 'Manrope',sans-serif;letter-spacing:.32em;color:#C6FF3D">ENERGIA EM CADA REP</div>
+          </div>
+          <div style="text-align:right;font:500 11px/1.5 'Manrope',sans-serif;color:#7E867F">Dark elétrico<br>Volt · alta intensidade</div>
+        </div>
+        <!-- palette + type -->
+        <div style="display:flex;gap:34px;padding:28px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#7E867F;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#C6FF3D"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F1F4EF">Volt<br><span style="color:#7E867F">#C6FF3D</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#0B0D0C;border:1px solid rgba(255,255,255,.12)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F1F4EF">Void<br><span style="color:#7E867F">#0B0D0C</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#1E2224"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F1F4EF">Steel<br><span style="color:#7E867F">#1E2224</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#F1F4EF"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F1F4EF">Chalk<br><span style="color:#7E867F">#F1F4EF</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(255,255,255,.08);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#7E867F;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:400 30px/.95 'Anton',sans-serif;color:#F1F4EF;letter-spacing:.01em">Anton <span style="color:#C6FF3D">display</span></div>
+            <div style="margin-top:6px;font:500 12px/1.5 'Manrope';color:#7E867F">Manrope — interface, números e corpo. Condensado batendo forte contra o grotesco humanista.</div>
+          </div>
+        </div>
+        <!-- screens -->
+        <div style="display:flex;gap:22px">
+          <!-- phone: home -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(198,255,61,.18)">
+            <div style="background:#0F1211;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F1F4EF"><span>9:41</span><span style="letter-spacing:.15em;color:#7E867F">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#7E867F">TER · 1 JUL</div><div style="font:800 19px/1.1 'Manrope';color:#F1F4EF;margin-top:2px">Olá, Léo</div></div>
+                  <div style="width:38px;height:38px;border-radius:12px;background:#1E2224;border:1px solid rgba(198,255,61,.4)"></div>
+                </div>
+                <div style="background:#C6FF3D;border-radius:18px;padding:16px 16px 14px;color:#0B0D0C">
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;opacity:.65">TREINO DE HOJE · A</div>
+                  <div style="font:400 26px/.95 'Anton';margin-top:8px;letter-spacing:.01em">PEITO &amp; TRÍCEPS</div>
+                  <div style="display:flex;gap:14px;margin-top:12px;font:700 11px 'Manrope'"><span>8 exercícios</span><span style="opacity:.55">52 min</span></div>
+                  <div style="margin-top:14px;background:#0B0D0C;color:#C6FF3D;border-radius:11px;padding:11px;text-align:center;font:800 13px 'Manrope';letter-spacing:.04em">INICIAR ▸</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#1A1E1F;border-radius:13px;padding:11px 12px"><div style="font:400 22px/1 'Anton';color:#C6FF3D">12</div><div style="font:600 9.5px 'Manrope';color:#7E867F;margin-top:4px">dias seguidos</div></div>
+                  <div style="flex:1;background:#1A1E1F;border-radius:13px;padding:11px 12px"><div style="font:400 22px/1 'Anton';color:#F1F4EF">18t</div><div style="font:600 9.5px 'Manrope';color:#7E867F;margin-top:4px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.06)">
+                <div style="width:22px;height:5px;border-radius:3px;background:#C6FF3D"></div>
+                <div style="width:9px;height:9px;border-radius:3px;background:#3A403C"></div>
+                <div style="width:9px;height:9px;border-radius:3px;background:#3A403C"></div>
+                <div style="width:9px;height:9px;border-radius:3px;background:#3A403C"></div>
+              </div>
+            </div>
+          </div>
+          <!-- phone: active -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(0,0,0,.6)">
+            <div style="background:#0F1211;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F1F4EF"><span>9:41</span><span style="letter-spacing:.15em;color:#7E867F">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#7E867F">TREINO A · 3/8</div>
+                  <div style="font:400 18px/1 'Anton';color:#C6FF3D">24:18</div>
+                </div>
+                <div><div style="font:400 30px/.9 'Anton';color:#F1F4EF;letter-spacing:.01em">SUPINO<br>RETO</div></div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#1A1E1F;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#7E867F"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#1A1E1F;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#7E867F"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#C6FF3D;border-radius:10px;padding:11px 13px;font:800 12px 'Manrope';color:#0B0D0C"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#1A1E1F;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:10px;background:#0B0D0C;color:#C6FF3D;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">–</div>
+                  <div style="text-align:center"><div style="font:400 28px/1 'Anton';color:#F1F4EF">50</div><div style="font:600 9px 'Manrope';color:#7E867F">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:#C6FF3D;color:#0B0D0C;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#C6FF3D;color:#0B0D0C;border-radius:12px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.04em">CONCLUIR SÉRIE</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 1b EMBER ================= -->
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Ember — premium quente + vermelho</div>
+      <div class="dv-card" style="width:944px;background:#15100E;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:26px;border-bottom:1px solid rgba(255,255,255,.08)">
+          <div>
+            <div style="display:flex;align-items:center;gap:13px">
+              <div style="width:34px;height:34px;border-radius:50%;background:#FF4A2E;display:flex;align-items:center;justify-content:center;font:800 17px/1 'Archivo Expanded',sans-serif;color:#15100E">T</div>
+              <div style="font:900 30px/.9 'Archivo Expanded',sans-serif;letter-spacing:-.01em;color:#F6EEE8">TREINUS</div>
+            </div>
+            <div style="margin-top:12px;font:600 12px/1 'Manrope',sans-serif;letter-spacing:.14em;color:#FF7A5C">FORÇA QUE SE CONSTRÓI</div>
+          </div>
+          <div style="text-align:right;font:500 11px/1.5 'Manrope',sans-serif;color:#9A8B82">Carvão quente<br>Brasa · sofisticado</div>
+        </div>
+        <div style="display:flex;gap:34px;padding:28px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#9A8B82;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#FF4A2E"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F6EEE8">Ember<br><span style="color:#9A8B82">#FF4A2E</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#E8B27A"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F6EEE8">Sand<br><span style="color:#9A8B82">#E8B27A</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#15100E;border:1px solid rgba(255,255,255,.12)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F6EEE8">Coal<br><span style="color:#9A8B82">#15100E</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#F6EEE8"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#F6EEE8">Bone<br><span style="color:#9A8B82">#F6EEE8</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(255,255,255,.08);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#9A8B82;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:900 26px/.95 'Archivo Expanded',sans-serif;color:#F6EEE8;letter-spacing:-.01em">Archivo <span style="color:#FF4A2E">Expanded</span></div>
+            <div style="margin-top:8px;font:500 12px/1.5 'Manrope';color:#9A8B82">Manrope — interface e corpo. Peso expandido dá presença editorial e cara de marca premium.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px">
+          <!-- home -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(255,74,46,.2)">
+            <div style="background:#1B1512;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F6EEE8"><span>9:41</span><span style="letter-spacing:.15em;color:#9A8B82">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#9A8B82">TER · 1 JUL</div><div style="font:900 17px/1.1 'Archivo Expanded';color:#F6EEE8;margin-top:3px">Olá, Léo</div></div>
+                  <div style="width:38px;height:38px;border-radius:50%;background:#2B211D;border:1px solid rgba(232,178,122,.5)"></div>
+                </div>
+                <div style="background:linear-gradient(150deg,#FF4A2E,#C7371F);border-radius:20px;padding:16px 16px 14px;color:#15100E">
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;opacity:.7">TREINO DE HOJE · A</div>
+                  <div style="font:900 21px/1 'Archivo Expanded';margin-top:8px;letter-spacing:-.01em">PEITO &amp; TRÍCEPS</div>
+                  <div style="display:flex;gap:14px;margin-top:12px;font:700 11px 'Manrope'"><span>8 exercícios</span><span style="opacity:.6">52 min</span></div>
+                  <div style="margin-top:14px;background:#15100E;color:#FF9C82;border-radius:12px;padding:11px;text-align:center;font:800 12.5px 'Manrope';letter-spacing:.03em">Iniciar treino</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#231B17;border-radius:15px;padding:11px 12px"><div style="font:900 21px/1 'Archivo Expanded';color:#E8B27A">12</div><div style="font:600 9.5px 'Manrope';color:#9A8B82;margin-top:4px">dias seguidos</div></div>
+                  <div style="flex:1;background:#231B17;border-radius:15px;padding:11px 12px"><div style="font:900 21px/1 'Archivo Expanded';color:#F6EEE8">18t</div><div style="font:600 9.5px 'Manrope';color:#9A8B82;margin-top:4px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.06)">
+                <div style="width:22px;height:5px;border-radius:3px;background:#FF4A2E"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#3E332D"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#3E332D"></div>
+                <div style="width:9px;height:9px;border-radius:50%;background:#3E332D"></div>
+              </div>
+            </div>
+          </div>
+          <!-- active -->
+          <div style="width:230px;flex:none;background:#000;border-radius:34px;padding:9px;box-shadow:0 30px 60px -24px rgba(0,0,0,.6)">
+            <div style="background:#1B1512;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#F6EEE8"><span>9:41</span><span style="letter-spacing:.15em;color:#9A8B82">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#9A8B82">TREINO A · 3/8</div>
+                  <div style="font:900 15px/1 'Archivo Expanded';color:#FF7A5C">24:18</div>
+                </div>
+                <div style="font:900 22px/.95 'Archivo Expanded';color:#F6EEE8;letter-spacing:-.01em">SUPINO RETO</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#231B17;border-radius:12px;padding:9px 13px;font:700 12px 'Manrope';color:#9A8B82"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#231B17;border-radius:12px;padding:9px 13px;font:700 12px 'Manrope';color:#9A8B82"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#FF4A2E;border-radius:12px;padding:11px 13px;font:800 12px 'Manrope';color:#15100E"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#231B17;border-radius:16px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:50%;background:#15100E;color:#FF9C82;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">–</div>
+                  <div style="text-align:center"><div style="font:900 24px/1 'Archivo Expanded';color:#F6EEE8">50</div><div style="font:600 9px 'Manrope';color:#9A8B82">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:50%;background:#FF4A2E;color:#15100E;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#FF4A2E;color:#15100E;border-radius:14px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.03em">Concluir série</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 1c CHALK ================= -->
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Chalk — claro minimal + cobalto</div>
+      <div class="dv-card" style="width:944px;background:#F3F2ED;padding:34px 36px 40px;font-family:'Manrope',sans-serif">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:26px;border-bottom:1px solid rgba(0,0,0,.1)">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:34px;height:34px;border-radius:9px;background:#15171C;display:flex;align-items:center;justify-content:center;font:700 18px/1 'Space Grotesk',sans-serif;color:#F3F2ED">T</div>
+              <div style="font:700 30px/.9 'Space Grotesk',sans-serif;letter-spacing:-.03em;color:#15171C">Treinus</div>
+            </div>
+            <div style="margin-top:12px;font:600 12px/1 'Manrope',sans-serif;letter-spacing:.1em;color:#2947FF">MENOS RUÍDO. MAIS TREINO.</div>
+          </div>
+          <div style="text-align:right;font:500 11px/1.5 'Manrope',sans-serif;color:#83837C">Claro minimal<br>Cobalto · foco</div>
+        </div>
+        <div style="display:flex;gap:34px;padding:28px 0 30px">
+          <div style="flex:none">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#83837C;margin-bottom:12px">PALETA</div>
+            <div style="display:flex;gap:10px">
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#2947FF"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#15171C">Cobalt<br><span style="color:#83837C">#2947FF</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#15171C"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#15171C">Ink<br><span style="color:#83837C">#15171C</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#FFFFFF;border:1px solid rgba(0,0,0,.1)"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#15171C">Paper<br><span style="color:#83837C">#FFFFFF</span></div></div>
+              <div><div style="width:66px;height:58px;border-radius:10px;background:#ECEBE4"></div><div style="margin-top:6px;font:600 9.5px/1.3 'Manrope';color:#15171C">Mist<br><span style="color:#83837C">#ECEBE4</span></div></div>
+            </div>
+          </div>
+          <div style="flex:1;border-left:1px solid rgba(0,0,0,.1);padding-left:30px">
+            <div style="font:700 10px/1 'Manrope';letter-spacing:.22em;color:#83837C;margin-bottom:12px">TIPOGRAFIA</div>
+            <div style="font:700 28px/.95 'Space Grotesk',sans-serif;color:#15171C;letter-spacing:-.03em">Space Grotesk <span style="color:#2947FF">display</span></div>
+            <div style="margin-top:8px;font:500 12px/1.5 'Manrope';color:#83837C">Manrope — interface e corpo. Geométrico calmo, muito respiro. Cor só onde importa.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px">
+          <!-- home -->
+          <div style="width:230px;flex:none;background:#1c1c1c;border-radius:34px;padding:9px;box-shadow:0 30px 60px -26px rgba(0,0,0,.5)">
+            <div style="background:#FFFFFF;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#15171C"><span>9:41</span><span style="letter-spacing:.15em;color:#B4B3AC">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:13px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div><div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#83837C">TER · 1 JUL</div><div style="font:700 19px/1.1 'Space Grotesk';color:#15171C;margin-top:2px;letter-spacing:-.02em">Olá, Léo</div></div>
+                  <div style="width:38px;height:38px;border-radius:12px;background:#ECEBE4"></div>
+                </div>
+                <div style="background:#15171C;border-radius:18px;padding:16px 16px 14px;color:#FFFFFF">
+                  <div style="font:700 9px 'Manrope';letter-spacing:.2em;color:#8C8CF0">TREINO DE HOJE · A</div>
+                  <div style="font:700 21px/1 'Space Grotesk';margin-top:8px;letter-spacing:-.02em">Peito &amp; Tríceps</div>
+                  <div style="display:flex;gap:14px;margin-top:12px;font:700 11px 'Manrope';color:#B4B3AC"><span>8 exercícios</span><span>52 min</span></div>
+                  <div style="margin-top:14px;background:#2947FF;color:#fff;border-radius:11px;padding:11px;text-align:center;font:800 12.5px 'Manrope';letter-spacing:.02em">Iniciar treino</div>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="flex:1;background:#F3F2ED;border-radius:13px;padding:11px 12px"><div style="font:700 22px/1 'Space Grotesk';color:#2947FF;letter-spacing:-.02em">12</div><div style="font:600 9.5px 'Manrope';color:#83837C;margin-top:4px">dias seguidos</div></div>
+                  <div style="flex:1;background:#F3F2ED;border-radius:13px;padding:11px 12px"><div style="font:700 22px/1 'Space Grotesk';color:#15171C;letter-spacing:-.02em">18t</div><div style="font:600 9.5px 'Manrope';color:#83837C;margin-top:4px">volume/semana</div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 18px 16px;border-top:1px solid rgba(0,0,0,.07)">
+                <div style="width:22px;height:5px;border-radius:3px;background:#2947FF"></div>
+                <div style="width:9px;height:9px;border-radius:3px;background:#D6D5CE"></div>
+                <div style="width:9px;height:9px;border-radius:3px;background:#D6D5CE"></div>
+                <div style="width:9px;height:9px;border-radius:3px;background:#D6D5CE"></div>
+              </div>
+            </div>
+          </div>
+          <!-- active -->
+          <div style="width:230px;flex:none;background:#1c1c1c;border-radius:34px;padding:9px;box-shadow:0 30px 60px -26px rgba(0,0,0,.5)">
+            <div style="background:#FFFFFF;border-radius:26px;overflow:hidden;height:466px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px 6px;font:700 11px 'Manrope';color:#15171C"><span>9:41</span><span style="letter-spacing:.15em;color:#B4B3AC">5G ▪▪▪</span></div>
+              <div style="padding:8px 18px 0;flex:1;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font:700 10px 'Manrope';letter-spacing:.2em;color:#83837C">TREINO A · 3/8</div>
+                  <div style="font:700 16px/1 'Space Grotesk';color:#2947FF;letter-spacing:-.02em">24:18</div>
+                </div>
+                <div style="font:700 26px/.95 'Space Grotesk';color:#15171C;letter-spacing:-.03em">Supino reto</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;justify-content:space-between;background:#F3F2ED;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#83837C"><span>Série 1</span><span>12 × 40kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#F3F2ED;border-radius:10px;padding:9px 13px;font:700 12px 'Manrope';color:#83837C"><span>Série 2</span><span>10 × 45kg</span></div>
+                  <div style="display:flex;justify-content:space-between;background:#2947FF;border-radius:10px;padding:11px 13px;font:800 12px 'Manrope';color:#fff"><span>Série 3</span><span>8 × 50kg</span></div>
+                </div>
+                <div style="margin-top:2px;background:#F3F2ED;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="width:36px;height:36px;border-radius:10px;background:#fff;color:#15171C;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope';border:1px solid rgba(0,0,0,.08)">–</div>
+                  <div style="text-align:center"><div style="font:700 26px/1 'Space Grotesk';color:#15171C;letter-spacing:-.02em">50</div><div style="font:600 9px 'Manrope';color:#83837C">KG</div></div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:#2947FF;color:#fff;display:flex;align-items:center;justify-content:center;font:800 20px 'Manrope'">+</div>
+                </div>
+              </div>
+              <div style="padding:10px 18px 16px"><div style="background:#2947FF;color:#fff;border-radius:12px;padding:13px;text-align:center;font:800 13px 'Manrope';letter-spacing:.02em">Concluir série</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Tente em seguida: "seguir a <a class="dv-oid" href="#1a">1a</a> e expandir o guia completo" · "misturar o lima da <a class="dv-oid" href="#1a">1a</a> com o layout da <a class="dv-oid" href="#1c">1c</a>" · "mais telas na direção <a class="dv-oid" href="#1b">1b</a>" · "novas direções"</p>
+</section>
+
+</x-dc>
+</body>
+</html>

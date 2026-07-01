@@ -54,6 +54,13 @@
           <span class="ir-label">Peso</span>
           <span class="ir-val">{{ user.bodyWeightKg }} kg</span>
         </div>
+        <div class="info-row is-clickable" *ngIf="achievements.length" (click)="goToAchievements()">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <span class="ir-label">Conquistas</span>
+          <span class="ir-val">{{ unlockedAchievementsCount }}/{{ achievements.length }}</span>
+          <span class="ir-new-dot" *ngIf="hasNewAchievements"></span>
+          <ion-icon name="chevron-forward-outline" class="ir-chevron"></ion-icon>
+        </div>
       </div>
     </div>
 

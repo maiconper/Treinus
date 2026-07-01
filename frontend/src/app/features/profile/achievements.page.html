@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="dark" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Conquistas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="achievements-content">
+  <div class="content-inner">
+    <div class="achv-category" *ngFor="let group of categorizedAchievements">
+      <p class="achv-category-title">{{ categoryLabel(group.category) }}</p>
+      <div class="achv-grid">
+        <div class="achv-badge" *ngFor="let a of group.items" (click)="showAchievementDetail(a)">
+          <div class="achv-icon" [ngClass]="a.unlocked ? 'tier-' + a.tier.toLowerCase() : 'locked'">
+            <i class="ti {{ a.icon }}"></i>
+            <span class="achv-new-dot" *ngIf="a.isNew"></span>
+          </div>
+          <span class="achv-name" [class.locked-text]="!a.unlocked">{{ a.name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

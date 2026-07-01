@@ -20,4 +20,15 @@ public interface SessionSetRepository extends JpaRepository<SessionSet, UUID> {
             ORDER BY ss.completedAt DESC
             """)
     List<SessionSet> findPersonalRecordsByUserId(@Param("userId") UUID userId);
+
+    @Query("""
+            SELECT ss FROM SessionSet ss
+            JOIN FETCH ss.sessionExercise se
+            JOIN FETCH se.exercise e
+            JOIN FETCH se.session s
+            WHERE s.user.id = :userId
+              AND s.status = 'COMPLETED'
+            ORDER BY s.finishedAt ASC, ss.completedAt ASC
+            """)
+    List<SessionSet> findAllCompletedByUserId(@Param("userId") UUID userId);
 }

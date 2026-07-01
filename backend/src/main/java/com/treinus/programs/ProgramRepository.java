@@ -13,4 +13,10 @@ public interface ProgramRepository extends JpaRepository<Program, UUID> {
     Optional<Program> findByIdAndUserId(UUID id, UUID userId);
 
     Optional<Program> findByUserIdAndStatus(UUID userId, ProgramStatus status);
+
+    List<Program> findAllByUserIdAndStatus(UUID userId, ProgramStatus status);
+
+    long countByUserId(UUID userId);
+
+    long countByUserIdAndStatus(UUID userId, ProgramStatus status);
 }
