@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress, MuscleSetStat } from '../models';
+import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress, MuscleSetStat, TopExercise } from '../models';
 import { expand, reduce, takeWhile } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
@@ -11,8 +11,9 @@ export class ProgressService {
 
   constructor(private http: HttpClient) {}
 
-  getSummary(): Observable<ProgressSummary> {
-    return this.http.get<ProgressSummary>(`${this.url}/summary`);
+  getSummary(period: string = 'ALL'): Observable<ProgressSummary> {
+    const params = new HttpParams().set('period', period);
+    return this.http.get<ProgressSummary>(`${this.url}/summary`, { params });
   }
 
   getHistory(page = 0, size = 20): Observable<WorkoutHistory> {
@@ -47,6 +48,11 @@ export class ProgressService {
   getSetsByMuscle(period: string = 'ALL'): Observable<MuscleSetStat[]> {
     const params = new HttpParams().set('period', period);
     return this.http.get<MuscleSetStat[]>(`${this.url}/sets-by-muscle`, { params });
+  }
+
+  getTopExercises(limit = 3): Observable<TopExercise[]> {
+    const params = new HttpParams().set('limit', limit);
+    return this.http.get<TopExercise[]>(`${this.url}/top-exercises`, { params });
   }
 
   getExerciseProgress(exerciseId: string): Observable<ExerciseProgress> {

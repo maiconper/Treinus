@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProgressService } from '../../core/services/progress.service';
-import { MuscleSetStat, ProgressSummary, WorkoutHistoryItem } from '../../core/models';
+import { MuscleSetStat, ProgressSummary, TopExercise, WorkoutHistoryItem } from '../../core/models';
 
 const MUSCLE_LABELS: Record<string, string> = {
   CHEST: 'Peito',
@@ -59,9 +59,11 @@ export interface PieSlice {
 export class ProgressPage implements OnInit {
   summary: ProgressSummary | null = null;
   history: WorkoutHistoryItem[] = [];
+  topExercises: TopExercise[] = [];
   muscleSlices: PieSlice[] = [];
   totalMusclesSets = 0;
   musclePeriod: MusclePeriod = 'MONTH';
+  statsPeriod: MusclePeriod = 'ALL';
   readonly periods: MusclePeriod[] = ['WEEK', 'MONTH', 'YEAR', 'ALL'];
   readonly periodLabels = MUSCLE_PERIOD_LABELS;
   loading = true;
@@ -76,17 +78,24 @@ export class ProgressPage implements OnInit {
   load() {
     this.loading = true;
     this.page = 0;
-    this.progressService.getSummary().subscribe({
-      next: s => { this.summary = s; this.loading = false; },
-      error: () => { this.loading = false; },
-    });
+    this.loadSummary();
     this.progressService.getHistory(0).subscribe({
       next: h => {
         this.history = h.content;
         this.hasMore = h.number + 1 < h.totalPages;
       },
     });
+    this.progressService.getTopExercises().subscribe({
+      next: data => { this.topExercises = data; },
+    });
     this.loadMuscleChart();
+  }
+
+  loadSummary() {
+    this.progressService.getSummary(this.statsPeriod).subscribe({
+      next: s => { this.summary = s; this.loading = false; },
+      error: () => { this.loading = false; },
+    });
   }
 
   loadMuscleChart() {
@@ -102,6 +111,12 @@ export class ProgressPage implements OnInit {
     if (this.musclePeriod === period) return;
     this.musclePeriod = period;
     this.loadMuscleChart();
+  }
+
+  selectStatsPeriod(period: MusclePeriod) {
+    if (this.statsPeriod === period) return;
+    this.statsPeriod = period;
+    this.loadSummary();
   }
 
   loadMore() {

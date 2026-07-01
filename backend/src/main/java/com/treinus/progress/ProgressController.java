@@ -3,6 +3,7 @@ package com.treinus.progress;
 import com.treinus.progress.dto.ExerciseProgressResponse;
 import com.treinus.progress.dto.MuscleSetStatResponse;
 import com.treinus.progress.dto.ProgressSummaryResponse;
+import com.treinus.progress.dto.TopExerciseResponse;
 import com.treinus.progress.dto.WorkoutHistoryResponse;
 import com.treinus.users.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,8 +34,10 @@ public class ProgressController {
 
     @GetMapping("/summary")
     @Operation(summary = "Resumo geral do progresso do usuário")
-    public ResponseEntity<ProgressSummaryResponse> getSummary(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(progressService.getSummary(user.getId()));
+    public ResponseEntity<ProgressSummaryResponse> getSummary(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "ALL") String period) {
+        return ResponseEntity.ok(progressService.getSummary(user.getId(), period));
     }
 
     @GetMapping("/history")
@@ -57,6 +60,14 @@ public class ProgressController {
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "MONTH") String period) {
         return ResponseEntity.ok(progressService.getSetsByMuscle(user.getId(), period));
+    }
+
+    @GetMapping("/top-exercises")
+    @Operation(summary = "Exercícios mais frequentes do usuário")
+    public ResponseEntity<List<TopExerciseResponse>> getTopExercises(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "3") int limit) {
+        return ResponseEntity.ok(progressService.getTopExercises(user.getId(), limit));
     }
 
     @GetMapping("/exercises/{exerciseId}")

@@ -5,6 +5,7 @@ import com.treinus.exercises.ExerciseRepository;
 import com.treinus.progress.dto.ExerciseProgressResponse;
 import com.treinus.progress.dto.MuscleSetStatResponse;
 import com.treinus.progress.dto.ProgressSummaryResponse;
+import com.treinus.progress.dto.TopExerciseResponse;
 import com.treinus.progress.dto.WorkoutHistoryResponse;
 import com.treinus.sessions.SessionSet;
 import com.treinus.sessions.SessionStatus;
@@ -28,6 +29,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,7 +49,7 @@ public class ProgressService {
         this.exerciseRepository = exerciseRepository;
     }
 
-    public ProgressSummaryResponse getSummary(UUID userId) {
+    public ProgressSummaryResponse getSummary(UUID userId, String period) {
         UserProfile profile = userProfileRepository.findByUserId(userId).orElse(null);
 
         Instant weekStart = Instant.now().atZone(ZoneOffset.UTC)
@@ -57,22 +59,33 @@ public class ProgressService {
         Instant lastWeekStart = weekStart.minusSeconds(7 * 24 * 3600);
         Instant lastWeekEnd = weekStart;
 
-        Page<TrainingSession> completedSessions = sessionRepository
+        Page<TrainingSession> allCompleted = sessionRepository
                 .findByUserIdAndStatusOrderByStartedAtDesc(userId, SessionStatus.COMPLETED, Pageable.unpaged());
 
-        int totalWorkouts = (int) completedSessions.getTotalElements();
+        Instant periodFrom = switch (period.toUpperCase()) {
+            case "WEEK"  -> Instant.now().minusSeconds(7L * 24 * 3600);
+            case "MONTH" -> Instant.now().minusSeconds(30L * 24 * 3600);
+            case "YEAR"  -> Instant.now().minusSeconds(365L * 24 * 3600);
+            default      -> Instant.EPOCH;
+        };
 
-        int workoutsThisWeek = (int) completedSessions.getContent().stream()
+        List<TrainingSession> periodSessions = allCompleted.getContent().stream()
+                .filter(s -> s.getStartedAt().isAfter(periodFrom))
+                .toList();
+
+        int totalWorkouts = periodSessions.size();
+
+        int workoutsThisWeek = (int) allCompleted.getContent().stream()
                 .filter(s -> s.getStartedAt().isAfter(weekStart))
                 .count();
 
-        BigDecimal volumeThisWeek = completedSessions.getContent().stream()
+        BigDecimal volumeThisWeek = allCompleted.getContent().stream()
                 .filter(s -> s.getStartedAt().isAfter(weekStart))
                 .filter(s -> s.getTotalVolumeKg() != null)
                 .map(TrainingSession::getTotalVolumeKg)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal volumeLastWeek = completedSessions.getContent().stream()
+        BigDecimal volumeLastWeek = allCompleted.getContent().stream()
                 .filter(s -> s.getStartedAt().isAfter(lastWeekStart) && s.getStartedAt().isBefore(lastWeekEnd))
                 .filter(s -> s.getTotalVolumeKg() != null)
                 .map(TrainingSession::getTotalVolumeKg)
@@ -84,9 +97,12 @@ public class ProgressService {
         int streak = rawStreak != null ? rawStreak : 0;
         int level = XpCalculator.levelFromXp(xp);
 
-        long totalSets = sessionRepository.countTotalSetsByUserId(userId);
+        long totalSets = periodSessions.stream()
+                .flatMap(s -> s.getExercises().stream())
+                .mapToLong(se -> se.getSets().size())
+                .sum();
 
-        long totalDurationSeconds = completedSessions.getContent().stream()
+        long totalDurationSeconds = periodSessions.stream()
                 .filter(s -> s.getStartedAt() != null && s.getFinishedAt() != null)
                 .mapToLong(s -> Duration.between(s.getStartedAt(), s.getFinishedAt()).getSeconds())
                 .sum();
@@ -175,6 +191,29 @@ public class ProgressService {
                 .entrySet().stream()
                 .map(e -> new MuscleSetStatResponse(e.getKey(), e.getValue()))
                 .sorted(Comparator.comparingLong(MuscleSetStatResponse::sets).reversed())
+                .toList();
+    }
+
+    public List<TopExerciseResponse> getTopExercises(UUID userId, int limit) {
+        record ExKey(UUID id, String name) {}
+
+        return sessionRepository
+                .findByUserIdAndStatusOrderByStartedAtDesc(userId, SessionStatus.COMPLETED, Pageable.unpaged())
+                .getContent().stream()
+                .flatMap(s -> s.getExercises().stream())
+                .filter(se -> se.getExercise() != null)
+                .collect(Collectors.groupingBy(
+                        se -> new ExKey(se.getExercise().getId(), se.getExercise().getName()),
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.<ExKey, Long>comparingByValue().reversed())
+                .limit(limit)
+                .map(e -> new TopExerciseResponse(
+                        e.getKey().id().toString(),
+                        e.getKey().name(),
+                        e.getValue()
+                ))
                 .toList();
     }
 

@@ -40,6 +40,12 @@ export interface MuscleSetStat {
   sets: number;
 }
 
+export interface TopExercise {
+  exerciseId: string;
+  exerciseName: string;
+  timesPerformed: number;
+}
+
 export interface ExerciseProgressEntry {
   completedAt: string;
   reps: number;

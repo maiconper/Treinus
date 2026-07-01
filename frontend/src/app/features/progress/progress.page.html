@@ -9,6 +9,16 @@
     <div class="content-inner">
 
       <!-- Mini stats -->
+      <div class="mini-stats-header">
+        <p class="section-lbl">Estatísticas</p>
+        <div class="period-selector">
+          @for (p of periods; track p) {
+            <button class="period-btn" [class.active]="statsPeriod === p" (click)="selectStatsPeriod(p)">
+              {{ periodLabels[p] }}
+            </button>
+          }
+        </div>
+      </div>
       <div class="mini-stats">
         <div class="mini-stat">
           <p class="ms-val">{{ summary.streak }}</p>
@@ -19,12 +29,8 @@
           <p class="ms-lbl">Treinos</p>
         </div>
         <div class="mini-stat">
-          <p class="ms-val">{{ summary.workoutsThisWeek }}</p>
-          <p class="ms-lbl">Esta semana</p>
-        </div>
-        <div class="mini-stat">
           <p class="ms-val">{{ summary.totalSets }}</p>
-          <p class="ms-lbl">Séries totais</p>
+          <p class="ms-lbl">Séries</p>
         </div>
         <div class="mini-stat">
           <p class="ms-val">{{ formatDuration(summary.avgDurationSeconds) }}</p>
@@ -52,6 +58,20 @@
           </div>
         </div>
       </div>
+
+      <!-- Top exercises -->
+      @if (topExercises.length > 0) {
+        <div class="card top-exercises-card">
+          <p class="card-title">Exercícios frequentes</p>
+          @for (ex of topExercises; track ex.exerciseId; let i = $index) {
+            <div class="top-ex-row">
+              <span class="top-ex-rank">{{ i + 1 }}</span>
+              <span class="top-ex-name">{{ ex.exerciseName }}</span>
+              <span class="top-ex-count">{{ ex.timesPerformed }}×</span>
+            </div>
+          }
+        </div>
+      }
 
       <!-- XP -->
       <div class="card xp-card">
