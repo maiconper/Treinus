@@ -16,5 +16,6 @@ public record ProgressSummaryResponse(
         LocalDate lastWorkoutDate,
         long totalSets,
         long totalDurationSeconds,
-        long avgDurationSeconds
+        long avgDurationSeconds,
+        long totalPersonalRecords
 ) {}

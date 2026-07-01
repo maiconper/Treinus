@@ -1,7 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProgressService } from '../../core/services/progress.service';
-import { MuscleSetStat, ProgressSummary, TopExercise, WorkoutHistoryItem } from '../../core/models';
+import { ExerciseProgress, ExerciseProgressEntry, MuscleSetStat, ProgressSummary, TopExercise, WorkoutHistoryItem } from '../../core/models';
+
+interface SessionPoint {
+  sessionId: string;
+  date: string;
+  maxWeight: number;
+  isPR: boolean;
+  setsCount: number;
+  dateLabel: string;
+  dayNum: string;
+}
+
+interface ChartPoint {
+  sessionId: string;
+  maxWeight: number;
+  isPR: boolean;
+  cx: number;
+  cy: number;
+}
 
 const MUSCLE_LABELS: Record<string, string> = {
   CHEST: 'Peito',
@@ -70,6 +88,26 @@ export class ProgressPage implements OnInit {
   hasMore = false;
   private page = 0;
 
+  // Evolução tab
+  activeTab = 'resumo';
+  exercisesDone: TopExercise[] = [];
+  searchText = '';
+  showSuggestions = false;
+  selectedExercise: TopExercise | null = null;
+  exerciseProgress: ExerciseProgress | null = null;
+  exerciseLoading = false;
+  exPeriod = 'all';
+  readonly exPeriods = [
+    { value: '1m', label: '1M' },
+    { value: '3m', label: '3M' },
+    { value: '6m', label: '6M' },
+    { value: 'all', label: 'Tudo' },
+  ];
+
+  private readonly CL = 40; private readonly CR = 285;
+  private readonly CT = 12; private readonly CB = 102;
+  private readonly CW = 245; private readonly CH = 90;
+
   constructor(private progressService: ProgressService, private router: Router) {}
 
   ngOnInit() { this.load(); }
@@ -87,6 +125,9 @@ export class ProgressPage implements OnInit {
     });
     this.progressService.getTopExercises().subscribe({
       next: data => { this.topExercises = data; },
+    });
+    this.progressService.getExercisesDone().subscribe({
+      next: data => { this.exercisesDone = data; },
     });
     this.loadMuscleChart();
   }
@@ -169,6 +210,152 @@ export class ProgressPage implements OnInit {
         percentage: Math.round(fraction * 100),
       };
     });
+  }
+
+  // --- Exercise evolution ---
+
+  get filteredSuggestions(): TopExercise[] {
+    const q = this.searchText.trim().toLowerCase();
+    if (!q) return this.exercisesDone.slice(0, 6);
+    return this.exercisesDone.filter(e => e.exerciseName.toLowerCase().includes(q));
+  }
+
+  onExerciseSearch(event: Event) {
+    this.searchText = (event.target as HTMLInputElement).value;
+    this.showSuggestions = true;
+    if (this.selectedExercise) {
+      this.selectedExercise = null;
+      this.exerciseProgress = null;
+    }
+  }
+
+  onSearchBlur() {
+    setTimeout(() => { this.showSuggestions = false; }, 200);
+  }
+
+  selectExercise(ex: TopExercise) {
+    this.selectedExercise = ex;
+    this.searchText = ex.exerciseName;
+    this.showSuggestions = false;
+    this.loadExerciseProgress();
+  }
+
+  clearExercise() {
+    this.selectedExercise = null;
+    this.exerciseProgress = null;
+    this.searchText = '';
+    this.showSuggestions = false;
+  }
+
+  selectExPeriod(period: string) {
+    if (this.exPeriod === period) return;
+    this.exPeriod = period;
+    this.loadExerciseProgress();
+  }
+
+  loadExerciseProgress() {
+    if (!this.selectedExercise) return;
+    this.exerciseLoading = true;
+    this.exerciseProgress = null;
+    this.progressService.getExerciseProgress(this.selectedExercise.exerciseId, this.exPeriod).subscribe({
+      next: data => { this.exerciseProgress = data; this.exerciseLoading = false; },
+      error: () => { this.exerciseLoading = false; },
+    });
+  }
+
+  get sessionPoints(): SessionPoint[] {
+    return this.groupBySession(this.exerciseProgress?.history ?? []);
+  }
+
+  get maxLoad(): number {
+    return this.sessionPoints.reduce((max, p) => Math.max(max, p.maxWeight), 0);
+  }
+
+  get loadDelta(): number {
+    const pts = this.sessionPoints;
+    if (pts.length < 2) return 0;
+    return Math.round((pts[pts.length - 1].maxWeight - pts[0].maxWeight) * 10) / 10;
+  }
+
+  get lastSessions(): SessionPoint[] {
+    return [...this.sessionPoints].reverse().slice(0, 4);
+  }
+
+  get chartPoints(): ChartPoint[] {
+    const pts = this.sessionPoints;
+    if (!pts.length) return [];
+    const weights = pts.map(p => p.maxWeight);
+    let minW = Math.min(...weights), maxW = Math.max(...weights);
+    if (minW === maxW) { minW -= 5; maxW += 5; }
+    const range = maxW - minW;
+    const n = pts.length;
+    return pts.map((p, i) => ({
+      sessionId: p.sessionId,
+      maxWeight: p.maxWeight,
+      isPR: p.isPR,
+      cx: n === 1 ? (this.CL + this.CR) / 2 : this.CL + (i / (n - 1)) * this.CW,
+      cy: this.CB - ((p.maxWeight - minW) / range) * this.CH,
+    }));
+  }
+
+  get chartLinePath(): string {
+    const pts = this.chartPoints;
+    if (pts.length < 2) return '';
+    return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.cx.toFixed(1)} ${p.cy.toFixed(1)}`).join(' ');
+  }
+
+  get chartYLabels(): Array<{ value: string; cy: number }> {
+    const pts = this.sessionPoints;
+    if (!pts.length) return [];
+    const weights = pts.map(p => p.maxWeight);
+    let minW = Math.min(...weights), maxW = Math.max(...weights);
+    if (minW === maxW) { minW -= 5; maxW += 5; }
+    const range = maxW - minW;
+    const toCy = (w: number) => this.CB - ((w - minW) / range) * this.CH;
+    const fmt = (w: number) => w % 1 === 0 ? `${w}` : `${w.toFixed(1)}`;
+    return [
+      { value: fmt(maxW), cy: toCy(maxW) },
+      { value: fmt(Math.round((minW + maxW) / 2)), cy: toCy((minW + maxW) / 2) },
+      { value: fmt(minW), cy: toCy(minW) },
+    ];
+  }
+
+  get chartXLabels(): Array<{ label: string; cx: number }> {
+    const pts = this.chartPoints;
+    if (!pts.length) return [];
+    const n = pts.length;
+    const spts = this.sessionPoints;
+    const indices = new Set([0, n - 1]);
+    if (n > 4) { indices.add(Math.round(n / 3)); indices.add(Math.round(2 * n / 3)); }
+    else if (n > 2) { indices.add(Math.round(n / 2)); }
+    return [...indices].sort((a, b) => a - b).map(i => ({
+      label: spts[i].dateLabel,
+      cx: pts[i].cx,
+    }));
+  }
+
+  private groupBySession(history: ExerciseProgressEntry[]): SessionPoint[] {
+    if (!history?.length) return [];
+    const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const map = new Map<string, SessionPoint>();
+    for (const entry of history) {
+      const sid = entry.sessionId;
+      if (!map.has(sid)) {
+        const d = new Date(entry.sessionStartedAt);
+        map.set(sid, {
+          sessionId: sid,
+          date: entry.sessionStartedAt.substring(0, 10),
+          maxWeight: 0, isPR: false, setsCount: 0,
+          dateLabel: `${d.getDate()} ${MONTHS[d.getMonth()]}`,
+          dayNum: d.getDate().toString(),
+        });
+      }
+      const p = map.get(sid)!;
+      p.setsCount++;
+      if (entry.weightKg > p.maxWeight) p.maxWeight = entry.weightKg;
+      if (entry.personalRecord) p.isPR = true;
+    }
+    return [...map.values()].sort((a, b) => a.date.localeCompare(b.date));
   }
 
   formatDuration(seconds: number): string {

@@ -1,5 +1,234 @@
 # Changelog — Treinus
 
+## [2026-06-30] — Homepage, Progresso: mini-stats com período, top exercícios, aba Evolução com gráfico de carga
+
+### Homepage — `home.page.*`
+
+**Avatar com iniciais do usuário:**
+- Removido `<img class="hero-img">` (gif `hero-musculo.gif`) e seu bloco CSS `.hero-img`
+- Adicionado `<div class="user-avatar">{{ userInitials }}</div>` no `.home-header`
+- Getter `userInitials` já existia no TS: pega as duas primeiras iniciais de `user.name`, uppercase
+- Estilo: círculo 44×44 px, `background: var(--purple)`, texto branco 15px bold, `flex-shrink: 0`; o `justify-content: space-between` do header já posiciona o avatar à direita
+
+---
+
+### Progresso — period-selector em mini-stats
+
+#### Backend
+
+**`ProgressController.getSummary`:** adicionado `@RequestParam(defaultValue = "ALL") String period` e repasse ao service.
+
+**`ProgressService.getSummary(UUID userId, String period)`:**
+- Calcula `Instant periodFrom` com switch:
+
+| `period` | Filtro |
+|---|---|
+| `WEEK` | últimos 7 dias |
+| `MONTH` | últimos 30 dias |
+| `YEAR` | últimos 365 dias |
+| `ALL` | `Instant.EPOCH` (sem filtro) |
+
+- `periodSessions` = sessions filtradas por `startedAt > periodFrom`
+- Campos filtrados pelo período: `totalWorkouts`, `totalSets`, `totalDurationSeconds`, `avgDurationSeconds`, `totalPersonalRecords`
+- Campos sempre all-time: `streak`, `xp`, `level`, `workoutsThisWeek`, `volumeThisWeek`, `volumeLastWeek`
+
+#### Frontend
+
+**`progress.service.ts`:** `getSummary(period = 'ALL')` passa `period` como `HttpParams`.
+
+**`progress.page.ts`:**
+- `statsPeriod: MusclePeriod = 'ALL'`
+- `loadSummary()`: método isolado que chama `getSummary(this.statsPeriod)`; `load()` delega a ele
+- `selectStatsPeriod(p)`: early-return se mesmo período; atualiza estado e chama `loadSummary()`
+
+**`progress.page.html`:** header acima do grid com label "Estatísticas" + period-selector (mesmos botões pill já existentes para o gráfico de músculo).
+
+**`progress.page.scss`:**
+- `.period-selector` e `.period-btn` extraídos de `.muscle-chart-card` para top-level (reutilizados pelos dois seletores)
+- `.mini-stats-header`: flex `space-between` + `section-lbl` sem `margin-bottom`
+- Removido stat "Esta semana" (`workoutsThisWeek`) dos mini-stats — redundante com period = WEEK
+- Grid de 5 stats: Sequência · Treinos · Séries · Tempo médio · Tempo total
+
+---
+
+### Progresso — card "Exercícios frequentes"
+
+#### Backend
+
+**Novo DTO — `TopExerciseResponse.java`:**
+```java
+public record TopExerciseResponse(String exerciseId, String exerciseName, long timesPerformed) {}
+```
+
+**`ProgressService`:**
+- `getExercisesDone(UUID userId)`: agrupa `SessionExercise` por `ExKey(id, name)` via `Collectors.groupingBy + counting()`, ordena por frequência decrescente, sem limite; retorna `List<TopExerciseResponse>`
+- `getTopExercises(UUID userId, int limit)`: delega a `getExercisesDone` e aplica `.limit(limit)` — evita duplicação de query
+
+**`ProgressController`:** `GET /api/v1/progress/top-exercises?limit=3`
+
+**`progress.model.ts`:**
+```typescript
+export interface TopExercise { exerciseId: string; exerciseName: string; timesPerformed: number; }
+```
+
+**`progress.service.ts`:** `getTopExercises(limit = 3)` com `HttpParams`.
+
+**`progress.page.ts`:** `topExercises: TopExercise[]`; carregado no `load()`.
+
+**`progress.page.html`:** card `.top-exercises-card` entre o volume card e o XP card:
+- 3 linhas com rank (círculo 20px), nome do exercício e contador `N×`
+- Card só renderizado quando `topExercises.length > 0`
+
+**`progress.page.scss` — `.top-exercises-card`:**
+- `.top-ex-rank`: círculo 20px, `var(--surface2)`, `var(--text3)`
+- `.top-ex-name`: flex-1, truncamento com `text-overflow: ellipsis`
+- `.top-ex-count`: 13px bold, `var(--text1)`
+- Separador entre linhas via `border-bottom: 0.5px solid var(--border)`; última linha sem borda
+
+---
+
+### Progresso — aba Evolução com gráfico de carga por exercício
+
+#### Backend
+
+**`ExerciseProgressResponse.SetHistoryEntry`:** adicionados `UUID sessionId` e `Instant sessionStartedAt` para o frontend poder agrupar sets por sessão:
+```java
+public record SetHistoryEntry(UUID sessionId, Instant sessionStartedAt, Instant completedAt, int reps, BigDecimal weightKg, boolean personalRecord) {}
+```
+
+**`ProgressController.getExerciseProgress`:** adicionado `@RequestParam(defaultValue = "all") String period`.
+
+**`ProgressService.getExerciseProgress(UUID userId, UUID exerciseId, String period)`:**
+- Para `"all"`: carrega via `findByUserIdAndStatusOrderByStartedAtDesc(Pageable.unpaged())`
+- Para `1m / 3m / 6m`: usa `findByUserIdAndStatusAndFinishedAtBetween` com `Instant.now().minusSeconds(...)`
+- Stream reestruturado com nested lambdas para manter `s` (session) no escopo ao criar `SetHistoryEntry`
+- `personalRecord` e `totalSets` recalculados sobre o histórico filtrado
+
+**`ProgressController`:** `GET /api/v1/progress/exercises-done` → `progressService.getExercisesDone(user.getId())`.
+
+**`ProgressService.getExercisesDone`:** igual ao `getTopExercises` mas sem limite — fonte do autocomplete.
+
+#### Frontend — models e service
+
+**`progress.model.ts`:**
+```typescript
+export interface ExerciseProgressEntry {
+  sessionId: string; sessionStartedAt: string;
+  completedAt: string; reps: number; weightKg: number; personalRecord: boolean;
+}
+```
+
+**`progress.service.ts`:**
+- `getExercisesDone(): Observable<TopExercise[]>` → `GET /progress/exercises-done`
+- `getExerciseProgress(exerciseId, period = 'all')` → passa `period` como `HttpParams`
+
+#### Frontend — componente
+
+**`progress.page.ts` — novos campos:**
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `activeTab` | `string` | `'resumo'` ou `'evolucao'` |
+| `exercisesDone` | `TopExercise[]` | Fonte do autocomplete, ordenada por frequência |
+| `searchText` | `string` | Valor do input de busca |
+| `showSuggestions` | `boolean` | Controla visibilidade do dropdown |
+| `selectedExercise` | `TopExercise \| null` | Exercício selecionado |
+| `exerciseProgress` | `ExerciseProgress \| null` | Dados retornados pelo endpoint |
+| `exerciseLoading` | `boolean` | Spinner de carregamento do exercício |
+| `exPeriod` | `string` | `'1m' \| '3m' \| '6m' \| 'all'` |
+| `exPeriods` | `array` | Labels dos botões de período do card |
+
+**Constantes de layout do SVG** (privadas): `CL=40`, `CR=285`, `CT=12`, `CB=102`, `CW=245`, `CH=90`.
+
+**Interfaces internas:**
+```typescript
+interface SessionPoint { sessionId; date; maxWeight; isPR; setsCount; dateLabel; dayNum; }
+interface ChartPoint   { sessionId; maxWeight; isPR; cx; cy; }
+```
+
+**Getters computados:**
+
+| Getter | Descrição |
+|---|---|
+| `filteredSuggestions` | Filtra `exercisesDone` pelo `searchText`; sem texto retorna os 6 primeiros |
+| `sessionPoints` | Chama `groupBySession(history)` |
+| `maxLoad` | `Math.max` de `sessionPoints.maxWeight` |
+| `loadDelta` | `lastWeight − firstWeight`, arredondado em 1 decimal |
+| `lastSessions` | `sessionPoints` reverso, primeiros 4 |
+| `chartPoints` | Mapeia `sessionPoints` para `{cx, cy}` normalizados na área do SVG |
+| `chartLinePath` | String SVG `M x0 y0 L x1 y1 ...` |
+| `chartYLabels` | 3 labels (max, mid, min) com `cy` calculado |
+| `chartXLabels` | Até 4 labels distribuídos no eixo X |
+
+**`groupBySession(history)`:** itera os `SetHistoryEntry`, agrupa por `sessionId`; para cada grupo acumula `maxWeight`, `setsCount` e `isPR` (true se qualquer série for PR). Ordena por data asc. Formata `dateLabel` como `"15 Jun"` usando array de meses PT-BR.
+
+**Métodos de interação:**
+
+| Método | Comportamento |
+|---|---|
+| `onExerciseSearch(event)` | Atualiza `searchText`, exibe sugestões, limpa seleção |
+| `onSearchBlur()` | `setTimeout 200ms` → fecha sugestões (permite click nas sugestões disparar antes) |
+| `selectExercise(ex)` | Define seleção, fecha dropdown, chama `loadExerciseProgress()` |
+| `clearExercise()` | Reseta seleção, progress e texto |
+| `selectExPeriod(p)` | Early-return se mesmo período; chama `loadExerciseProgress()` |
+| `loadExerciseProgress()` | Chama service com `exerciseId` + `exPeriod`; gerencia `exerciseLoading` |
+
+#### Frontend — template (`progress.page.html`)
+
+**Tabs no `ion-header`:** segundo `ion-toolbar` com `ion-segment` + `(ionChange)` que atualiza `activeTab` sem `ngModel`.
+
+**Aba Resumo:** conteúdo existente envolvido em `@if (activeTab === 'resumo')`.
+
+**Aba Evolução** (`@if (activeTab === 'evolucao')`): card `.evolution-card` com:
+1. Input de busca com ícone + botão clear
+2. Dropdown de autocomplete (até 6 sugestões com frequência `N×`)
+3. Chips de atalho (top 3 de `topExercises`) quando nenhum exercício selecionado
+4. Botões de período independentes: `1M · 3M · 6M · Tudo`
+5. 3 chips de métricas: Máxima (kg) · Evolução (±kg) · Sessões
+6. SVG 300×130 (`viewBox`): linhas de grade + path da linha + círculos (PR em âmbar `var(--amber)` raio 5.5, normal em `var(--blue)` raio 4) + labels X e Y
+7. Label "Últimas sessões" + lista das 4 mais recentes: data · separador · peso max · nº séries · badge PR
+8. Estado vazio quando `sessionPoints.length === 0`
+
+#### Frontend — estilos (`progress.page.scss`)
+
+Bloco `.evolution-card { }` com todos os seletores aninhados:
+- `.ex-search-wrapper`: flex + `var(--surface2)` + borda, `border-radius: 10px`
+- `.ex-suggestions`: dropdown com `box-shadow` e `border-radius: 10px`; itens com `border-bottom` e `:active` feedback
+- `.ex-quick-chips` / `.ex-chip`: chips pill com `border-radius: 99px`
+- `.ex-metrics`: 3 células flex-1 com `var(--surface2)`, fonte 16px bold; `.pos` em `var(--green)`, `.neg` em `#ef4444`
+- `.ex-sess-row`: flex, `padding: 7px 6px`, `border-radius: 8px`; `.is-pr` com `background: rgba(245,158,11,0.08)`
+- `.pr-badge`: flex, `color: var(--amber)`, 11px bold
+- Peso em sessões com PR: `[style.color]="s.isPR ? 'var(--amber)' : null"` (binding direto, não depende de CSS cascade)
+
+---
+
+### Progresso — destaque de PR em sessões e histórico
+
+**`ex-sessions`:** `.ex-sess-row.is-pr` com fundo âmbar `rgba(245,158,11,0.08)` (não usa `color-mix` por compatibilidade com WebView); badge `pr-badge` estilizado dentro de `.evolution-card`; peso colorido via `[style.color]` inline.
+
+**`.hist-item`:** mesma classe `.is-pr` com `background: rgba(245,158,11,0.08); border-radius: 8px` acionada por `[class.is-pr]="h.newPersonalRecords > 0"`.
+
+---
+
+### Progresso — PRs nos mini-stats
+
+**`ProgressSummaryResponse`:** campo `long totalPersonalRecords` adicionado ao record.
+
+**`ProgressService.getSummary`:** conta sets com `isPersonalRecord() == true` dentro de `periodSessions`:
+```java
+long totalPersonalRecords = periodSessions.stream()
+    .flatMap(s -> s.getExercises().stream())
+    .flatMap(se -> se.getSets().stream())
+    .filter(SessionSet::isPersonalRecord)
+    .count();
+```
+
+**`ProgressSummary` (frontend):** campo `totalPersonalRecords: number`.
+
+**`progress.page.html`:** 6º mini-stat com valor em `color: var(--amber)` e label "PRs"; grid `1fr 1fr 1fr` acomoda 6 itens em 2 linhas sem ajuste.
+
+---
+
 ## [2026-06-30] — Gráfico de pizza: séries por músculo na tela de Progresso
 
 ### Backend

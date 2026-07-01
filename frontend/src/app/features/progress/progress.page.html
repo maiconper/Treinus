@@ -2,10 +2,165 @@
   <ion-toolbar>
     <ion-title>Progresso</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [value]="activeTab" (ionChange)="activeTab = $any($event).detail.value">
+      <ion-segment-button value="resumo"><ion-label>Resumo</ion-label></ion-segment-button>
+      <ion-segment-button value="evolucao"><ion-label>Evolução</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="progress-content">
-  @if (!loading && summary) {
+  @if (activeTab === 'evolucao') {
+    <div class="content-inner">
+
+      <!-- Exercise load evolution card -->
+      <div class="card evolution-card">
+        <p class="card-title">Evolução de carga</p>
+
+        <!-- Search -->
+        <div class="ex-search-wrapper">
+          <ion-icon name="search-outline" class="ex-search-icon"></ion-icon>
+          <input
+            class="ex-search-input"
+            type="text"
+            placeholder="Buscar exercício..."
+            [value]="searchText"
+            (input)="onExerciseSearch($event)"
+            (focus)="showSuggestions = true"
+            (blur)="onSearchBlur()"
+          />
+          @if (selectedExercise) {
+            <button class="ex-clear-btn" (click)="clearExercise()">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          }
+        </div>
+
+        <!-- Autocomplete dropdown -->
+        @if (showSuggestions && filteredSuggestions.length > 0) {
+          <div class="ex-suggestions">
+            @for (ex of filteredSuggestions.slice(0, 6); track ex.exerciseId) {
+              <button class="ex-suggestion-item" (click)="selectExercise(ex)">
+                <span>{{ ex.exerciseName }}</span>
+                <span class="ex-sug-freq">{{ ex.timesPerformed }}×</span>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Quick chips when no exercise selected -->
+        @if (!selectedExercise && topExercises.length > 0) {
+          <p class="ex-quick-lbl">Frequentes</p>
+          <div class="ex-quick-chips">
+            @for (ex of topExercises; track ex.exerciseId) {
+              <button class="ex-chip" (click)="selectExercise(ex)">{{ ex.exerciseName }}</button>
+            }
+          </div>
+        }
+
+        <!-- Loading exercise data -->
+        @if (exerciseLoading) {
+          <div class="ex-loading"><ion-spinner name="crescent"></ion-spinner></div>
+        }
+
+        <!-- Chart content -->
+        @if (selectedExercise && !exerciseLoading && exerciseProgress) {
+
+          <!-- Period filter -->
+          <div class="ex-period-row">
+            @for (p of exPeriods; track p.value) {
+              <button class="period-btn" [class.active]="exPeriod === p.value" (click)="selectExPeriod(p.value)">
+                {{ p.label }}
+              </button>
+            }
+          </div>
+
+          @if (sessionPoints.length > 0) {
+
+            <!-- Metrics chips -->
+            <div class="ex-metrics">
+              <div class="ex-metric">
+                <p class="em-val">{{ maxLoad }}kg</p>
+                <p class="em-lbl">Máxima</p>
+              </div>
+              <div class="ex-metric">
+                <p class="em-val" [class.pos]="loadDelta >= 0" [class.neg]="loadDelta < 0">
+                  {{ loadDelta >= 0 ? '+' : '' }}{{ loadDelta }}kg
+                </p>
+                <p class="em-lbl">Evolução</p>
+              </div>
+              <div class="ex-metric">
+                <p class="em-val">{{ sessionPoints.length }}</p>
+                <p class="em-lbl">Sessões</p>
+              </div>
+            </div>
+
+            <!-- Line chart -->
+            <div class="ex-chart">
+              <svg viewBox="0 0 300 130" class="ex-svg">
+                <!-- Horizontal grid + Y labels -->
+                @for (yl of chartYLabels; track yl.value) {
+                  <line x1="40" [attr.y1]="yl.cy" x2="285" [attr.y2]="yl.cy"
+                        stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,3"/>
+                  <text [attr.x]="37" [attr.y]="yl.cy + 4" text-anchor="end" class="chart-lbl">{{ yl.value }}</text>
+                }
+                <!-- Line -->
+                @if (chartLinePath) {
+                  <path [attr.d]="chartLinePath" fill="none" stroke="var(--blue)"
+                        stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                }
+                <!-- Data points -->
+                @for (pt of chartPoints; track pt.sessionId) {
+                  <circle [attr.cx]="pt.cx" [attr.cy]="pt.cy"
+                          [attr.r]="pt.isPR ? 5.5 : 4"
+                          [attr.fill]="pt.isPR ? 'var(--amber)' : 'var(--blue)'"
+                          [attr.stroke]="pt.isPR ? 'white' : 'none'"
+                          stroke-width="2"/>
+                }
+                <!-- X labels -->
+                @for (xl of chartXLabels; track xl.label) {
+                  <text [attr.x]="xl.cx" y="126" text-anchor="middle" class="chart-lbl">{{ xl.label }}</text>
+                }
+              </svg>
+            </div>
+
+            <!-- Last 4 sessions -->
+            <p class="ex-sessions-lbl">Últimas sessões</p>
+            <div class="ex-sessions">
+              @for (s of lastSessions; track s.sessionId) {
+                <div class="ex-sess-row" [class.is-pr]="s.isPR">
+                  <div class="ex-sess-date">
+                    <p class="esd-num">{{ s.dayNum }}</p>
+                    <p class="esd-lbl">{{ s.dateLabel.split(' ')[1] }}</p>
+                  </div>
+                  <div class="ex-sess-divider"></div>
+                  <div class="ex-sess-info">
+                    <p class="esi-weight" [style.color]="s.isPR ? 'var(--amber)' : null">{{ s.maxWeight }}kg</p>
+                    <p class="esi-sets">{{ s.setsCount }} séries</p>
+                  </div>
+                  @if (s.isPR) {
+                    <span class="pr-badge">
+                      <ion-icon name="trophy-outline"></ion-icon> PR
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+          } @else {
+            <div class="ex-empty">
+              <ion-icon name="trending-up-outline"></ion-icon>
+              <p>Nenhum dado no período</p>
+            </div>
+          }
+        }
+      </div>
+
+    </div>
+  }
+
+  @if (!loading && summary && activeTab === 'resumo') {
     <div class="content-inner">
 
       <!-- Mini stats -->
@@ -39,6 +194,10 @@
         <div class="mini-stat">
           <p class="ms-val">{{ formatDuration(summary.totalDurationSeconds) }}</p>
           <p class="ms-lbl">Tempo total</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-val" style="color: var(--amber)">{{ summary.totalPersonalRecords }}</p>
+          <p class="ms-lbl">PRs</p>
         </div>
       </div>
 
@@ -135,7 +294,7 @@
       }
 
       @for (h of history; track h.sessionId) {
-        <div class="hist-item" (click)="openSession(h)">
+        <div class="hist-item" [class.is-pr]="h.newPersonalRecords > 0" (click)="openSession(h)">
           <div class="hist-date">
             <p class="hd-day">{{ formatDate(h.startedAt).day }}</p>
             <p class="hd-mon">{{ formatDate(h.startedAt).month }}</p>

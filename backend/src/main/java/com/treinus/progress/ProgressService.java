@@ -102,6 +102,12 @@ public class ProgressService {
                 .mapToLong(se -> se.getSets().size())
                 .sum();
 
+        long totalPersonalRecords = periodSessions.stream()
+                .flatMap(s -> s.getExercises().stream())
+                .flatMap(se -> se.getSets().stream())
+                .filter(SessionSet::isPersonalRecord)
+                .count();
+
         long totalDurationSeconds = periodSessions.stream()
                 .filter(s -> s.getStartedAt() != null && s.getFinishedAt() != null)
                 .mapToLong(s -> Duration.between(s.getStartedAt(), s.getFinishedAt()).getSeconds())
@@ -122,7 +128,8 @@ public class ProgressService {
                 profile != null ? profile.getLastWorkoutDate() : null,
                 totalSets,
                 totalDurationSeconds,
-                avgDurationSeconds
+                avgDurationSeconds,
+                totalPersonalRecords
         );
     }
 
@@ -194,7 +201,7 @@ public class ProgressService {
                 .toList();
     }
 
-    public List<TopExerciseResponse> getTopExercises(UUID userId, int limit) {
+    public List<TopExerciseResponse> getExercisesDone(UUID userId) {
         record ExKey(UUID id, String name) {}
 
         return sessionRepository
@@ -208,7 +215,6 @@ public class ProgressService {
                 ))
                 .entrySet().stream()
                 .sorted(Map.Entry.<ExKey, Long>comparingByValue().reversed())
-                .limit(limit)
                 .map(e -> new TopExerciseResponse(
                         e.getKey().id().toString(),
                         e.getKey().name(),
@@ -217,32 +223,50 @@ public class ProgressService {
                 .toList();
     }
 
-    public ExerciseProgressResponse getExerciseProgress(UUID userId, UUID exerciseId) {
+    public List<TopExerciseResponse> getTopExercises(UUID userId, int limit) {
+        return getExercisesDone(userId).stream().limit(limit).toList();
+    }
+
+    public ExerciseProgressResponse getExerciseProgress(UUID userId, UUID exerciseId, String period) {
         Exercise exercise = exerciseRepository.findById(exerciseId)
                 .orElseThrow(() -> ResourceNotFoundException.of("Exercise", exerciseId));
 
-        Page<TrainingSession> sessions = sessionRepository
-                .findByUserIdAndStatusOrderByStartedAtDesc(userId, SessionStatus.COMPLETED, Pageable.unpaged());
+        List<TrainingSession> sessions;
+        if ("all".equalsIgnoreCase(period)) {
+            sessions = sessionRepository
+                    .findByUserIdAndStatusOrderByStartedAtDesc(userId, SessionStatus.COMPLETED, Pageable.unpaged())
+                    .getContent();
+        } else {
+            Instant from = switch (period.toUpperCase()) {
+                case "1M" -> Instant.now().minusSeconds(30L * 24 * 3600);
+                case "3M" -> Instant.now().minusSeconds(90L * 24 * 3600);
+                case "6M" -> Instant.now().minusSeconds(180L * 24 * 3600);
+                default   -> Instant.EPOCH;
+            };
+            sessions = sessionRepository
+                    .findByUserIdAndStatusAndFinishedAtBetween(userId, SessionStatus.COMPLETED, from, Instant.now());
+        }
 
-        List<ExerciseProgressResponse.SetHistoryEntry> history = sessions.getContent().stream()
-                .flatMap(s -> s.getExercises().stream())
-                .filter(se -> se.getExercise().getId().equals(exerciseId))
-                .flatMap(se -> se.getSets().stream()
-                        .map(set -> new ExerciseProgressResponse.SetHistoryEntry(
-                                set.getCompletedAt(),
-                                set.getReps(),
-                                set.getWeightKg(),
-                                set.isPersonalRecord()
-                        )))
+        List<ExerciseProgressResponse.SetHistoryEntry> history = sessions.stream()
+                .flatMap(s -> s.getExercises().stream()
+                        .filter(se -> se.getExercise() != null && se.getExercise().getId().equals(exerciseId))
+                        .flatMap(se -> se.getSets().stream()
+                                .map(set -> new ExerciseProgressResponse.SetHistoryEntry(
+                                        s.getId(),
+                                        s.getStartedAt(),
+                                        set.getCompletedAt(),
+                                        set.getReps(),
+                                        set.getWeightKg(),
+                                        set.isPersonalRecord()
+                                ))))
                 .toList();
 
         BigDecimal personalRecord = history.stream()
                 .map(ExerciseProgressResponse.SetHistoryEntry::weightKg)
+                .filter(w -> w != null)
                 .max(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
 
-        int totalSets = history.size();
-
-        return new ExerciseProgressResponse(exerciseId, exercise.getName(), personalRecord, totalSets, history);
+        return new ExerciseProgressResponse(exerciseId, exercise.getName(), personalRecord, history.size(), history);
     }
 }

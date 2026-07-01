@@ -55,7 +55,12 @@ export class ProgressService {
     return this.http.get<TopExercise[]>(`${this.url}/top-exercises`, { params });
   }
 
-  getExerciseProgress(exerciseId: string): Observable<ExerciseProgress> {
-    return this.http.get<ExerciseProgress>(`${this.url}/exercises/${exerciseId}`);
+  getExercisesDone(): Observable<TopExercise[]> {
+    return this.http.get<TopExercise[]>(`${this.url}/exercises-done`);
+  }
+
+  getExerciseProgress(exerciseId: string, period = 'all'): Observable<ExerciseProgress> {
+    const params = new HttpParams().set('period', period);
+    return this.http.get<ExerciseProgress>(`${this.url}/exercises/${exerciseId}`, { params });
   }
 }

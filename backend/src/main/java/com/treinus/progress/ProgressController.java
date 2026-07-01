@@ -70,11 +70,18 @@ public class ProgressController {
         return ResponseEntity.ok(progressService.getTopExercises(user.getId(), limit));
     }
 
+    @GetMapping("/exercises-done")
+    @Operation(summary = "Todos os exercícios realizados pelo usuário, ordenados por frequência")
+    public ResponseEntity<List<TopExerciseResponse>> getExercisesDone(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(progressService.getExercisesDone(user.getId()));
+    }
+
     @GetMapping("/exercises/{exerciseId}")
     @Operation(summary = "Progresso por exercício (cargas, PRs e histórico de séries)")
     public ResponseEntity<ExerciseProgressResponse> getExerciseProgress(
             @AuthenticationPrincipal User user,
-            @PathVariable UUID exerciseId) {
-        return ResponseEntity.ok(progressService.getExerciseProgress(user.getId(), exerciseId));
+            @PathVariable UUID exerciseId,
+            @RequestParam(defaultValue = "all") String period) {
+        return ResponseEntity.ok(progressService.getExerciseProgress(user.getId(), exerciseId, period));
     }
 }

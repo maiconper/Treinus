@@ -13,6 +13,8 @@ public record ExerciseProgressResponse(
         List<SetHistoryEntry> history
 ) {
     public record SetHistoryEntry(
+            UUID sessionId,
+            Instant sessionStartedAt,
             Instant completedAt,
             int reps,
             BigDecimal weightKg,

@@ -12,6 +12,7 @@ export interface ProgressSummary {
   totalSets: number;
   totalDurationSeconds: number;
   avgDurationSeconds: number;
+  totalPersonalRecords: number;
 }
 
 export interface WorkoutHistoryItem {
@@ -47,6 +48,8 @@ export interface TopExercise {
 }
 
 export interface ExerciseProgressEntry {
+  sessionId: string;
+  sessionStartedAt: string;
   completedAt: string;
   reps: number;
   weightKg: number;
