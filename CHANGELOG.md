@@ -1,5 +1,48 @@
 # Changelog — Treinus
 
+## [2026-07-01] — Progresso do programa no program-card da homepage
+
+### Bug fix — `programPercent` sempre retornava 0
+
+O card do programa na homepage exibia `0% concluído` independentemente dos treinos feitos. A causa era dupla:
+
+**1. Model frontend incompleto (`program.model.ts`)**
+
+`ProgramDay` não declarava os campos `completed` e `lastSessionId` que o backend já enviava no `ProgramDayResponse`. O TypeScript os ignorava silenciosamente, fazendo `d.completed` ser sempre `undefined`.
+
+Correção: adicionados `completed?: boolean` e `lastSessionId?: string` à interface `ProgramDay`.
+
+**2. Sessões iniciadas sem vínculo ao dia do programa (`home.page.ts`)**
+
+`startWorkout()` chamava `sessionService.start({ workoutId })` sem incluir `programDayId`. Sem esse vínculo, o `completedDaysMap` no backend nunca encontrava a sessão ao calcular `completed` para cada dia — todos ficavam `false`.
+
+Correção: `startWorkout()` agora envia `{ workoutId: this.todayWorkout.workoutId, programDayId: this.todayWorkout.id }`.
+
+**Cálculo do percentual reescrito (`home.page.ts`)**
+
+```typescript
+// antes
+get programPercent(): number {
+  if (!this.activeProgram) return 0;
+  return 4; // hardcoded
+}
+
+// depois
+get programPercent(): number {
+  if (!this.activeProgram) return 0;
+  const trainingDays = ([] as ProgramDay[])
+    .concat(...this.activeProgram.weeks.map((w) => w.days))
+    .filter((d) => !d.restDay);
+  if (!trainingDays.length) return 0;
+  const done = trainingDays.filter((d) => d.completed).length;
+  return Math.round((done / trainingDays.length) * 100);
+}
+```
+
+> **Nota:** sessões concluídas antes desta correção não têm `program_day_id` preenchido e não entram no cálculo. Backfill SQL foi avaliado e descartado — apenas sessões iniciadas a partir desta data incrementam o progresso.
+
+---
+
 ## [2026-07-01] — Progresso: period selector em top exercícios, heatmap, recordes pessoais, volume semanal e bug fix de finalização
 
 ### Progresso — period selector no card "Exercícios frequentes"

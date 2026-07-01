@@ -10,6 +10,7 @@ import { ProgressService } from '../../core/services/progress.service';
 import {
   User,
   Program,
+  ProgramDay,
   ProgramWeek,
   Session,
   Workout,
@@ -265,8 +266,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   get programPercent(): number {
     if (!this.activeProgram) return 0;
-    // Simplified: based on started weeks
-    return 4;
+    const trainingDays = ([] as ProgramDay[])
+      .concat(...this.activeProgram.weeks.map((w) => w.days))
+      .filter((d) => !d.restDay);
+    if (!trainingDays.length) return 0;
+    const done = trainingDays.filter((d) => d.completed).length;
+    return Math.round((done / trainingDays.length) * 100);
   }
 
   get greeting(): string {
@@ -528,7 +533,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.router.navigate(['/session', this.activeSession.id]);
     } else if (this.todayWorkout?.workoutId) {
       this.sessionService
-        .start({ workoutId: this.todayWorkout.workoutId })
+        .start({ workoutId: this.todayWorkout.workoutId, programDayId: this.todayWorkout.id })
         .subscribe((s) => {
           this.router.navigate(['/session', s.id]);
         });

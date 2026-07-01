@@ -6,6 +6,8 @@ export interface ProgramDay {
   workoutId?: string;
   workoutName?: string;
   restDay: boolean;
+  completed?: boolean;
+  lastSessionId?: string;
 }
 
 export interface ProgramWeek {
