@@ -1,5 +1,219 @@
 # Changelog — Treinus
 
+## [2026-07-01] — Progresso: period selector em top exercícios, heatmap, recordes pessoais, volume semanal e bug fix de finalização
+
+### Progresso — period selector no card "Exercícios frequentes"
+
+O card `top-exercises-card` (aba Resumo) ganhou o mesmo seletor de período já presente no gráfico de músculo (Semana / Mês / Ano / Todos).
+
+**Backend — `ProgressService.getTopExercises`:** assinatura atualizada para `getTopExercises(UUID userId, int limit, String period)`. Quando `period = ALL`, usa `findByUserIdAndStatusOrderByStartedAtDesc(Pageable.unpaged())`; caso contrário usa `findByUserIdAndStatusAndFinishedAtBetween` com a janela de tempo correspondente.
+
+**Backend — `ProgressController`:** `GET /api/v1/progress/top-exercises?limit=3&period=ALL` — `@RequestParam(defaultValue = "ALL") String period`.
+
+**Frontend:**
+- `progress.service.ts`: `getTopExercises(limit = 3, period = 'ALL')` passa `period` via `HttpParams`
+- `progress.page.ts`: estado `topExPeriod: MusclePeriod = 'ALL'`; `loadTopExercises()` isolado; `selectTopExPeriod(p)` com early-return
+- `progress.page.html`: `.chart-header` (flex, space-between) no topo do card com título + `.period-selector` de 4 botões
+
+---
+
+### Progresso (Evolução) — Heatmap de frequência de treinos
+
+Novo card `.heatmap-card` na aba Evolução mostrando um grid estilo GitHub com os dias treinados nos últimos meses, toggle 3M / 6M.
+
+#### Backend
+
+**Novo DTO — `HeatmapDayResponse.java`:**
+```java
+public record HeatmapDayResponse(String date, int count) {}
+```
+
+**`ProgressService.getHeatmap(UUID userId, int months)`:**
+- Busca sessões COMPLETED via `findByUserIdAndStatusAndFinishedAtBetween` (janela `months × 30 dias`)
+- Agrupa por `startedAt.toLocalDate().toString()` via `Collectors.groupingBy + counting()`
+- Retorna lista `List<HeatmapDayResponse>` ordenada por data asc
+
+**`ProgressController`:** `GET /api/v1/progress/heatmap?months=6` — `@RequestParam(defaultValue = "6")`.
+
+#### Frontend
+
+**`progress.model.ts`:** `interface HeatmapDay { date: string; count: number; }`
+
+**`progress.service.ts`:** `getHeatmap(months = 6): Observable<HeatmapDay[]>`
+
+**`progress.page.ts`:**
+
+| Adição | Detalhe |
+|---|---|
+| `HeatmapCell` | Interface interna: `{ date, count, col, row, isToday }` |
+| `HeatmapMonthLabel` | Interface interna: `{ label, col }` |
+| `heatmapMonths` | Estado do toggle, inicia em `6` |
+| `heatmapCells` | Array de células computado por `buildHeatmap()` |
+| `heatmapMonthLabels` | Labels dos meses para o SVG |
+| `heatmapSvgWidth` | `24 + numWeeks * 13` px |
+| `heatmapTrainedDays` | Contagem de dias com ao menos 1 treino |
+| `buildHeatmap()` | Alinha início para segunda-feira; itera cada dia até hoje; `col = Math.floor(offset/7)`, `row = offset%7`; adiciona label de mês quando `row===0` e mês muda |
+| `heatmapCellOpacity(count)` | `0→1` (fundo), `1→0.35`, `2→0.65`, `≥3→1` (azul cheio) |
+| `loadHeatmap()` / `selectHeatmapMonths(n)` | Carregam e recarregam ao trocar período |
+
+**`progress.page.html`:** SVG scrollável (`overflow-x: auto`):
+- Labels de dia (Seg, Qua, Sex) no eixo Y
+- Labels de mês acima das colunas
+- `<rect>` por célula: `fill: var(--blue)` quando `count > 0`, `var(--surface2)` quando 0; opacidade variável; borda de destaque para hoje
+- Footer: contador "N dias treinados" + legenda de 4 quadrados (Menos → Mais)
+
+**`progress.page.scss`:** `.heatmap-card` com `.heatmap-scroll` (`overflow-x: auto`, `-webkit-overflow-scrolling: touch`), classes `hm-day-lbl`, `hm-month-lbl`, `hm-footer`, `hm-legend`, `hm-legend-cell`.
+
+---
+
+### Progresso (Evolução) — Card de Recordes Pessoais
+
+Novo card `.pr-card` após o heatmap na aba Evolução: lista os recordes pessoais atuais (melhor carga por exercício) com filtro por grupo muscular.
+
+#### Backend
+
+**Novo DTO — `PersonalRecordResponse.java`:**
+```java
+public record PersonalRecordResponse(
+    String exerciseId, String exerciseName, String category,
+    double weightKg, int reps, String achievedAt) {}
+```
+
+**`SessionSetRepository.findPersonalRecordsByUserId(@Param UUID userId)`** — nova query JPQL com `JOIN FETCH`:
+```java
+@Query("""
+    SELECT ss FROM SessionSet ss
+    JOIN FETCH ss.sessionExercise se
+    JOIN FETCH se.exercise e
+    JOIN se.session s
+    WHERE s.user.id = :userId
+      AND s.status = 'COMPLETED'
+      AND ss.personalRecord = true
+    ORDER BY ss.completedAt DESC
+    """)
+List<SessionSet> findPersonalRecordsByUserId(@Param("userId") UUID userId);
+```
+
+**`ProgressService.getPersonalRecords(UUID userId)`:**
+- Carrega todos os sets com `personalRecord = true`
+- Agrupa por `exercise.getId()` via `Collectors.toMap`, função de merge: mantém a maior carga (`a.getWeightKg().compareTo(b.getWeightKg()) >= 0 ? a : b`)
+- Mapeia para `PersonalRecordResponse`, ordena por `achievedAt` desc
+
+**`ProgressController`:** `GET /api/v1/progress/personal-records` (sem parâmetros).
+
+#### Frontend
+
+**`progress.model.ts`:** `interface PersonalRecord { exerciseId, exerciseName, category: string | null, weightKg, reps, achievedAt }`
+
+**`progress.service.ts`:** `getPersonalRecords(): Observable<PersonalRecord[]>`
+
+**`progress.page.ts`:**
+
+| Adição | Detalhe |
+|---|---|
+| `prList` | `PersonalRecord[]` carregado por `loadPersonalRecords()` |
+| `prCategory` | String do filtro ativo (vazio = todos) |
+| `prAvailableCategories` | Getter: `Set` de categorias presentes em `prList` |
+| `filteredPrList` | Getter: filtra `prList` por `prCategory` |
+| `muscleLabel(cat)` | Expõe `MUSCLE_LABELS[cat]` para o template |
+| `formatPrDate(dateStr)` | `"2026-06-15"` → `"15 Jun"` |
+
+**`progress.page.html`:** card com:
+- Header: título + badge de contagem em âmbar (pill)
+- Filtros: scroll horizontal de botões `.period-btn` por músculo (todos + categorias disponíveis)
+- Lista de `@for (pr of filteredPrList)`: nome do exercício, meta (`músculo · N reps · DD Mês`), peso em âmbar com ícone troféu
+- Empty state quando `prList.length === 0`
+
+**`progress.page.scss`:** `.pr-card` com `.pr-count-badge` (âmbar), `.pr-filter-scroll` (sem scrollbar visível, `flex-shrink: 0` nos botões), `.pr-item`, `.pr-info`, `.pr-name` (ellipsis), `.pr-meta`, `.pr-weight` (âmbar + ícone).
+
+---
+
+### Progresso (Evolução) — Gráfico de barras: volume por semana
+
+Novo card `.weekly-vol-card` entre o heatmap e o card de recordes, exibindo o volume total por semana como gráfico de barras SVG, com toggle 3M (12 semanas) / 6M (24 semanas).
+
+#### Backend
+
+**Novo DTO — `WeeklyVolumeResponse.java`:**
+```java
+public record WeeklyVolumeResponse(String weekStart, double totalVolumeKg) {}
+```
+
+**`ProgressService.getWeeklyVolume(UUID userId, int weeks)`:**
+- Determina `startWeek` = segunda-feira de `(todayWeekStart − (weeks−1) semanas)`
+- Busca sessões via `findByUserIdAndStatusAndFinishedAtBetween`
+- Agrupa `totalVolumeKg` por semana (segunda-feira) via `Collectors.groupingBy + summingDouble`
+- Itera `startWeek → todayWeekStart`, preenchendo semanas sem treino com `0.0`
+- Retorna lista com entrada para cada semana do intervalo (sem lacunas)
+
+**`ProgressController`:** `GET /api/v1/progress/weekly-volume?weeks=12` — `@RequestParam(defaultValue = "12")`.
+
+#### Frontend
+
+**`progress.model.ts`:** `interface WeeklyVolume { weekStart: string; totalVolumeKg: number; }`
+
+**`progress.service.ts`:** `getWeeklyVolume(weeks = 12): Observable<WeeklyVolume[]>`
+
+**`progress.page.ts`:**
+
+| Adição | Detalhe |
+|---|---|
+| `WeeklyVolumeBar` | Interface interna: `{ weekStart, totalVolumeKg, barX, barY, barW, barH, monthLabel, isCurrentWeek }` |
+| `weeklyVolumeWeeks` | Toggle state: 12 (padrão) ou 24 |
+| `weeklyVolumeBars` | Array computado por `buildWeeklyVolumeBars()` |
+| `weeklyVolumeMaxKg` | Maior volume semanal do período |
+| `weeklyVolumeAvgKg` | Média das semanas com pelo menos 1 treino |
+| `buildWeeklyVolumeBars(data)` | `viewBox 0 0 300 128`; `LEFT=38, RIGHT=295, BOTTOM=105, CHART_H=95`; `step=chartW/n`, `barW=min(step×0.65, 16)`; barH proporcional ao max; semana atual `opacity=1`, demais `opacity=0.55`; label de mês quando o mês muda |
+| `weeklyVolumeYLabels` | Getter: 2 labels (max e max/2) com `cy` para as linhas de grid |
+| `loadWeeklyVolume()` / `selectWeeklyVolumeWeeks(n)` | Carregam e recarregam ao trocar período |
+
+**`progress.page.html`:** SVG `viewBox="0 0 300 128"` (responsivo, `width: 100%`):
+- Linha de base em `y=105`
+- Linhas de grade horizontais tracejadas com labels de volume no Y (max e metade)
+- Barras `<rect>` com `rx=2`; semana atual sem opacidade reduzida (destaque)
+- Label de mês abaixo da primeira barra de cada mês
+- Subtítulo: "X kg/semana em média" (calculado sobre semanas com treino)
+- Empty state quando `weeklyVolumeMaxKg === 0`
+
+**`progress.page.scss`:** `.weekly-vol-card` com `.chart-header` (flex, `align-items: flex-start`), `.wv-svg`, `.wv-lbl` (9px, `var(--text3)`), `.wv-month-lbl` (8px).
+
+---
+
+### Bug fix — Aviso falso "1 exercício não concluído" ao finalizar treino
+
+**Arquivo:** `active-session.page.ts`
+
+**Causa raiz:** `pendingExerciseCount` contava exercícios com `status !== 'SKIPPED' && status !== 'COMPLETED'`, o que incluía o último exercício em `IN_PROGRESS` mesmo após o usuário ter concluído todas as séries. O backend em `SessionService.finish()` já auto-completa qualquer exercício `IN_PROGRESS` com séries ao fechar a sessão, tornando o aviso um falso positivo.
+
+**Fix aplicado:**
+```typescript
+// ANTES
+return this.session.exercises.filter(
+  (ex) => ex.status !== 'SKIPPED' && ex.status !== 'COMPLETED',
+).length;
+
+// DEPOIS
+return this.session.exercises.filter(
+  (ex) => ex.status !== 'SKIPPED' && ex.status !== 'COMPLETED' && ex.sets.length === 0,
+).length;
+```
+
+**Raciocínio:** um exercício é "verdadeiramente pendente" apenas se nunca foi iniciado (`sets.length === 0`). Exercícios `IN_PROGRESS` com séries serão auto-completados pelo backend — mostrar aviso para eles é enganoso para o usuário. A condição `sets.length === 0` espelha exatamente a lógica do `SessionService.finish()`:
+```java
+.filter(se -> !se.getSets().isEmpty())
+.forEach(se -> se.setStatus(COMPLETED));
+```
+
+**Cenários antes/depois:**
+
+| Cenário | Antes | Depois |
+|---|---|---|
+| Fez todos os exercícios, finalizou sem clicar "Próximo" no último | ⚠️ "1 exercício pendente" (falso) | ✅ Sem aviso |
+| Exercício pulado (SKIPPED) | ✅ Sem aviso | ✅ Sem aviso |
+| Exercício não iniciado (PENDING, sets=[]) | ✅ Aviso correto | ✅ Aviso correto |
+
+---
+
 ## [2026-06-30] — Homepage, Progresso: mini-stats com período, top exercícios, aba Evolução com gráfico de carga
 
 ### Homepage — `home.page.*`

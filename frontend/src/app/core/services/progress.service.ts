@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress, MuscleSetStat, TopExercise } from '../models';
+import { ProgressSummary, WorkoutHistory, WorkoutHistoryItem, ExerciseProgress, MuscleSetStat, TopExercise, HeatmapDay, PersonalRecord, WeeklyVolume } from '../models';
 import { expand, reduce, takeWhile } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
@@ -50,13 +50,27 @@ export class ProgressService {
     return this.http.get<MuscleSetStat[]>(`${this.url}/sets-by-muscle`, { params });
   }
 
-  getTopExercises(limit = 3): Observable<TopExercise[]> {
-    const params = new HttpParams().set('limit', limit);
+  getTopExercises(limit = 3, period = 'ALL'): Observable<TopExercise[]> {
+    const params = new HttpParams().set('limit', limit).set('period', period);
     return this.http.get<TopExercise[]>(`${this.url}/top-exercises`, { params });
   }
 
   getExercisesDone(): Observable<TopExercise[]> {
     return this.http.get<TopExercise[]>(`${this.url}/exercises-done`);
+  }
+
+  getPersonalRecords(): Observable<PersonalRecord[]> {
+    return this.http.get<PersonalRecord[]>(`${this.url}/personal-records`);
+  }
+
+  getHeatmap(months = 6): Observable<HeatmapDay[]> {
+    const params = new HttpParams().set('months', months);
+    return this.http.get<HeatmapDay[]>(`${this.url}/heatmap`, { params });
+  }
+
+  getWeeklyVolume(weeks = 12): Observable<WeeklyVolume[]> {
+    const params = new HttpParams().set('weeks', weeks);
+    return this.http.get<WeeklyVolume[]>(`${this.url}/weekly-volume`, { params });
   }
 
   getExerciseProgress(exerciseId: string, period = 'all'): Observable<ExerciseProgress> {

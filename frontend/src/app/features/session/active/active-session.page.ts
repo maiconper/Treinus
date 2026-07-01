@@ -92,7 +92,7 @@ export class ActiveSessionPage implements OnInit, OnDestroy {
   get pendingExerciseCount(): number {
     if (!this.session) return 0;
     return this.session.exercises.filter(
-      (ex) => ex.status !== 'SKIPPED' && ex.status !== 'COMPLETED',
+      (ex) => ex.status !== 'SKIPPED' && ex.status !== 'COMPLETED' && ex.sets.length === 0,
     ).length;
   }
 

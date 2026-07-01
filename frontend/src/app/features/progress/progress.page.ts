@@ -1,7 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProgressService } from '../../core/services/progress.service';
-import { ExerciseProgress, ExerciseProgressEntry, MuscleSetStat, ProgressSummary, TopExercise, WorkoutHistoryItem } from '../../core/models';
+import { ExerciseProgress, ExerciseProgressEntry, HeatmapDay, MuscleSetStat, PersonalRecord, ProgressSummary, TopExercise, WeeklyVolume, WorkoutHistoryItem } from '../../core/models';
+
+interface WeeklyVolumeBar {
+  weekStart: string;
+  totalVolumeKg: number;
+  barX: number;
+  barY: number;
+  barW: number;
+  barH: number;
+  monthLabel: string;
+  isCurrentWeek: boolean;
+}
+
+interface HeatmapCell {
+  date: string;
+  count: number;
+  col: number;
+  row: number;
+  isToday: boolean;
+}
+
+interface HeatmapMonthLabel {
+  label: string;
+  col: number;
+}
 
 interface SessionPoint {
   sessionId: string;
@@ -82,6 +106,25 @@ export class ProgressPage implements OnInit {
   totalMusclesSets = 0;
   musclePeriod: MusclePeriod = 'MONTH';
   statsPeriod: MusclePeriod = 'ALL';
+  topExPeriod: MusclePeriod = 'ALL';
+
+  // Personal records
+  prList: PersonalRecord[] = [];
+  prCategory = '';
+
+  // Weekly volume
+  weeklyVolumeWeeks = 12;
+  weeklyVolumeBars: WeeklyVolumeBar[] = [];
+  weeklyVolumeMaxKg = 0;
+  weeklyVolumeAvgKg = 0;
+
+  // Heatmap
+  heatmapMonths = 6;
+  heatmapCells: HeatmapCell[] = [];
+  heatmapMonthLabels: HeatmapMonthLabel[] = [];
+  heatmapSvgWidth = 0;
+  heatmapTrainedDays = 0;
+  private heatmapData: HeatmapDay[] = [];
   readonly periods: MusclePeriod[] = ['WEEK', 'MONTH', 'YEAR', 'ALL'];
   readonly periodLabels = MUSCLE_PERIOD_LABELS;
   loading = true;
@@ -123,9 +166,10 @@ export class ProgressPage implements OnInit {
         this.hasMore = h.number + 1 < h.totalPages;
       },
     });
-    this.progressService.getTopExercises().subscribe({
-      next: data => { this.topExercises = data; },
-    });
+    this.loadTopExercises();
+    this.loadHeatmap();
+    this.loadPersonalRecords();
+    this.loadWeeklyVolume();
     this.progressService.getExercisesDone().subscribe({
       next: data => { this.exercisesDone = data; },
     });
@@ -158,6 +202,171 @@ export class ProgressPage implements OnInit {
     if (this.statsPeriod === period) return;
     this.statsPeriod = period;
     this.loadSummary();
+  }
+
+  loadTopExercises() {
+    this.progressService.getTopExercises(3, this.topExPeriod).subscribe({
+      next: data => { this.topExercises = data; },
+    });
+  }
+
+  selectTopExPeriod(period: MusclePeriod) {
+    if (this.topExPeriod === period) return;
+    this.topExPeriod = period;
+    this.loadTopExercises();
+  }
+
+  loadPersonalRecords() {
+    this.progressService.getPersonalRecords().subscribe({
+      next: data => { this.prList = data; },
+    });
+  }
+
+  get prAvailableCategories(): string[] {
+    return [...new Set(this.prList.map(p => p.category).filter((c): c is string => !!c))];
+  }
+
+  get filteredPrList(): PersonalRecord[] {
+    if (!this.prCategory) return this.prList;
+    return this.prList.filter(p => p.category === this.prCategory);
+  }
+
+  muscleLabel(category: string | null): string {
+    return category ? (MUSCLE_LABELS[category] ?? category) : '';
+  }
+
+  formatPrDate(dateStr: string): string {
+    const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const [, m, d] = dateStr.split('-').map(Number);
+    return `${d} ${MONTHS[m - 1]}`;
+  }
+
+  loadHeatmap() {
+    this.progressService.getHeatmap(this.heatmapMonths).subscribe({
+      next: data => { this.heatmapData = data; this.buildHeatmap(); },
+    });
+  }
+
+  selectHeatmapMonths(months: number) {
+    if (this.heatmapMonths === months) return;
+    this.heatmapMonths = months;
+    this.loadHeatmap();
+  }
+
+  loadWeeklyVolume() {
+    this.progressService.getWeeklyVolume(this.weeklyVolumeWeeks).subscribe({
+      next: data => this.buildWeeklyVolumeBars(data),
+    });
+  }
+
+  selectWeeklyVolumeWeeks(weeks: number) {
+    if (this.weeklyVolumeWeeks === weeks) return;
+    this.weeklyVolumeWeeks = weeks;
+    this.loadWeeklyVolume();
+  }
+
+  private buildWeeklyVolumeBars(data: WeeklyVolume[]) {
+    if (!data.length) { this.weeklyVolumeBars = []; this.weeklyVolumeMaxKg = 0; this.weeklyVolumeAvgKg = 0; return; }
+
+    const MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const LEFT = 38, RIGHT = 295, BOTTOM = 105, CHART_H = 95;
+    const n = data.length;
+    const step = (RIGHT - LEFT) / n;
+    const barW = Math.min(step * 0.65, 16);
+    const maxVol = Math.max(...data.map(d => d.totalVolumeKg));
+    this.weeklyVolumeMaxKg = maxVol;
+
+    const nonZero = data.filter(d => d.totalVolumeKg > 0);
+    this.weeklyVolumeAvgKg = nonZero.length > 0
+      ? Math.round(nonZero.reduce((s, d) => s + d.totalVolumeKg, 0) / nonZero.length)
+      : 0;
+
+    const now = new Date();
+    const dow = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+    monday.setHours(0, 0, 0, 0);
+    const currentWeekStr = monday.toISOString().substring(0, 10);
+
+    let lastMonth = -1;
+    this.weeklyVolumeBars = data.map((d, i) => {
+      const barH = maxVol > 0 ? Math.max((d.totalVolumeKg / maxVol) * CHART_H, d.totalVolumeKg > 0 ? 2 : 0) : 0;
+      const barX = LEFT + i * step + (step - barW) / 2;
+      const month = parseInt(d.weekStart.substring(5, 7), 10) - 1;
+      let monthLabel = '';
+      if (month !== lastMonth) { monthLabel = MONTHS_PT[month]; lastMonth = month; }
+      return {
+        weekStart: d.weekStart,
+        totalVolumeKg: d.totalVolumeKg,
+        barX,
+        barY: BOTTOM - barH,
+        barW,
+        barH,
+        monthLabel,
+        isCurrentWeek: d.weekStart === currentWeekStr,
+      };
+    });
+  }
+
+  get weeklyVolumeYLabels(): Array<{ label: string; cy: number }> {
+    const max = this.weeklyVolumeMaxKg;
+    if (!max) return [];
+    const fmt = (v: number) => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : Math.round(v).toString();
+    return [
+      { label: fmt(max), cy: 10 },
+      { label: fmt(max / 2), cy: 57 },
+    ];
+  }
+
+  private buildHeatmap() {
+    const MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().substring(0, 10);
+
+    const start = new Date(today);
+    start.setMonth(start.getMonth() - this.heatmapMonths);
+    const dow = start.getDay(); // 0=Sun
+    start.setDate(start.getDate() + (dow === 0 ? -6 : 1 - dow)); // align to Monday
+
+    const dayMap = new Map(this.heatmapData.map(d => [d.date, d.count]));
+    const cells: HeatmapCell[] = [];
+    const labels: HeatmapMonthLabel[] = [];
+    let d = new Date(start);
+    let dayOffset = 0;
+    let lastLabelMonth = -1;
+
+    while (d <= today) {
+      const dateStr = d.toISOString().substring(0, 10);
+      const col = Math.floor(dayOffset / 7);
+      const row = dayOffset % 7;
+
+      cells.push({ date: dateStr, count: dayMap.get(dateStr) ?? 0, col, row, isToday: dateStr === todayStr });
+
+      if (row === 0) {
+        const month = d.getMonth();
+        if (month !== lastLabelMonth) {
+          labels.push({ label: MONTHS_PT[month], col });
+          lastLabelMonth = month;
+        }
+      }
+
+      d.setDate(d.getDate() + 1);
+      dayOffset++;
+    }
+
+    const numWeeks = cells.length > 0 ? cells[cells.length - 1].col + 1 : 0;
+    this.heatmapCells = cells;
+    this.heatmapMonthLabels = labels;
+    this.heatmapSvgWidth = 24 + numWeeks * 13;
+    this.heatmapTrainedDays = this.heatmapData.length;
+  }
+
+  heatmapCellOpacity(count: number): number {
+    if (count === 0) return 1;
+    if (count === 1) return 0.35;
+    if (count === 2) return 0.65;
+    return 1;
   }
 
   loadMore() {

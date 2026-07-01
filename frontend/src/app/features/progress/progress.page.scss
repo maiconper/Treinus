@@ -55,6 +55,78 @@ ion-content.progress-content { --background: var(--bg); }
   .xp-sub { font-size: 11px; color: var(--text3); }
 }
 
+.heatmap-card {
+  .chart-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .heatmap-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .heatmap-svg { display: block; }
+  .hm-day-lbl {
+    font-size: 8px; fill: var(--text3); font-family: inherit;
+  }
+  .hm-month-lbl {
+    font-size: 9px; fill: var(--text3); font-family: inherit;
+  }
+  .hm-footer {
+    display: flex; align-items: center; justify-content: space-between; margin-top: 10px;
+  }
+  .hm-stat { font-size: 11px; color: var(--text3); }
+  .hm-legend {
+    display: flex; align-items: center; gap: 3px;
+  }
+  .hm-legend-lbl { font-size: 9px; color: var(--text3); }
+  .hm-legend-cell {
+    width: 10px; height: 10px; border-radius: 2px; display: inline-block;
+  }
+}
+
+.weekly-vol-card {
+  .chart-header {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;
+    .wv-sub { margin-bottom: 0; margin-top: 2px; }
+  }
+  .wv-svg { width: 100%; height: auto; display: block; }
+  .wv-lbl { font-size: 9px; fill: var(--text3); font-family: inherit; }
+  .wv-month-lbl { font-size: 8px; fill: var(--text3); font-family: inherit; }
+}
+
+.pr-card {
+  .chart-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .pr-count-badge {
+    font-size: 11px; font-weight: 600; color: var(--amber);
+    background: rgba(245, 158, 11, 0.12); border-radius: 99px; padding: 2px 8px;
+  }
+  .pr-filter-scroll {
+    display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px; scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+    .period-btn { flex-shrink: 0; }
+  }
+  .pr-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0; border-bottom: 0.5px solid var(--border);
+    &:last-child { border-bottom: none; }
+  }
+  .pr-info { flex: 1; min-width: 0; }
+  .pr-name {
+    display: block; font-size: 13px; font-weight: 600; color: var(--text1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .pr-meta { font-size: 11px; color: var(--text3); }
+  .pr-weight {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 14px; font-weight: 700; color: var(--amber);
+    white-space: nowrap; flex-shrink: 0;
+    ion-icon { font-size: 13px; }
+  }
+}
+
 .evolution-card {
   position: relative;
 

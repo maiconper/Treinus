@@ -3,11 +3,15 @@ package com.treinus.progress;
 import com.treinus.exercises.Exercise;
 import com.treinus.exercises.ExerciseRepository;
 import com.treinus.progress.dto.ExerciseProgressResponse;
+import com.treinus.progress.dto.HeatmapDayResponse;
 import com.treinus.progress.dto.MuscleSetStatResponse;
+import com.treinus.progress.dto.PersonalRecordResponse;
 import com.treinus.progress.dto.ProgressSummaryResponse;
 import com.treinus.progress.dto.TopExerciseResponse;
+import com.treinus.progress.dto.WeeklyVolumeResponse;
 import com.treinus.progress.dto.WorkoutHistoryResponse;
 import com.treinus.sessions.SessionSet;
+import com.treinus.sessions.SessionSetRepository;
 import com.treinus.sessions.SessionStatus;
 import com.treinus.sessions.TrainingSession;
 import com.treinus.sessions.TrainingSessionRepository;
@@ -27,6 +31,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +43,16 @@ import java.util.stream.Collectors;
 public class ProgressService {
 
     private final TrainingSessionRepository sessionRepository;
+    private final SessionSetRepository sessionSetRepository;
     private final UserProfileRepository userProfileRepository;
     private final ExerciseRepository exerciseRepository;
 
     public ProgressService(TrainingSessionRepository sessionRepository,
+                           SessionSetRepository sessionSetRepository,
                            UserProfileRepository userProfileRepository,
                            ExerciseRepository exerciseRepository) {
         this.sessionRepository = sessionRepository;
+        this.sessionSetRepository = sessionSetRepository;
         this.userProfileRepository = userProfileRepository;
         this.exerciseRepository = exerciseRepository;
     }
@@ -223,8 +231,106 @@ public class ProgressService {
                 .toList();
     }
 
-    public List<TopExerciseResponse> getTopExercises(UUID userId, int limit) {
-        return getExercisesDone(userId).stream().limit(limit).toList();
+    public List<TopExerciseResponse> getTopExercises(UUID userId, int limit, String period) {
+        record ExKey(UUID id, String name) {}
+
+        List<TrainingSession> sessions;
+        if ("ALL".equalsIgnoreCase(period)) {
+            sessions = sessionRepository
+                    .findByUserIdAndStatusOrderByStartedAtDesc(userId, SessionStatus.COMPLETED, Pageable.unpaged())
+                    .getContent();
+        } else {
+            Instant from = switch (period.toUpperCase()) {
+                case "WEEK"  -> Instant.now().minusSeconds(7L * 24 * 3600);
+                case "MONTH" -> Instant.now().minusSeconds(30L * 24 * 3600);
+                case "YEAR"  -> Instant.now().minusSeconds(365L * 24 * 3600);
+                default      -> Instant.EPOCH;
+            };
+            sessions = sessionRepository
+                    .findByUserIdAndStatusAndFinishedAtBetween(userId, SessionStatus.COMPLETED, from, Instant.now());
+        }
+
+        return sessions.stream()
+                .flatMap(s -> s.getExercises().stream())
+                .filter(se -> se.getExercise() != null)
+                .collect(Collectors.groupingBy(
+                        se -> new ExKey(se.getExercise().getId(), se.getExercise().getName()),
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.<ExKey, Long>comparingByValue().reversed())
+                .limit(limit)
+                .map(e -> new TopExerciseResponse(
+                        e.getKey().id().toString(),
+                        e.getKey().name(),
+                        e.getValue()
+                ))
+                .toList();
+    }
+
+    public List<HeatmapDayResponse> getHeatmap(UUID userId, int months) {
+        Instant from = Instant.now().minusSeconds((long) months * 30 * 24 * 3600);
+        return sessionRepository
+                .findByUserIdAndStatusAndFinishedAtBetween(userId, SessionStatus.COMPLETED, from, Instant.now())
+                .stream()
+                .filter(s -> s.getStartedAt() != null)
+                .collect(Collectors.groupingBy(
+                        s -> s.getStartedAt().atZone(ZoneOffset.UTC).toLocalDate().toString(),
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .map(e -> new HeatmapDayResponse(e.getKey(), (int) (long) e.getValue()))
+                .sorted(Comparator.comparing(HeatmapDayResponse::date))
+                .toList();
+    }
+
+    public List<PersonalRecordResponse> getPersonalRecords(UUID userId) {
+        return sessionSetRepository.findPersonalRecordsByUserId(userId).stream()
+                .collect(Collectors.toMap(
+                        ss -> ss.getSessionExercise().getExercise().getId(),
+                        ss -> ss,
+                        (a, b) -> a.getWeightKg().compareTo(b.getWeightKg()) >= 0 ? a : b
+                ))
+                .values().stream()
+                .map(ss -> {
+                    Exercise ex = ss.getSessionExercise().getExercise();
+                    return new PersonalRecordResponse(
+                            ex.getId().toString(),
+                            ex.getName(),
+                            ex.getCategory() != null ? ex.getCategory().name() : null,
+                            ss.getWeightKg().doubleValue(),
+                            ss.getReps(),
+                            ss.getCompletedAt().atZone(ZoneOffset.UTC).toLocalDate().toString()
+                    );
+                })
+                .sorted(Comparator.comparing(PersonalRecordResponse::achievedAt).reversed())
+                .toList();
+    }
+
+    public List<WeeklyVolumeResponse> getWeeklyVolume(UUID userId, int weeks) {
+        LocalDate todayWeekStart = LocalDate.now(ZoneOffset.UTC)
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate startWeek = todayWeekStart.minusWeeks(weeks - 1);
+        Instant from = startWeek.atStartOfDay(ZoneOffset.UTC).toInstant();
+
+        Map<String, Double> volumeByWeek = sessionRepository
+                .findByUserIdAndStatusAndFinishedAtBetween(userId, SessionStatus.COMPLETED, from, Instant.now())
+                .stream()
+                .filter(s -> s.getStartedAt() != null && s.getTotalVolumeKg() != null)
+                .collect(Collectors.groupingBy(
+                        s -> s.getStartedAt().atZone(ZoneOffset.UTC).toLocalDate()
+                                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toString(),
+                        Collectors.summingDouble(s -> s.getTotalVolumeKg().doubleValue())
+                ));
+
+        List<WeeklyVolumeResponse> result = new ArrayList<>();
+        LocalDate cursor = startWeek;
+        while (!cursor.isAfter(todayWeekStart)) {
+            String key = cursor.toString();
+            result.add(new WeeklyVolumeResponse(key, volumeByWeek.getOrDefault(key, 0.0)));
+            cursor = cursor.plusWeeks(1);
+        }
+        return result;
     }
 
     public ExerciseProgressResponse getExerciseProgress(UUID userId, UUID exerciseId, String period) {

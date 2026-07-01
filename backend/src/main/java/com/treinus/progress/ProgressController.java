@@ -1,9 +1,12 @@
 package com.treinus.progress;
 
 import com.treinus.progress.dto.ExerciseProgressResponse;
+import com.treinus.progress.dto.HeatmapDayResponse;
 import com.treinus.progress.dto.MuscleSetStatResponse;
+import com.treinus.progress.dto.PersonalRecordResponse;
 import com.treinus.progress.dto.ProgressSummaryResponse;
 import com.treinus.progress.dto.TopExerciseResponse;
+import com.treinus.progress.dto.WeeklyVolumeResponse;
 import com.treinus.progress.dto.WorkoutHistoryResponse;
 import com.treinus.users.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,14 +69,38 @@ public class ProgressController {
     @Operation(summary = "Exercícios mais frequentes do usuário")
     public ResponseEntity<List<TopExerciseResponse>> getTopExercises(
             @AuthenticationPrincipal User user,
-            @RequestParam(defaultValue = "3") int limit) {
-        return ResponseEntity.ok(progressService.getTopExercises(user.getId(), limit));
+            @RequestParam(defaultValue = "3") int limit,
+            @RequestParam(defaultValue = "ALL") String period) {
+        return ResponseEntity.ok(progressService.getTopExercises(user.getId(), limit, period));
     }
 
     @GetMapping("/exercises-done")
     @Operation(summary = "Todos os exercícios realizados pelo usuário, ordenados por frequência")
     public ResponseEntity<List<TopExerciseResponse>> getExercisesDone(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(progressService.getExercisesDone(user.getId()));
+    }
+
+    @GetMapping("/heatmap")
+    @Operation(summary = "Dias de treino para o heatmap de frequência")
+    public ResponseEntity<List<HeatmapDayResponse>> getHeatmap(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "6") int months) {
+        return ResponseEntity.ok(progressService.getHeatmap(user.getId(), months));
+    }
+
+    @GetMapping("/personal-records")
+    @Operation(summary = "Recordes pessoais do usuário (melhor carga por exercício)")
+    public ResponseEntity<List<PersonalRecordResponse>> getPersonalRecords(
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(progressService.getPersonalRecords(user.getId()));
+    }
+
+    @GetMapping("/weekly-volume")
+    @Operation(summary = "Volume total por semana para o gráfico de barras")
+    public ResponseEntity<List<WeeklyVolumeResponse>> getWeeklyVolume(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "12") int weeks) {
+        return ResponseEntity.ok(progressService.getWeeklyVolume(user.getId(), weeks));
     }
 
     @GetMapping("/exercises/{exerciseId}")

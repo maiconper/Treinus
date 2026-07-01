@@ -63,3 +63,22 @@ export interface ExerciseProgress {
   totalSets: number;
   history: ExerciseProgressEntry[];
 }
+
+export interface HeatmapDay {
+  date: string;
+  count: number;
+}
+
+export interface WeeklyVolume {
+  weekStart: string;
+  totalVolumeKg: number;
+}
+
+export interface PersonalRecord {
+  exerciseId: string;
+  exerciseName: string;
+  category: string | null;
+  weightKg: number;
+  reps: number;
+  achievedAt: string;
+}
