@@ -28,6 +28,10 @@
   --ice-grad-start: #37CDEA;
   --ice-grad-end:   #1E7C98;
 
+  // Conquistas — tiers bronze/prata (ouro = volt, platina = ice)
+  --tier-bronze: #C58B54;
+  --tier-silver: #C2C7D0;
+
   --radius:       14px;
   --radius-sm:    10px;
   --radius-xs:    8px;
@@ -48,4 +52,11 @@
   --ion-color-primary-shade:          #d6e040;
   --ion-color-primary-tint:           #f4ff61;
   --ion-font-family:                  'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  // Fundo dos overlays (action-sheet, alert, popover) — sem isso o Ionic
+  // assume tema claro e renderiza essas telas com fundo branco.
+  --ion-overlay-background-color:     var(--surface);
+  --ion-color-step-50:                #1F1F1F;
+  --ion-color-step-100:               var(--surface);
+  --ion-color-step-150:               #232323;
 }

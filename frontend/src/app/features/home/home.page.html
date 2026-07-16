@@ -93,6 +93,9 @@
     <p class="section-lbl">Treino de hoje</p>
     <div class="day-card">
       <div class="day-watermark font-display">{{ todayWorkoutLetter }}</div>
+      <button class="btn-edit day-menu" (click)="openWorkoutOptions()">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </button>
       <div class="wc-title-row">
         <div>
           <p class="wc-meta">
@@ -105,13 +108,10 @@
             <span class="pos-chip"
               >Semana {{ todayProgramWeek.weekNumber }}</span
             >
-            <span class="pos-chip">Dia {{ todayDayNumber }}</span>
+            <span class="pos-chip"> - Dia {{ todayDayNumber }}</span>
           </div>
           }
         </div>
-        <button class="btn-edit" (click)="openWorkoutOptions()">
-          <ion-icon name="ellipsis-vertical"></ion-icon>
-        </button>
       </div>
       @if (todayWorkoutDetails; as w) {
       <div class="wc-stats">

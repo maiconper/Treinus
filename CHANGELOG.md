@@ -1,5 +1,127 @@
 # Changelog — Treinus
 
+## [2026-07-16] — Fix: 500 em todos os endpoints de Progresso, overlays escuros do Ionic e posição do btn-edit
+
+### Bug fix crítico: 500 Internal Server Error em `/api/v1/progress/*` — `backend/pom.xml`
+
+**Causa raiz:** o commit `97a2a521` ("Step 3: Upgrade Java Version to 25", 2026-06-11) adicionou um bloco `<configuration>` customizado no `maven-compiler-plugin` (só para registrar o annotation processor do Lombok) que **substituiu** a configuração padrão herdada do `spring-boot-starter-parent` — e essa configuração padrão inclui a flag `-parameters`. Sem ela, as classes compiladas perdem os nomes dos parâmetros de método via reflection, e o Spring 6.2 não tem mais fallback para `LocalVariableTable`: qualquer `@RequestParam`/`@PathVariable` sem `name=`/`value=` explícito falha em runtime com `IllegalArgumentException: Name for argument of type [...] not specified... Ensure that the compiler uses the '-parameters' flag`, capturado pelo `GlobalExceptionHandler` genérico (500 "An unexpected error occurred").
+
+Como **todos** os parâmetros do `ProgressController` (`period`, `months`, `weeks`, `limit`, `exerciseId`) usam a forma curta sem nome explícito, os 6 endpoints de progresso (`summary`, `history`, `top-exercises`, `heatmap`, `weekly-volume`, `sets-by-muscle`) quebravam sempre — inclusive para um usuário novo sem nenhum dado, confirmando que não era um problema de volume/performance. Endpoints sem query params (`personal-records`, `exercises-done`) continuavam funcionando, mascarando o escopo real do bug. Também afeta silenciosamente outros controllers com o mesmo padrão (ex.: filtros `category`/`equipment` em `ExerciseController`).
+
+**Fix:** `<parameters>true</parameters>` adicionado à configuração do `maven-compiler-plugin`. Requer rebuild completo do backend para ter efeito (build incremental não recompila arquivos inalterados).
+
+> **Diagnóstico:** reproduzido via instância descartável do backend em porta alternativa (8081, mesmo banco) para capturar o stack trace real sem interromper a sessão de debug ativa do usuário (JDWP attach na porta 8080); confirmado com usuário de teste recém-registrado (zero sessões) antes de aplicar o fix.
+
+---
+
+### Overlays do Ionic (action-sheet, alert, popover) com fundo branco ilegível — `theme/variables.scss`
+
+**Causa raiz:** nenhuma variável `--ion-overlay-background-color` estava definida, então o Ionic assume tema claro para esses componentes (`ion-action-sheet`, `ion-alert`, `ion-popover`) independentemente do resto do app já estar no tema escuro Volt — o menu de opções "Treino de hoje" (Editar/Substituir/Remover) abria com fundo branco e texto de baixo contraste.
+
+**Fix:** adicionado `--ion-overlay-background-color: var(--surface)` + `--ion-color-step-50`/`--ion-color-step-100`/`--ion-color-step-150` em `:root`, corrigindo o fundo de qualquer action-sheet/alert/popover do app de uma vez.
+
+---
+
+### Botão de opções do card de hoje fora do canto — `home.page.html`/`.scss`
+
+O `btn-edit` (⋮) do `.day-card` (treino de hoje) estava dentro do `.wc-title-row` como item de flexbox, alinhado à direita da linha do título mas não fixado no canto do card. Movido para fora do `wc-title-row`, como filho direto de `.day-card`, com posicionamento absoluto (`.day-menu { position: absolute; top: 13px; right: 14px }`) — mesmo padrão já usado em `.rest-day-menu`/`.no-workout-menu`. Adicionado `padding-right` ao `wc-title-row` para o título não ficar embaixo do botão.
+
+---
+
+## [2026-07-01] — Identidade visual Treinus (Volt/Gelo): reskin completo do app e conquistas com tiers
+
+### Contexto
+
+Pedido: aplicar a identidade visual "Treinus — Performance atlética" (fundo preto, acento único Volt `#F2FF49`, tipografia Oswald itálica + Manrope, ícones em traço) descrita em `design_handoff_treinus_brand/README.md` (+ `Identidade Treinus.dc.html`, turn 5 / badge `5a`) em **todas as telas existentes** do frontend, não só nas duas com mockup em alta fidelidade (Início e Treino ativo). Ao longo da sessão o escopo evoluiu em passos: (1) reskin completo do app claro→escuro, (2) introdução de uma segunda cor de marca "Gelo" `#35CDEA` com papel próprio em data-viz, (3) restyle da tela de Conquistas a partir de um HTML de referência (`Conquistas Treinus.html`) com 4 tiers.
+
+---
+
+### 1. Fundação (tokens, fontes, ícones) — `frontend/src/theme/variables.scss`, `global.scss`, `index.html`
+
+**Tokens substituídos** (tema claro bege multicolor → dark mono + Volt):
+```
+--bg:#0A0A0A  --surface:#1A1A1A  --surface2:#141414
+--border:rgba(255,255,255,.08)  --border2:rgba(255,255,255,.16)
+--text1:#FFFFFF  --text2:#888888  --text3:#5B5B5B
+--volt:#F2FF49  --on-volt:#0A0A0A  --volt-bg:rgba(242,255,73,.12)
+--danger:#FF453A  --danger-bg:rgba(255,69,58,.12)
+--font-display:'Oswald'  --font-body:'Manrope'
+```
+Removidos `--blue/--purple/--green/--orange/--amber` (e variantes `-bg/-dark/-mid`) — toda cor categórica antiga foi remapeada para Volt (ação/pico/agora) ou tons neutros de texto/superfície. Overrides do Ionic atualizados (`--ion-color-primary` → Volt, `--ion-tab-bar-background`, `--ion-font-family` → Manrope).
+
+**Fontes:** `index.html` ganhou `<link>` do Google Fonts para `Oswald:wght@700` e `Manrope:wght@400;500;600;700;800` (+ preconnect).
+
+**Classes globais novas em `global.scss`** (reusadas em todo o app): `.font-display` (Oswald itálico uppercase), `.section-lbl`, `.btn-primary`/`.btn-secondary`/`.btn-dark`, `.chip`/`.chip.selected`, `.stat-card`/`.stat-card-value`/`.stat-card-label`, além de resets escuros para `ion-content`, `ion-toolbar`, `ion-tab-bar`, `ion-item`, `ion-input`/`ion-textarea`. Regra global `ion-title { font-family: Oswald itálico uppercase }` — garante que todo header de página (Treinos, Progresso, Perfil, etc.) segue a tipografia de marca sem precisar estilizar cada tela.
+
+**Componente de ícone — `frontend/src/app/shared/icon/icon.component.ts`:** standalone `<app-icon>` com os 12 SVGs em traço 2px definidos no guia (`home, dumbbell, bar-chart, timer, person, flame, play, plus, check, calendar, heart-rate, settings`), inputs `name`/`size`/`color` (default `currentColor`)/`strokeWidth`. Importado (como standalone, via `imports`, não `declarations`) nos módulos que precisam: `TabsPageModule`, `HomePageModule`, `SessionModule`, `OnboardingPageModule`, `ProfilePageModule`. Ícones Ionicons fora desse set (dezenas de usos em todo o app) foram mantidos — já herdam `color` via CSS, então recolorem automaticamente com os novos tokens sem precisar trocar de biblioteca.
+
+---
+
+### 2. Tab bar — `frontend/src/app/tabs/tabs.page.html`/`.scss`
+
+Reimplementada como pílula: `ion-tab-bar` com `--background:#141414`; cada `ion-tab-button` usa `<app-icon>` dentro de um wrapper `.tab-pill`. A aba ativa (`ion-tab-button.tab-selected`, classe que o próprio Ionic aplica no host) ganha fundo Volt + label; as inativas mostram só o ícone. Ajuste posterior: `ion-tab-bar` passou de barra flutuante com margem lateral (`border-radius:16px; margin:0 14px 6px; width:calc(100% - 28px)`) para **largura total da tela** (`width:100%; margin:0`), a pedido do usuário.
+
+---
+
+### 3. Home e Treino ativo — reprodução em alta fidelidade
+
+**`home.page.html`/`.scss`/`.ts`:** header com data + saudação Oswald + avatar `#1C1C1C`; card do dia em Volt com marca d'água da letra do treino (`rgba(10,10,10,.08)`, Oswald ~62px) — letra derivada via novo getter `todayWorkoutLetter` (posição do dia entre os dias de treino não-descanso da semana, já que `ProgramDay` não tem campo de letra); botão "Iniciar treino" preto com ícone play Volt; stat cards de streak e volume semanal (novo campo `summary: ProgressSummary` carregado via `progressService.getSummary()`, com helper `formatVolume()` para exibir `"18t"`/`"320kg"`); footer da semana com dots de estado. Estados alternativos (descanso, sem treino, concluído hoje, amanhã) migrados para os novos componentes. Ajuste posterior: `.week-footer` (o `ion-footer`) passou de `background: var(--surface2)` para **transparente**, com `box-shadow:none` para remover a elevação MD que sobrava como halo claro no fundo escuro.
+
+**`active-session.page.html`/`.scss`:** contexto "EXERCÍCIO · i/total" + cronômetro em pílula Volt; nome do exercício em Oswald; lista de séries reaproveitando `completedSets`/`plannedSets` mas com o visual de linha do guia (inativa `#1A1A1A`, concluída com check, ativa em Volt); stepper de peso/reps (botão "–" escuro/símbolo Volt, botão "+" Volt/símbolo preto); demais elementos sem mockup exato (painel de info, bloco de descanso, botões concluir/pular/finalizar, nav entre exercícios) seguem os mesmos tokens/componentes.
+
+---
+
+### 4. Reskin em lote — demais telas (mesmos tokens, sem mockup pixel-exato)
+
+Convertidas seguindo o princípio "Volt só onde importa": `features/auth/{welcome,login,register,onboarding}` (+ `auth-shared.scss`), `features/workouts/{workouts.page, builder/*, manual-register, programs/program-detail}`, `features/session/finish/post-workout.page`, `features/progress/{progress.page, session-detail.page}`, `features/profile/{profile.page, achievements.page}`. Padrão aplicado: cores antigas → tokens novos; botões primários/secundários → `.btn-primary`/`.btn-secondary`; seleção tipo chip (grupo muscular, nível/objetivo no onboarding, segmentos) → padrão Volt/preto quando selecionado; badges de sucesso/conquista → Volt; títulos → `.font-display`. No onboarding, os campos `bg`/`color` por opção de nível (`onboarding.page.ts`) foram removidos — a seleção agora é 100% dirigida pelo estado `.selected`, não por cor fixa por item. Limpeza: removidos 2 métodos mortos (`getCategoryColor` em `workout-builder.page.ts` e `exercise-picker.modal.ts`) que ficaram sem uso após a troca de dots coloridos por ícone neutro.
+
+---
+
+### 5. Cor secundária "Gelo" `#35CDEA` — papel de "dado" vs. Volt como "pico/agora/recorde"
+
+**Regra introduzida:** Volt fica reservado a no máximo 1–2 pontos por tela — ação primária, dado ativo/"agora" (treino em andamento, aba ativa, dia de hoje), e **recordes/PRs/contagens** (que continuam Volt por definição). Todo o restante de data-viz que antes era Volt/oliva virou Gelo.
+
+**Novos tokens em `variables.scss`:**
+```
+--ice:#35CDEA  --ice-bg:rgba(53,205,234,.12)
+--ice-track:#161719  --ice-track-border:rgba(255,255,255,.04)
+--ice-1:#0F3A4A  --ice-2:#176079  --ice-3:#2494B4  --ice-4:#35CDEA
+--ice-grad-start:#37CDEA  --ice-grad-end:#1E7C98
+```
+
+**Heatmap de frequência (`progress.page.ts`/`.html`):** saiu do esquema de opacidade única (`heatmapCellOpacity`, removido) e passou a uma escala graduada discreta — `heatmapCellColor(cell)` mapeia contagem 0→`--ice-track`, 1→`--ice-1`, 2→`--ice-2`, 3→`--ice-3`, ≥4→`--ice-4`; novo getter `heatmapMaxCount` identifica o dia-recorde do período (só quando `maxCount ≥ 2`, para não pintar de Volt todo dia comum de treino), que é renderizado em Volt. Legenda "Menos → Mais" atualizada para os 4 tons de Gelo.
+
+**Volume por semana:** barras não-atuais passaram a usar `<linearGradient id="wv-ice-gradient">` (180deg, `--ice-grad-start` → `--ice-grad-end`) definido inline no SVG; a barra da semana atual continua sólida em Volt (o "pico/agora" do gráfico).
+
+**Evolução de carga:** linha e pontos do SVG (`stroke`/`fill`) viraram Gelo; pontos de PR (`pt.isPR`) continuam Volt e maiores, com contorno `--on-volt` — o pico do gráfico.
+
+**Demais conversões Volt → Gelo** (dado informativo, não pico/PR/ação): XP (valor, barra de progresso, badge no histórico — `progress.page`, `session-detail.page`), streak "dias seguidos" (`home.page`, `profile.page`), barra de progresso de programa (`home.page`), dias concluídos no heatmap semanal da Home (`.day-dot.done`) e no strip de dias da tela Treinos (`.tag-workout`, `.day-done-dot`), badge "preset" (`workouts.page`), badge "Rascunho" (`workout-builder.page`), delta de evolução positivo (`.em-val.pos`), check de séries já concluídas no Treino ativo, barra de progresso do treino no topo (`.progress-bar-fill`), passo já concluído do onboarding (`.dot.done`).
+
+**Mantido em Volt** (conforme a regra): navegação/abas/pílula ativa, botões primários, chips de seleção, badges de contagem (séries, exercícios), valores/badges de PR, estados "agora" (cronômetro, série ativa, dia de hoje, programa ativo, indicador de treino em andamento), e os banners de XP/level-up pós-treino (tratados como o momento "agora" de celebração, não como gráfico).
+
+---
+
+### 6. Conquistas — dark theme com 4 tiers, a partir de `Conquistas Treinus.html`
+
+**`achievements.page.html`:** adicionada legenda de tiers no topo (`.achv-legend` — Bronze/Prata/Ouro/Platina com dot colorido), reproduzindo a seção `.legend` do HTML de referência.
+
+**`achievements.page.scss` — reescrita completa de `.achv-icon`:** selo circular 58px (antes 52px) com tratamento por tier:
+- `.tier-bronze` (`--tier-bronze:#C58B54`, novo token) e `.tier-silver` (`--tier-silver:#C2C7D0`, novo token): `radial-gradient(circle at 50% 34%, rgba(TIER,.16), var(--surface2) 72%)` + anel `1.5px solid rgba(TIER,.42)`, sem glow.
+- `.tier-gold` (reusa `--volt`) e `.tier-platinum` (reusa `--ice`): mesmo tratamento + `box-shadow: 0 0 22px -6px rgba(TIER,.55)` — só esses dois tiers brilham, reforçando a hierarquia de prestígio.
+- `.locked`: fundo `--surface2` liso, anel `rgba(255,255,255,.1)`, ícone `#4a4a4a`, sem gradiente/glow.
+
+Ícones mantidos como estavam (Tabler webfont, `<i class="ti {{a.icon}}">`) — só o container mudou. Nenhum "card de detalhe" ou "notificação de desbloqueio" com cor de tier foi encontrado em outro lugar do app (o detalhe de conquista é um `AlertController` nativo sem estilo customizado), então não havia mais nada para sincronizar.
+
+---
+
+### Verificação
+
+- `cd frontend && npx ng build --configuration development` limpo após cada etapa (fundação, telas hifi, cada lote de reskin, Gelo, Conquistas).
+- Varredura `grep -r "var(--blue\|--purple\|--green\|--amber\|--orange"` no app confirmando zero tokens antigos remanescentes.
+- Checagem visual ao vivo: `ng serve` (porta 4300) + backend real (`mvn spring-boot:run`) via Playwright/Chromium headless — registrado usuário de teste pela UI (senha do usuário seed `teste@gmail.com` não é conhecida) e navegado pelas telas autenticadas (Início, Treinos, Progresso, Perfil, Treino ativo, Conquistas). Confirmado via inspeção de DOM: célula do heatmap em `rgb(15,58,74)` (`--ice-1`), `<linearGradient id="wv-ice-gradient">` presente com os stops corretos, barra da semana atual em Volt, e selo de conquista Bronze com o gradiente/anel esperado.
+
+---
+
 ## [2026-07-01] — Sistema de Conquistas (Achievements): catálogo, motor de desbloqueio e UI
 
 ### Contexto

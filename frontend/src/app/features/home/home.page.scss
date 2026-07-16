@@ -111,7 +111,7 @@ ion-content.home-content { --background: var(--bg); }
     pointer-events: none;
   }
 
-  .wc-title-row { position: relative; }
+  .wc-title-row { position: relative; padding-right: 34px; }
   .wc-meta { color: rgba(10, 10, 10, 0.65); font-size: 9px; }
   .wc-title { color: var(--on-volt); font-size: 23px; }
 
@@ -123,6 +123,10 @@ ion-content.home-content { --background: var(--bg); }
   .btn-edit {
     background: rgba(10, 10, 10, 0.1);
     color: rgba(10, 10, 10, 0.6);
+  }
+
+  .day-menu {
+    position: absolute; top: 13px; right: 14px;
   }
 
   .wc-stats {

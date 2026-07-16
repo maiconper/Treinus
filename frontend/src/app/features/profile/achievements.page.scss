@@ -1,20 +1,33 @@
 ion-content.achievements-content { --background: var(--bg); }
 .content-inner { padding: 16px 16px 40px; }
 
+.achv-legend {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 16px; padding-bottom: 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.achv-legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--text2);
+}
+
+.achv-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
 .achv-category { margin-bottom: 20px; }
 
 .achv-category-title {
-  font-size: 11px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.06em; color: var(--text3); margin-bottom: 10px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.22em; color: var(--text2); margin-bottom: 16px;
 }
 
 .achv-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 14px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 18px 12px;
 }
 
 .achv-badge {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
   text-align: center; cursor: pointer;
 
   &:active { opacity: 0.7; }
@@ -22,16 +35,41 @@ ion-content.achievements-content { --background: var(--bg); }
 
 .achv-icon {
   position: relative;
-  width: 52px; height: 52px; border-radius: 50%;
+  width: 58px; height: 58px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; border: 0.5px solid var(--border);
+  font-size: 24px;
 
-  &.tier-bronze { background: var(--surface2); color: var(--text1); }
-  &.tier-silver { background: var(--surface2); color: var(--text1); }
-  &.tier-gold { background: var(--volt-bg); color: var(--volt); }
-  &.tier-platinum { background: var(--volt); color: var(--on-volt); }
+  &.tier-bronze {
+    color: var(--tier-bronze);
+    background: radial-gradient(circle at 50% 34%, rgba(197, 139, 84, 0.16), var(--surface2) 72%);
+    border: 1.5px solid rgba(197, 139, 84, 0.42);
+  }
 
-  &.locked { background: var(--surface2); color: var(--border2); }
+  &.tier-silver {
+    color: var(--tier-silver);
+    background: radial-gradient(circle at 50% 34%, rgba(194, 199, 208, 0.16), var(--surface2) 72%);
+    border: 1.5px solid rgba(194, 199, 208, 0.42);
+  }
+
+  &.tier-gold {
+    color: var(--volt);
+    background: radial-gradient(circle at 50% 34%, rgba(242, 255, 73, 0.16), var(--surface2) 72%);
+    border: 1.5px solid rgba(242, 255, 73, 0.42);
+    box-shadow: 0 0 22px -6px rgba(242, 255, 73, 0.55);
+  }
+
+  &.tier-platinum {
+    color: var(--ice);
+    background: radial-gradient(circle at 50% 34%, rgba(53, 205, 234, 0.16), var(--surface2) 72%);
+    border: 1.5px solid rgba(53, 205, 234, 0.42);
+    box-shadow: 0 0 22px -6px rgba(53, 205, 234, 0.55);
+  }
+
+  &.locked {
+    color: #4a4a4a;
+    background: var(--surface2);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
 .achv-new-dot {
@@ -41,7 +79,7 @@ ion-content.achievements-content { --background: var(--bg); }
 }
 
 .achv-name {
-  font-size: 10.5px; color: var(--text2); line-height: 1.3;
+  font-size: 10.5px; font-weight: 600; color: var(--text2); line-height: 1.3;
 
   &.locked-text { color: var(--text3); }
 }
