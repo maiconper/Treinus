@@ -28,6 +28,15 @@ O `btn-edit` (⋮) do `.day-card` (treino de hoje) estava dentro do `.wc-title-r
 
 ---
 
+### Auditoria de TODOs pendentes — nenhum encontrado; 1 doc desatualizada corrigida
+
+Busca por `TODO`/`FIXME` em todo o projeto encontrou só 2 ocorrências reais (o resto — "CORPO TODO" em migrations e `ExerciseSyncService.java` — é o rótulo da categoria "corpo todo"/full body, falso positivo):
+
+- **`CHANGELOG.md:1319`** (registrado em 2026-06-20): TODO sobre `lastWorkoutDate` marcar "treino concluído hoje" mesmo com o treino do dia trocado no programa. **Já resolvido** — `home.page.ts` (`isTodayWorkoutDone`) hoje compara `todaySessions` pelo `workoutId` específico, não mais pela data genérica. Mantido no changelog como registro histórico.
+- **`backend/README.md:184`**: `XP | Estrutura implementada — fórmula a definir (TODO)`. Doc desatualizada — `XpCalculator.java` já tem a fórmula implementada (`5000 * (1.2^N - 1)`). Corrigido para refletir o código atual.
+
+---
+
 ## [2026-07-01] — Identidade visual Treinus (Volt/Gelo): reskin completo do app e conquistas com tiers
 
 ### Contexto

@@ -181,7 +181,7 @@ Migrations em `src/main/resources/db/migration/`:
 | Exercício personalizado | Visível apenas para o dono |
 | Record pessoal (PR) | Detectado automaticamente ao registrar série |
 | Streak | Atualizado ao finalizar sessão (dias consecutivos) |
-| XP | Estrutura implementada — **fórmula a definir** (TODO) |
+| XP | Curva exponencial: XP total pro nível N = `5000 * (1.2^N - 1)` (`XpCalculator.java`) |
 
 ## Roles
 

@@ -42,3 +42,4 @@ Treinus/
 
 - [Documentação do Backend](backend/README.md)
 - [Especificações do MVP](SPECS.md)
+- [TODO](TODO.md)
