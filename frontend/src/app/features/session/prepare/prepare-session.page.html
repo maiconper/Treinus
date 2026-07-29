@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" fill="clear" [disabled]="starting">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <div class="toolbar-center">
+      <p class="toolbar-title">Prepare-se</p>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="prepare-content">
+  @if (!loading && workout) {
+    <div class="content-inner">
+      <p class="wk-meta">SEU TREINO</p>
+      <p class="wk-title font-display">{{ workout.name }}</p>
+
+      <div class="wk-stats">
+        <span
+          >{{ workout.exercises.length }} exercício{{
+            workout.exercises.length !== 1 ? 's' : ''
+          }}</span
+        >
+        <span class="stat-sep">·</span>
+        <span>~{{ estimatedMinutes(workout) }} min</span>
+      </div>
+
+      <div class="exercise-list">
+        @for (ex of workout.exercises; track ex.id) {
+          <div class="ex-row">
+            <span class="ex-name">{{ ex.exerciseName }}</span>
+            <span class="ex-detail">{{ formatReps(ex) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (!loading && error) {
+    <div class="state-msg">
+      <p>Não foi possível carregar o treino.</p>
+      <button class="btn-quiet" (click)="cancel()">Voltar</button>
+    </div>
+  }
+</ion-content>
+
+@if (!loading && workout) {
+  <ion-footer class="prepare-footer">
+    <div class="footer-inner">
+      @if (!countdownStarted) {
+        <button class="btn-skip" (click)="startWorkout()">Começar treino</button>
+      } @else {
+        <div class="countdown" [class.starting]="starting">
+          <span class="countdown-num font-display">{{ starting ? '...' : secondsLeft }}</span>
+        </div>
+        <p class="countdown-lbl">Começando em instantes</p>
+      }
+    </div>
+  </ion-footer>
+}

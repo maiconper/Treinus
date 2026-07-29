@@ -5,7 +5,6 @@ import { ExerciseConfigModal, ExerciseConfig } from './exercise-config.modal';
 import { ExercisePickerModal } from './exercise-picker.modal';
 import { WorkoutService } from '../../../core/services/workout.service';
 import { ExerciseService } from '../../../core/services/exercise.service';
-import { SessionService } from '../../../core/services/session.service';
 import { Exercise, Workout, WorkoutExercise } from '../../../core/models';
 
 const MUSCLE_GROUPS = [
@@ -47,7 +46,6 @@ export class WorkoutBuilderPage implements OnInit {
     private router: Router,
     private workoutService: WorkoutService,
     private exerciseService: ExerciseService,
-    private sessionService: SessionService,
     private modalCtrl: ModalController,
   ) {}
 
@@ -186,9 +184,7 @@ export class WorkoutBuilderPage implements OnInit {
 
   startWorkout() {
     if (!this.workoutId) return;
-    this.sessionService.start({ workoutId: this.workoutId }).subscribe(session => {
-      this.router.navigate(['/session', session.id]);
-    });
+    this.router.navigate(['/session/prepare', this.workoutId]);
   }
 
   get hasExercises(): boolean {

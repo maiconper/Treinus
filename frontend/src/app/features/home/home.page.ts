@@ -558,11 +558,9 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.activeSession) {
       this.router.navigate(['/session', this.activeSession.id]);
     } else if (this.todayWorkout?.workoutId) {
-      this.sessionService
-        .start({ workoutId: this.todayWorkout.workoutId, programDayId: this.todayWorkout.id })
-        .subscribe((s) => {
-          this.router.navigate(['/session', s.id]);
-        });
+      this.router.navigate(['/session/prepare', this.todayWorkout.workoutId], {
+        queryParams: { programDayId: this.todayWorkout.id },
+      });
     }
   }
 

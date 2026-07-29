@@ -1,5 +1,23 @@
 # Changelog — Treinus
 
+## [2026-07-27] — Feature: tela de preparação antes do treino
+
+### Nova tela `PrepareSessionPage` (`/session/prepare/:workoutId`)
+
+Antes, clicar em "Iniciar treino" criava a `TrainingSession` no backend e navegava direto pro primeiro exercício, sem nenhuma etapa intermediária. Agora existe uma tela de preparação entre os dois:
+
+- Nova rota `prepare/:workoutId` (query param opcional `programDayId`) registrada em `SessionModule`, **antes** da rota `:id` (senão `:id` capturaria `prepare` como parâmetro).
+- `PrepareSessionPage` busca o treino via `WorkoutService.get(workoutId)` (funciona tanto pra treino do usuário quanto preset SYSTEM) e exibe nome, contagem de exercícios, duração estimada e lista de exercícios com séries×reps — mesmo padrão visual/fórmula já usado em `home.page.ts`/`workouts.page.ts` (`estimatedMinutes`, `formatReps`, duplicado aqui seguindo a convenção já existente no projeto).
+- **Fluxo em duas fases** (ajustado a pedido do usuário após a primeira versão): a tela abre só com o resumo do treino e um botão "Começar treino" — nenhuma contagem roda ainda. Só ao clicar nesse botão (`startWorkout()`, estado `countdownStarted`) começa a contagem regressiva de **5 segundos** (`setInterval`), substituindo o botão por um círculo com o número decrescendo. Ao zerar, chama `SessionService.start({ workoutId, programDayId })` — **a sessão não é criada enquanto a pessoa está lendo o resumo**, então cancelar (botão ✕, `Location.back()`) não deixa sessão órfã no banco.
+- Navegação final usa `replaceUrl: true` pra `/session/:id`, então o botão voltar do device não retorna pra tela de preparação já expirada.
+
+### Call sites atualizados pra passar pela tela de preparação
+
+- `home.page.ts` (`startWorkout()`): se já existe `activeSession`, continua indo direto pra ela (retomar treino em andamento não passa por preparação); caso contrário, navega pra `/session/prepare/:workoutId` com `programDayId` como query param, em vez de chamar `sessionService.start()` diretamente.
+- `workout-builder.page.ts` (`startWorkout()`, botão "Iniciar treino" do builder — é o mesmo botão usado pelo fluxo "Iniciar treino" da aba Treinos, que abre o builder antes de iniciar): idem, navega pra `/session/prepare/:workoutId` sem `programDayId`. `SessionService` removido do construtor/import (não é mais usado nesse arquivo).
+
+---
+
 ## [2026-07-16] — Fix: 500 em todos os endpoints de Progresso, overlays escuros do Ionic e posição do btn-edit
 
 ### Bug fix crítico: 500 Internal Server Error em `/api/v1/progress/*` — `backend/pom.xml`

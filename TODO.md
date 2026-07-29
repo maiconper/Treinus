@@ -2,16 +2,6 @@
 
 Pendências conhecidas que precisam de ação futura. Diferente do `CHANGELOG.md` (log histórico do que já foi feito), este arquivo é pra ser **editado**: quando um item é resolvido, remove daqui e (se relevante) registra no `CHANGELOG.md`.
 
-## Feature: tela de preparação antes do treino
-
-**Problema:** ao clicar em "Iniciar treino" na home (`home.page.ts:557` `startWorkout()`), o app chama `SessionService.start()` e navega direto para `/session/:id` (`SessionModule`, tela de execução do primeiro exercício). Não há nenhuma etapa intermediária — a pessoa cai direto no primeiro exercício sem ver o treino completo nem ter tempo de se preparar (trocar de roupa, pegar água, etc.).
-
-**Desejado:**
-1. Nova tela de preparação, exibida entre o clique em "Iniciar treino" e a navegação pra `/session/:id`, com um resumo do treino do dia (nome, lista de exercícios, séries/reps planejadas — dados já existentes via `todayWorkoutDetails`/`getWorkoutForDay`).
-2. Cronômetro de contagem regressiva nessa tela (ex.: 10s, configurável) antes de liberar o botão/navegação automática pro primeiro exercício.
-
-**A decidir:** duração padrão da contagem, se dá pra pular a contagem, se essa tela é uma rota nova (`/session/prepare/:workoutId`?) ou um passo dentro do próprio `SessionModule` antes da tela de exercício ativo.
-
 ## Feature: link direto das sessões de treino pro histórico em Progresso
 
 **Problema:** hoje "Histórico" não é uma aba própria — é uma seção (`section-lbl` "Histórico", `progress.page.html:557`) dentro da aba **Resumo** do `ProgressPage` (`activeTab = 'resumo'`, `progress.page.ts:135`), mais abaixo na página. Não existe mecanismo de deep-link/anchor pra abrir a Progress já nessa seção — os links existentes (`goToHistory()` em `home.page.ts:569` e `workouts.page.ts:425`, navegação em `manual-register.page.ts:156`) vão todos pra `/tabs/progress/:sessionId`, que abre o **detalhe de uma sessão específica** (`session-detail.page`), não a lista de histórico em si.
