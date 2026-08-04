@@ -568,6 +568,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.router.navigate(['/tabs/progress', sessionId]);
   }
 
+  goToFullHistory() {
+    this.router.navigate(['/tabs/progress'], { queryParams: { scrollTo: 'historico' } });
+  }
+
   formatTime(iso: string): string {
     return new Date(iso).toLocaleTimeString('pt-BR', {
       hour: '2-digit',

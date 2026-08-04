@@ -1,5 +1,31 @@
 # Changelog — Treinus
 
+## [2026-08-04] — Ajuste: link "Ver histórico" da home fica sempre visível
+
+O link "Ver histórico" (feature `[2026-07-29]` abaixo) tinha sido colocado dentro da seção "Concluídos hoje" — só aparecia depois que a pessoa terminava algum treino no dia. Usuário pediu pra ficar disponível sempre.
+
+**`home.page`:** o botão saiu de dentro do `@if (todaySessions.length > 0)` e virou uma linha própria (`.link-history-row`, mesmo padrão visual do `.session-banner` já existente — fundo `surface2`, borda, ícone à esquerda e chevron à direita), posicionada logo abaixo do `stats-row` e acima do banner de sessão ativa/programa — sempre renderizada, independente de sessões concluídas hoje ou de haver programa ativo. `.section-row`/`.link-history` (que só existiam para esse link dentro da seção condicional) foram removidos do SCSS, substituídos por `.link-history-row`.
+
+---
+
+## [2026-07-29] — Feature: link direto da home pro histórico em Progresso
+
+### Link "Ver histórico" na seção "Concluídos hoje" (`home.page`)
+
+Antes não havia como ir direto da home pra seção de Histórico dentro de Progresso — só dava pra abrir o **detalhe de uma sessão específica** (`goToHistory(sessionId)` → `/tabs/progress/:sessionId`). Agora, quando a home mostra a seção "Concluídos hoje", ela ganhou um link "Ver histórico" ao lado do label (`.section-row` + `.link-history`), que chama `goToFullHistory()` → `router.navigate(['/tabs/progress'], { queryParams: { scrollTo: 'historico' } })`.
+
+> **Nota (2026-08-04):** essa posição foi revista — ver entrada acima. O link não fica mais dentro de "Concluídos hoje".
+
+### Deep-link + scroll até a seção (`progress.page`)
+
+`ProgressPage` não tinha suporte a nenhum parâmetro de navegação. Adicionado:
+
+- `ngOnInit` lê `route.snapshot.queryParamMap.get('scrollTo')`; se for `'historico'`, força `activeTab = 'resumo'` (a aba onde a seção Histórico vive — já era o default, mas fica explícito/robusto a mudanças futuras).
+- Elemento `id="historico-section"` adicionado no `<p class="section-lbl">Histórico</p>` do template.
+- `maybeScrollToHistory()`: dá `scrollIntoView({ behavior: 'smooth', block: 'start' })` no elemento, guardado por uma flag `scrolledToHistory` (só roda uma vez por navegação) e por `!this.loading` (só roda quando a seção já está renderizada). Chamado tanto no `next` de `loadSummary()` quanto no de `getHistory()` — como os dois carregam em paralelo e a seção só renderiza com `!loading && summary` (`loading` só vira `false` dentro de `loadSummary`), a chamada que roda primeiro checa `!this.loading` e desiste sem marcar a flag; a que roda depois (quando `loading` já é `false`) executa o scroll de fato — não importa qual das duas chamadas HTTP volta primeiro.
+
+---
+
 ## [2026-07-27] — Feature: tela de preparação antes do treino
 
 ### Nova tela `PrepareSessionPage` (`/session/prepare/:workoutId`)

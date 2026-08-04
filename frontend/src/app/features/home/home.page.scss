@@ -19,6 +19,17 @@ ion-content.home-content { --background: var(--bg); }
   }
 }
 
+.link-history-row {
+  width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); border: 0.5px solid var(--border); border-radius: 12px;
+  padding: 10px 12px; margin-bottom: 13px;
+  font-size: 13px; font-weight: 700; color: var(--text1); cursor: pointer;
+
+  ion-icon { font-size: 16px; color: var(--text2); flex-shrink: 0; }
+  ion-icon.chevron { margin-left: auto; }
+}
+
 .session-banner {
   display: flex; align-items: center; gap: 10px;
   background: var(--surface2); border: 0.5px solid var(--border);

@@ -2,14 +2,6 @@
 
 Pendências conhecidas que precisam de ação futura. Diferente do `CHANGELOG.md` (log histórico do que já foi feito), este arquivo é pra ser **editado**: quando um item é resolvido, remove daqui e (se relevante) registra no `CHANGELOG.md`.
 
-## Feature: link direto das sessões de treino pro histórico em Progresso
-
-**Problema:** hoje "Histórico" não é uma aba própria — é uma seção (`section-lbl` "Histórico", `progress.page.html:557`) dentro da aba **Resumo** do `ProgressPage` (`activeTab = 'resumo'`, `progress.page.ts:135`), mais abaixo na página. Não existe mecanismo de deep-link/anchor pra abrir a Progress já nessa seção — os links existentes (`goToHistory()` em `home.page.ts:569` e `workouts.page.ts:425`, navegação em `manual-register.page.ts:156`) vão todos pra `/tabs/progress/:sessionId`, que abre o **detalhe de uma sessão específica** (`session-detail.page`), não a lista de histórico em si.
-
-**Desejado:** um link direto das sessões de treino pra a seção de histórico dentro de Progresso (não pro detalhe de uma sessão específica).
-
-**A decidir:** de onde exatamente deve sair esse link (tela de sessões/treinos concluídos?); e como implementar o deep-link — via query param (`/tabs/progress?tab=resumo&scrollTo=historico`) lido no `ngOnInit` do `ProgressPage` pra setar `activeTab` e rolar até a seção, já que hoje não há suporte a isso.
-
 ## Feature: reps personalizadas por série ao adicionar exercício no treino
 
 **Problema:** ao configurar um exercício no builder (`exercise-config.modal.ts`), só dá pra definir um número de séries (`sets`) e **um único valor de reps** (`reps`) aplicado igualmente a todas as séries — não existe forma de dizer, por exemplo, "série 1: 12 reps, série 2: 10 reps, série 3: 8 reps" (padrão comum em treino piramidal/drop-set). No backend, `WorkoutExercise` (`WorkoutExercise.java:34-40`) armazena `plannedSets` (contagem) + `plannedRepsMin`/`plannedRepsMax` (uma faixa única pro exercício inteiro) — não há campo pra reps por série individual, então isso exigiria mudança de schema (ex.: tabela `planned_sets` com uma linha por série, reps próprio cada uma) além da UI.

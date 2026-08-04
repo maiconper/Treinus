@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProgressService } from '../../core/services/progress.service';
 import { ExerciseProgress, ExerciseProgressEntry, HeatmapDay, MuscleSetStat, PersonalRecord, ProgressSummary, TopExercise, WeeklyVolume, WorkoutHistoryItem } from '../../core/models';
 
@@ -151,9 +151,16 @@ export class ProgressPage implements OnInit {
   private readonly CT = 12; private readonly CB = 102;
   private readonly CW = 245; private readonly CH = 90;
 
-  constructor(private progressService: ProgressService, private router: Router) {}
+  private scrolledToHistory = false;
 
-  ngOnInit() { this.load(); }
+  constructor(private progressService: ProgressService, private router: Router, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    if (this.route.snapshot.queryParamMap.get('scrollTo') === 'historico') {
+      this.activeTab = 'resumo';
+    }
+    this.load();
+  }
   ionViewWillEnter() { this.load(); }
 
   load() {
@@ -164,6 +171,7 @@ export class ProgressPage implements OnInit {
       next: h => {
         this.history = h.content;
         this.hasMore = h.number + 1 < h.totalPages;
+        this.maybeScrollToHistory();
       },
     });
     this.loadTopExercises();
@@ -176,9 +184,18 @@ export class ProgressPage implements OnInit {
     this.loadMuscleChart();
   }
 
+  private maybeScrollToHistory() {
+    if (this.scrolledToHistory || this.loading) return;
+    if (this.route.snapshot.queryParamMap.get('scrollTo') !== 'historico') return;
+    this.scrolledToHistory = true;
+    setTimeout(() => {
+      document.getElementById('historico-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  }
+
   loadSummary() {
     this.progressService.getSummary(this.statsPeriod).subscribe({
-      next: s => { this.summary = s; this.loading = false; },
+      next: s => { this.summary = s; this.loading = false; this.maybeScrollToHistory(); },
       error: () => { this.loading = false; },
     });
   }

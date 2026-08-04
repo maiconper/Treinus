@@ -63,6 +63,13 @@
       </div>
     </ng-container>
 
+    <!-- History link (always available, not tied to today's completion) -->
+    <button class="link-history-row" (click)="goToFullHistory()">
+      <ion-icon name="time-outline"></ion-icon>
+      Ver histórico
+      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+    </button>
+
     <!-- Completed sessions today -->
     @if (todaySessions.length > 0) {
     <p class="section-lbl">Concluídos hoje</p>
